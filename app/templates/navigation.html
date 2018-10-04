@@ -1,0 +1,22 @@
+{% block navbar %}
+
+    <div class="container">
+
+    <div class="row">
+
+        <div class="col-sm-12 w3-center">
+
+            <button class="pulsanti w3-hover-light-blue w3-hover-text-indigo w3-padding w3-round-large" onclick="location.href='{{ url_for('site.index') }}'" title="Home">Home</button>
+            {% if current_user.is_anonymous %}
+            <button class="pulsanti w3-hover-light-blue w3-hover-text-indigo w3-padding w3-round-large" onclick="location.href='{{ url_for('site.login') }}'" title="Login">Login</button>
+            {% else %}
+            <button class="pulsanti w3-hover-light-blue w3-hover-text-indigo w3-padding w3-round-large" onclick="location.href='{{ url_for('site.logout') }}'" title="Logout">Logout</button>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    </div>
+
+{% endblock %}

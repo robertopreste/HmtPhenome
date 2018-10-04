@@ -1,0 +1,26 @@
+/*
+* Created by Roberto Preste
+*/
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    background-color: #DAE9FF;
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 15px;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* fixed height */
+    /*height: 40%;*/
+}

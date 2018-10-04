@@ -1,0 +1,12 @@
+Flask
+flask-marshmallow
+marshmallow-sqlalchemy
+Flask-restplus
+Flask-SQLAlchemy
+Flask-WTF
+flask-bootstrap
+flask-cors
+flask-login
+flask-mail
+sqlalchemy-migrate
+requests
