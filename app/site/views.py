@@ -11,8 +11,8 @@ www = Blueprint("site", __name__)
 from sqlalchemy import or_, and_
 from app import app, db
 from config import ADMINS
-from .forms import LoginForm, RegistrationForm
-from .models import User
+# from .forms import LoginForm, RegistrationForm
+# from .models import User
 from app.static import dbdata
 
 
@@ -22,8 +22,20 @@ from app.static import dbdata
 @www.route("/", methods=["GET"])
 def index():
     return render_template("index.html",
-                           title="HmtPhenome",
+                           title="Home",
                            latest_update=dbdata.latest_update)
+
+
+@www.route("/about", methods=["GET"])
+def about():
+    return render_template("about.html",
+                           title="About")
+
+
+@www.route("/contacts", methods=["GET"])
+def contacts():
+    return render_template("contacts.html",
+                           title="Contacts")
 
 
 @www.errorhandler(404)

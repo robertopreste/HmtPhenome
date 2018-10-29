@@ -2,19 +2,45 @@
 * Created by Roberto Preste
 */
 
+:root {
+    /* Palette 1 */
+    --red_nc5: #C4003B;
+    --pink_raspberry: #8F002B;
+    --vivid_auburn: #8A2121;
+    --prune: #711C1C;
+    --eerie_black: #1D1D1B;
+    /* Palette 2 */
+    --dark_liver: #564E3F;
+    --linen: #F9F3E5;
+    --gargoyle_gas: #F9CF45;
+    --yellow_crayola: #FFEE82;
+    --blond: #FFF2C1;
+    /* Palette 3 */
+    --rosy_brown: #C68D92;
+    --english_red: #A63A50;
+    --light_brown: #BA5A1F;
+    --pastel_pink: #EDA4A3;
+    --fuzzy_wuzzy: #C46464;
+}
+
 html {
     position: relative;
     min-height: 100%;
 }
 
 body {
-    background-color: #DAE9FF;
+    background-color: var(--blond);
     font-family: Verdana, Arial, sans-serif;
     font-size: 15px;
+    padding-top: 70px;
 }
 
 ::-webkit-scrollbar {
     display: none;
+}
+
+.navbar {
+    background-color: var(--yellow_crayola);
 }
 
 .footer {
@@ -22,5 +48,6 @@ body {
     bottom: 0;
     width: 100%;
     /* fixed height */
-    /*height: 40%;*/
+    /*height: 40px;*/
+    background-color: var(--yellow_crayola);
 }

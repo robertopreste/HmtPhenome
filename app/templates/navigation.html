@@ -1,22 +1,37 @@
 {% block navbar %}
 
-    <div class="container">
-
-    <div class="row">
-
-        <div class="col-sm-12 w3-center">
-
-            <button class="pulsanti w3-hover-light-blue w3-hover-text-indigo w3-padding w3-round-large" onclick="location.href='{{ url_for('site.index') }}'" title="Home">Home</button>
-            {% if current_user.is_anonymous %}
-            <button class="pulsanti w3-hover-light-blue w3-hover-text-indigo w3-padding w3-round-large" onclick="location.href='{{ url_for('site.login') }}'" title="Login">Login</button>
-            {% else %}
-            <button class="pulsanti w3-hover-light-blue w3-hover-text-indigo w3-padding w3-round-large" onclick="location.href='{{ url_for('site.logout') }}'" title="Logout">Logout</button>
-            {% endif %}
-
+    <nav class="navbar navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{{ url_for('site.index') }}">HmtPhenome</a>
+            </div>
+            <div class="collapse navbar-collapse" id="main-navbar">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{{ url_for('site.index') }}">Home</a></li>
+                    <li><a href="{{ url_for('site.about') }}">About</a></li>
+{#                    <li><a href="{{ url_for('site.stats') }}">Statistics</a></li>#}
+{#                    <li><a href="{{ url_for('site.query') }}">Query</a></li>#}
+                    <li><a href="{{ url_for('site.contacts') }}">Contacts</a></li>
+                </ul>
+            </div>
         </div>
+    </nav>
 
-    </div>
-
-    </div>
+{#    <div class="row">#}
+{##}
+{#        <div class="col-sm-12 w3-center">#}
+{##}
+{#            <button class="pulsanti w3-hover-light-blue w3-hover-text-indigo w3-padding w3-round-large" onclick="location.href='{{ url_for('site.index') }}'" title="Home">Home</button>#}
+{##}
+{#        </div>#}
+{##}
+{#    </div>#}
+{##}
+{#    </div>#}
 
 {% endblock %}

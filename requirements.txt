@@ -1,3 +1,4 @@
+sanic
 Flask
 flask-marshmallow
 marshmallow-sqlalchemy
