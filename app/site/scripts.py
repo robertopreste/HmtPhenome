@@ -1,11 +1,27 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
+from .models import Mitocarta
 # import pandas as pd
 # import numpy as np
 # import requests
 # import sys
 # from pybiomart import Server
+
+
+def get_genes():
+    chr_dict = {}
+    chrs = ["chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10",
+            "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19",
+            "chr20", "chr21", "chr22", "chrX", "chrM"]
+    for chrom in chrs:
+        lista = set()
+        q = Mitocarta.query.filter(Mitocarta.hg_chr == chrom).all()
+        for el in q:
+            lista.add(el.gene_symbol)
+        chr_dict[chrom] = sorted(list(lista))
+
+    return chr_dict
 
 
 # def get_vars_from_gene_name(gene_name):

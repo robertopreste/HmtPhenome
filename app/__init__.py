@@ -60,6 +60,9 @@ def create_db():
     click.echo("Done.")
 
 
+from app.site.scripts import get_genes
+
+
 @app.cli.command()
 def migrate_db():
     click.echo("Migrating database to new version...")
@@ -76,6 +79,11 @@ def migrate_db():
     api.upgrade(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
 
     v = api.db_version(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
+
+    with open("app/static/dbdata.py", "w") as f:
+        genes = get_genes()
+        f.write("genes = " + repr(genes) + "\n")
+
     click.echo("New migration saved as {}".format(migration))
     click.echo("Current database version: {}".format(v))
 
