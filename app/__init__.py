@@ -43,11 +43,14 @@ app.register_blueprint(www)
 # app.register_blueprint(www, static_folder="site/static")
 # app.register_blueprint(res, url_prefix="/api")
 
+from app.site.models import Mitocarta
+
 
 @app.cli.command()
 def create_db():
     click.echo("Creating new database...")
     db.create_all()
+    # db.session.commit()
     if not os.path.exists(SQLALCHEMY_MIGRATE_REPO):
         api.create(SQLALCHEMY_MIGRATE_REPO, "database repository")
         api.version_control(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)

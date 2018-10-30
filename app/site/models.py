@@ -33,10 +33,10 @@ class Mitocarta(db.Model):
     description = db.Column(db.Text, nullable=False)
     hg_chr = db.Column(db.String, nullable=False)
     hg_start = db.Column(db.Integer, nullable=False)
-    hg_end = db.Column(db.Integer, nullable=False)
+    hg_stop = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return """Genes(id: {self.id}, gene_id: {self.gene_id}, ensembl_id: {self.ensembl_id}, gene_symbol: {self.gene_symbol}, description: {self.description}, hg_chr: {self.hg_chr}, hg_start: {self.hg_start}, hg_end: {self.hg_end})""".format(self=self)
+        return """Genes(id: {self.id}, gene_id: {self.gene_id}, ensembl_id: {self.ensembl_id}, gene_symbol: {self.gene_symbol}, description: {self.description}, hg_chr: {self.hg_chr}, hg_start: {self.hg_start}, hg_stop: {self.hg_stop})""".format(self=self)
 
 
 # class Phenotypes(db.Model):

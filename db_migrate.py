@@ -23,11 +23,11 @@ api.upgrade(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
 v = api.db_version(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
 
 # expl: create the dbdata.py file with data to populate dropdown menus and details
-with open("app/static/dbdata.py", "w") as d:
-
-    # expl: display last update of the db in home page
-    latest_update = "%s %s" % (datetime.date.today().strftime("%B"), str(datetime.date.today().year))
-    d.write("latest_update = " + repr(latest_update) + "\n")
+# with open("app/static/dbdata.py", "w") as d:
+#
+#     # expl: display last update of the db in home page
+#     latest_update = "%s %s" % (datetime.date.today().strftime("%B"), str(datetime.date.today().year))
+#     d.write("latest_update = " + repr(latest_update) + "\n")
 
 
 print("New migration saved as " + migration)
