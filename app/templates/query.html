@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="container">
+
+        <div class="page-header">
+            <h1>Query</h1>
+        </div>
+
+        <p class="lead">This page allows to search for specific variants contained in HmtVar.</p>
+
+        <form action="/query" method="post" name="mainQuery" enctype="multipart/form-data">
+
+            <div class="container">
+            <div class="row">
+
+                <div class="col-sm-12">
+
+                    {% with messages = get_flashed_messages() %}
+
+                        {% if messages %}
+                            <div class="alert alert-danger alert-dismissable">
+                                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                <ul class="flashes"></ul>
+                                {% for message in messages %}
+
+                                    <li>{{ message }}</li>
+
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                    {% endwith %}
+
+                <div class="panel panel-success">
+
+                    <div class="panel-heading">
+                        <h4>Main information</h4>
+                    </div>
+
+                    <div class="panel-body">
+                        <table class="table">
+
+                        <thead>
+                            <tr>
+                                <th style="min-width: 15em;">Search Criteria</th>
+                                <th>Description</th>
+                                <th style="min-width: 20em;">Values</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                        {# Group #}
+                            <tr>
+                                <td>Locus Type</td>
+                                <td>Query the entire db or restrict to CDS, rRNA, tRNA or regulatory sequences.</td>
+                                <td><div class="form-group">
+                                    <select name="group" id="group" class="form-control" onchange="populateLoci(this.id, 'locus'); populatePathogenicity(this.id, 'pathogenicity')">
+                                        <option value="A" selected>--Any Sequences--</option>
+                                        <option value="CDS">Protein-Coding Sequences</option>
+                                        <option value="reg">Regulatory Sequences</option>
+                                        <option value="rRNA">rRNA</option>
+                                        <option value="tRNA">tRNA</option>
+                                    </select>
+                                </div></td>
+                            </tr>
+
+                        </tbody>
+
+                        </table>
+                    </div>
+
+                </div>
+                </div>
+
+            </div>
+
+            </div>
+
+            <div class="container">
+            <div class="row">
+                <div class="col-sm-4">&nbsp;</div>
+                <div class="col-sm-2 center">
+                    <button type="reset" class="btn btn-success btn-lg">Reset</button>
+                </div>
+                <div class="col-sm-2 center">
+                    <button type="submit" class="btn btn-success btn-lg">Launch Query</button>
+                </div>
+                <div class="col-sm-4">&nbsp;</div>
+            </div>
+            </div>
+
+        </form>
+
+    </div>
+
+    {{ super() }}
+{% endblock %}
