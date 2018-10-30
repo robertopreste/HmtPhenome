@@ -8,7 +8,7 @@
             <h1>Query</h1>
         </div>
 
-        <p class="lead">This page allows to search for specific variants contained in HmtVar.</p>
+        <p class="lead">Launch a query on HmtPhenome starting from variants, genes, phenotypes or diseases.</p>
 
         <form action="/query" method="post" name="mainQuery" enctype="multipart/form-data">
 
@@ -33,10 +33,10 @@
 
                     {% endwith %}
 
-                <div class="panel panel-success">
+                <div class="panel panel-warning">
 
                     <div class="panel-heading">
-                        <h4>Main information</h4>
+                        <h4>Entry point</h4>
                     </div>
 
                     <div class="panel-body">
@@ -44,27 +44,93 @@
 
                         <thead>
                             <tr>
-                                <th style="min-width: 15em;">Search Criteria</th>
-                                <th>Description</th>
-                                <th style="min-width: 20em;">Values</th>
+                                <th>Entity</th>
+                                <th>Values</th>
+{#                                <th style="min-width: 15em;">Search Criteria</th>#}
+{#                                <th>Description</th>#}
+{#                                <th style="min-width: 20em;">Values</th>#}
                             </tr>
                         </thead>
 
                         <tbody>
-                        {# Group #}
+
+                            {# Group #}
+                            <div class="form-group">
                             <tr>
-                                <td>Locus Type</td>
-                                <td>Query the entire db or restrict to CDS, rRNA, tRNA or regulatory sequences.</td>
-                                <td><div class="form-group">
-                                    <select name="group" id="group" class="form-control" onchange="populateLoci(this.id, 'locus'); populatePathogenicity(this.id, 'pathogenicity')">
-                                        <option value="A" selected>--Any Sequences--</option>
-                                        <option value="CDS">Protein-Coding Sequences</option>
-                                        <option value="reg">Regulatory Sequences</option>
-                                        <option value="rRNA">rRNA</option>
-                                        <option value="tRNA">tRNA</option>
-                                    </select>
+                                <td style="padding-left: 30px;">
+                                    <label class="radio">
+                                        <input type="radio" name="entity" value="variant" checked>Variants
+                                    </label>
+                                </td>
+                                <td><div class="form-group row">
+                                    <div class="col-sm-3">Insert a variant:</div>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" name="variant_input" id="variant_input">
+                                    </div>
                                 </div></td>
                             </tr>
+
+                            <tr>
+                                <td style="padding-left: 30px;">
+                                    <label class="radio">
+                                        <input type="radio" name="entity" value="gene">Genes
+                                    </label>
+                                </td>
+                                <td><div class="form-group row">
+                                    <div class="col-sm-3">Select a gene:</div>
+                                    <div class="col-sm-9">
+{#                                      TODO: qui bisogna mettere qualcosa che prenda la lista dei geni dal db  #}
+                                        <select class="form-control" name="gene_input" id="gene_input">
+                                            <option value="ATP6">ATP6</option>
+                                            <option value="ATP8">ATP8</option>
+                                            <option value="COX1">COX1</option>
+                                            <option value="COX2">COX2</option>
+                                            <option value="COX3">COX3</option>
+                                        </select>
+                                    </div>
+                                </div></td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding-left: 30px;">
+                                    <label class="radio">
+                                        <input type="radio" name="entity" value="pheno">Phenotypes
+                                    </label>
+                                </td>
+                                <td><div class="form-group row">
+                                    <div class="col-sm-3">Select a phenotype:</div>
+                                    <div class="col-sm-9">
+{#                                      TODO: come rendere la lista dei fenotipi?  #}
+                                        <select class="form-control" name="pheno_input" id="pheno_input">
+                                            <option value="0002013">HP:0002013 - Vomiting</option>
+                                            <option value="0002014">HP:0002014 - Diarrhea</option>
+                                            <option value="0000921">HP:0000921 - Missing ribs</option>
+                                            <option value="0000028">HP:0000028 - Cryptorchidism</option>
+                                        </select>
+                                    </div>
+                                </div></td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding-left: 30px;">
+                                    <label class="radio">
+                                        <input type="radio" name="entity" value="disease">Diseases
+                                    </label>
+                                </td>
+                                <td><div class="form-group row">
+                                    <div class="col-sm-3">Select a disease:</div>
+                                    <div class="col-sm-9">
+{#                                      TODO: come rendere la lista dei disease?  #}
+                                        <select class="form-control" name="disease_input" id="disease_input">
+                                            <option value="ORPHA:1775">ORPHA:1775 - Dyskeratosis congenita</option>
+                                            <option value="ORPHA:2704">ORPHA:2704 - Ochoa syndrome</option>
+                                            <option value="ORPHA:95">ORPHA:95 - Friedreich ataxia</option>
+                                            <option value="OMIM:102000">OMIM:102000 - ACROLEUKOPATHY, SYMMETRIC</option>
+                                        </select>
+                                    </div>
+                                </div></td>
+                            </tr>
+                            </div>
 
                         </tbody>
 
@@ -82,10 +148,10 @@
             <div class="row">
                 <div class="col-sm-4">&nbsp;</div>
                 <div class="col-sm-2 center">
-                    <button type="reset" class="btn btn-success btn-lg">Reset</button>
+                    <button type="reset" class="btn btn-warning btn-lg">Reset</button>
                 </div>
                 <div class="col-sm-2 center">
-                    <button type="submit" class="btn btn-success btn-lg">Launch Query</button>
+                    <button type="submit" class="btn btn-warning btn-lg">Launch Query</button>
                 </div>
                 <div class="col-sm-4">&nbsp;</div>
             </div>
