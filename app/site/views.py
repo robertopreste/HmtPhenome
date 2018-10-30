@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
-import requests
-import json
-from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g, jsonify, send_file
-from werkzeug.urls import url_parse
+# import requests
+# import json
+from quart import Blueprint, render_template
+# from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g, jsonify, send_file
+# from werkzeug.urls import url_parse
 
 www = Blueprint("site", __name__)
 
-from sqlalchemy import or_, and_
-from app import app, db
-from config import ADMINS
+# from sqlalchemy import or_, and_
+# from app import app, db
+# from config import ADMINS
 # from .forms import LoginForm, RegistrationForm
 # from .models import User
 from app.static import dbdata
@@ -20,30 +21,30 @@ from app.static import dbdata
 @www.route("/index", methods=["GET"])
 @www.route("/home", methods=["GET"])
 @www.route("/", methods=["GET"])
-def index():
-    return render_template("index.html",
+async def index():
+    return await render_template("index.html",
                            title="Home",
                            latest_update=dbdata.latest_update)
 
 
 @www.route("/about", methods=["GET"])
-def about():
-    return render_template("about.html",
+async def about():
+    return await render_template("about.html",
                            title="About")
 
 
 @www.route("/contacts", methods=["GET"])
-def contacts():
-    return render_template("contacts.html",
+async def contacts():
+    return await render_template("contacts.html",
                            title="Contacts")
 
 
 @www.errorhandler(404)
-def page_not_found(e):
-    return render_template("404.html", title="Error 404"), 404
+async def page_not_found(e):
+    return await render_template("404.html", title="Error 404"), 404
 
 
 @www.errorhandler(500)
-def internal_server_error(e):
-    return render_template("500.html", title="Error 500"), 500
+async def internal_server_error(e):
+    return await render_template("500.html", title="Error 500"), 500
 

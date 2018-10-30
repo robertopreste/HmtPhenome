@@ -1,3 +1,5 @@
+quart
+quart-openapi
 Flask
 flask-marshmallow
 marshmallow-sqlalchemy
