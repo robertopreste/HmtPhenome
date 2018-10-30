@@ -3,7 +3,7 @@
 # Created by Roberto Preste
 # from datetime import datetime
 # from threading import Thread
-# from app import db
+from app import db
 # from app import db, login, mail, app
 # from flask import render_template
 # from flask_login import UserMixin
@@ -23,20 +23,20 @@
 #         return """Diseases(id: {self.id}, disease_sym: {self.disease_sym}, disease_name: {self.disease_name})""".format(self=self)
 
 
-# class Mitocarta(db.Model):
-#     __tablename__ = "Mitocarta"
-#
-#     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
-#     gene_id = db.Column(db.Integer, index=True, unique=True, nullable=False)
-#     ensembl_id = db.Column(db.String, nullable=True, default=None)
-#     gene_symbol = db.Column(db.String, index=True, unique=True, nullable=False)
-#     description = db.Column(db.Text, nullable=False)
-#     hg_chr = db.Column(db.String, nullable=False)
-#     hg_start = db.Column(db.Integer, nullable=False)
-#     hg_end = db.Column(db.Integer, nullable=False)
-#
-#     def __repr__(self):
-#         return """Genes(id: {self.id}, gene_id: {self.gene_id}, ensembl_id: {self.ensembl_id}, gene_symbol: {self.gene_symbol}, description: {self.description}, hg_chr: {self.hg_chr}, hg_start: {self.hg_start}, hg_end: {self.hg_end})""".format(self=self)
+class Mitocarta(db.Model):
+    __tablename__ = "Mitocarta"
+
+    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
+    gene_id = db.Column(db.Integer, index=True, unique=True, nullable=False)
+    ensembl_id = db.Column(db.String, nullable=True, default=None)
+    gene_symbol = db.Column(db.String, index=True, unique=True, nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    hg_chr = db.Column(db.String, nullable=False)
+    hg_start = db.Column(db.Integer, nullable=False)
+    hg_end = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return """Genes(id: {self.id}, gene_id: {self.gene_id}, ensembl_id: {self.ensembl_id}, gene_symbol: {self.gene_symbol}, description: {self.description}, hg_chr: {self.hg_chr}, hg_start: {self.hg_start}, hg_end: {self.hg_end})""".format(self=self)
 
 
 # class Phenotypes(db.Model):

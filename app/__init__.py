@@ -2,6 +2,9 @@
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
 import quart.flask_patch
+import click
+import imp
+import os
 from quart import Quart
 # from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -10,11 +13,15 @@ from flask_marshmallow import Marshmallow
 # from flask_cors import CORS
 # from flask_login import LoginManager
 # from flask_mail import Mail
+from migrate.versioning import api
+from config import SQLALCHEMY_DATABASE_URI
+from config import SQLALCHEMY_MIGRATE_REPO
+
 
 app = Quart(__name__)
 # app = Flask(__name__)
 # CORS(app)
-# app.config.from_object("config")
+app.config.from_object("config")
 Bootstrap(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
@@ -35,3 +42,40 @@ app.register_blueprint(www)
 # app.register_blueprint(res)
 # app.register_blueprint(www, static_folder="site/static")
 # app.register_blueprint(res, url_prefix="/api")
+
+
+@app.cli.command()
+def create_db():
+    click.echo("Creating new database...")
+    db.create_all()
+    if not os.path.exists(SQLALCHEMY_MIGRATE_REPO):
+        api.create(SQLALCHEMY_MIGRATE_REPO, "database repository")
+        api.version_control(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
+    else:
+        api.version_control(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO,
+                            api.version(SQLALCHEMY_MIGRATE_REPO))
+    click.echo("Done.")
+
+
+@app.cli.command()
+def migrate_db():
+    click.echo("Migrating database to new version...")
+    v = api.db_version(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
+    migration = SQLALCHEMY_MIGRATE_REPO + ("/versions/%03d_migration.py" % (v + 1))
+    tmp_module = imp.new_module("old_model")
+    old_model = api.create_model(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
+
+    exec(old_model, tmp_module.__dict__)
+
+    script = api.make_update_script_for_model(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO,
+                                              tmp_module.meta, db.metadata)
+    open(migration, "wt").write(script)
+    api.upgrade(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
+
+    v = api.db_version(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
+    click.echo("New migration saved as {}".format(migration))
+    click.echo("Current database version: {}".format(v))
+
+
+
+
