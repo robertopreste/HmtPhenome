@@ -10,177 +10,162 @@
 
         <p class="lead">Launch a query on HmtPhenome starting from variants, genes, phenotypes or diseases.</p>
 
-        <form action="/query" method="post" name="mainQuery" enctype="multipart/form-data">
-
-            <div class="container">
+        {# Messages #}
+        <div class="container">
             <div class="row">
-
                 <div class="col-sm-12">
-
                     {% with messages = get_flashed_messages() %}
-
                         {% if messages %}
                             <div class="alert alert-danger alert-dismissable">
                                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                                 <ul class="flashes"></ul>
                                 {% for message in messages %}
-
                                     <li>{{ message }}</li>
-
                                 {% endfor %}
                             </div>
                         {% endif %}
-
                     {% endwith %}
+                </div>
+            </div>
+        </div>
 
-                <div class="panel panel-warning">
-
-                    <div class="panel-heading">
-                        <h4>Entry point</h4>
+        {# Variants #}
+        <form action="/query" method="post" name="query_variants" enctype="multipart/form-data">
+        <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h4>Variants</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-3"><p>Insert a variant: </p></div>
+                        <div class="form-group col-sm-9">
+                            <input type="text" class="form-control" name="variant_input" id="variant_input">
+                        </div>
                     </div>
+                </div>
+                <div class="panel-footer">
+                    <button type="submit" class="btn btn-warning btn-lg center-block" name="variant_button" value="submit_variant">Submit</button>
+                </div>
+            </div>
+        </div>
+        </div>
+        </form>
 
-                    <div class="panel-body">
-                        <table class="table">
-
-                        <thead>
-                            <tr>
-                                <th>Entity</th>
-                                <th>Values</th>
-{#                                <th style="min-width: 15em;">Search Criteria</th>#}
-{#                                <th>Description</th>#}
-{#                                <th style="min-width: 20em;">Values</th>#}
-                            </tr>
-                        </thead>
-
-                        <tbody>
-
-                            {# Group #}
-                            <div class="form-group">
-                            <tr>
-                                <td style="padding-left: 30px;">
-                                    <label class="radio">
-                                        <input type="radio" name="entity" value="variant" checked>Variants
-                                    </label>
-                                </td>
-                                <td><div class="form-group row">
-                                    <div class="col-sm-3">Insert a variant:</div>
-                                    <div class="col-sm-9">
-                                        <input type="text" class="form-control" name="variant_input" id="variant_input">
-                                    </div>
-                                </div></td>
-                            </tr>
-
-                            <tr>
-                                <td style="padding-left: 30px;">
-                                    <label class="radio">
-                                        <input type="radio" name="entity" value="gene">Genes
-                                    </label>
-                                </td>
-                                <td><div class="form-group row">
-                                    <div class="col-sm-3">Select a gene:</div>
-                                    <div class="col-sm-3">
-                                        <select class="form-control" name="gene_chr" id="gene_chr" onchange="populateGenes(this.id, 'gene_input');">
-                                            <option value="chr1">chr1</option>
-                                            <option value="chr2">chr2</option>
-                                            <option value="chr3">chr3</option>
-                                            <option value="chr4">chr4</option>
-                                            <option value="chr5">chr5</option>
-                                            <option value="chr6">chr6</option>
-                                            <option value="chr7">chr7</option>
-                                            <option value="chr8">chr8</option>
-                                            <option value="chr9">chr9</option>
-                                            <option value="chr10">chr10</option>
-                                            <option value="chr11">chr11</option>
-                                            <option value="chr12">chr12</option>
-                                            <option value="chr13">chr13</option>
-                                            <option value="chr14">chr14</option>
-                                            <option value="chr15">chr15</option>
-                                            <option value="chr16">chr16</option>
-                                            <option value="chr17">chr17</option>
-                                            <option value="chr18">chr18</option>
-                                            <option value="chr19">chr19</option>
-                                            <option value="chr20">chr20</option>
-                                            <option value="chr21">chr21</option>
-                                            <option value="chr22">chr22</option>
-                                            <option value="chrX">chrX</option>
-                                            <option value="chrM">chrM</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <select class="form-control" name="gene_input" id="gene_input">
-                                            <option value="A">--All Genes--</option>
-                                            {# populated by populateGenes #}
-                                        </select>
-                                    </div>
-                                </div></td>
-                            </tr>
-
-                            <tr>
-                                <td style="padding-left: 30px;">
-                                    <label class="radio">
-                                        <input type="radio" name="entity" value="pheno">Phenotypes
-                                    </label>
-                                </td>
-                                <td><div class="form-group row">
-                                    <div class="col-sm-3">Select a phenotype:</div>
-                                    <div class="col-sm-9">
-{#                                      TODO: come rendere la lista dei fenotipi?  #}
-                                        <select class="form-control" name="pheno_input" id="pheno_input">
-                                            <option value="0002013">HP:0002013 - Vomiting</option>
-                                            <option value="0002014">HP:0002014 - Diarrhea</option>
-                                            <option value="0000921">HP:0000921 - Missing ribs</option>
-                                            <option value="0000028">HP:0000028 - Cryptorchidism</option>
-                                        </select>
-                                    </div>
-                                </div></td>
-                            </tr>
-
-                            <tr>
-                                <td style="padding-left: 30px;">
-                                    <label class="radio">
-                                        <input type="radio" name="entity" value="disease">Diseases
-                                    </label>
-                                </td>
-                                <td><div class="form-group row">
-                                    <div class="col-sm-3">Select a disease:</div>
-                                    <div class="col-sm-9">
-{#                                      TODO: come rendere la lista dei disease?  #}
-                                        <select class="form-control" name="disease_input" id="disease_input">
-                                            <option value="ORPHA:1775">ORPHA:1775 - Dyskeratosis congenita</option>
-                                            <option value="ORPHA:2704">ORPHA:2704 - Ochoa syndrome</option>
-                                            <option value="ORPHA:95">ORPHA:95 - Friedreich ataxia</option>
-                                            <option value="OMIM:102000">OMIM:102000 - ACROLEUKOPATHY, SYMMETRIC</option>
-                                        </select>
-                                    </div>
-                                </div></td>
-                            </tr>
-                            </div>
-
-                        </tbody>
-
-                        </table>
+        {# Genes #}
+        <form action="/query" method="post" name="query_genes" enctype="multipart/form-data">
+        <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h4>Genes</h4>
+                </div>
+                <div class="panel-body">
+                    <p>Select a chromosome and gene: </p>
+                    <div class="row">
+                        <div class="form-group col-sm-6">
+                            <select class="form-control" name="gene_chr" id="gene_chr" onchange="populateGenes(this.id, 'gene_input');">
+                                <option value="chr1">chr1</option>
+                                <option value="chr2">chr2</option>
+                                <option value="chr3">chr3</option>
+                                <option value="chr4">chr4</option>
+                                <option value="chr5">chr5</option>
+                                <option value="chr6">chr6</option>
+                                <option value="chr7">chr7</option>
+                                <option value="chr8">chr8</option>
+                                <option value="chr9">chr9</option>
+                                <option value="chr10">chr10</option>
+                                <option value="chr11">chr11</option>
+                                <option value="chr12">chr12</option>
+                                <option value="chr13">chr13</option>
+                                <option value="chr14">chr14</option>
+                                <option value="chr15">chr15</option>
+                                <option value="chr16">chr16</option>
+                                <option value="chr17">chr17</option>
+                                <option value="chr18">chr18</option>
+                                <option value="chr19">chr19</option>
+                                <option value="chr20">chr20</option>
+                                <option value="chr21">chr21</option>
+                                <option value="chr22">chr22</option>
+                                <option value="chrX">chrX</option>
+                                <option value="chrM">chrM</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <select class="form-control" name="gene_input" id="gene_input">
+                                <option value="A">--All Genes--</option>
+                                {# populated by populateGenes #}
+                            </select>
+                        </div>
                     </div>
-
                 </div>
+                <div class="panel-footer">
+                    <button type="submit" class="btn btn-warning btn-lg center-block" name="gene_button" value="submit_gene">Submit</button>
                 </div>
-
             </div>
+        </div>
+        </div>
+        </form>
 
-            </div>
-
-            <div class="container">
-            <div class="row">
-                <div class="col-sm-4">&nbsp;</div>
-                <div class="col-sm-2 center">
-                    <button type="reset" class="btn btn-warning btn-lg">Reset</button>
+        {# Phenotype #}
+        <form action="/query" method="post" name="query_phenos" enctype="multipart/form-data">
+        <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h4>Phenotypes</h4>
                 </div>
-                <div class="col-sm-2 center">
-                    <button type="submit" class="btn btn-warning btn-lg">Launch Query</button>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-3"><p>Select a phenotype: </p></div>
+                        <div class="form-group col-sm-9">
+                            {# TODO: come rendere la lista dei fenotipi? #}
+                            <select class="form-control" name="pheno_input" id="pheno_input">
+                                <option value="0002013">HP:0002013 - Vomiting</option>
+                                <option value="0002014">HP:0002014 - Diarrhea</option>
+                                <option value="0000921">HP:0000921 - Missing ribs</option>
+                                <option value="0000028">HP:0000028 - Cryptorchidism</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-sm-4">&nbsp;</div>
+                <div class="panel-footer">
+                    <button type="submit" class="btn btn-warning btn-lg center-block" name="pheno_button" value="submit_pheno">Submit</button>
+                </div>
             </div>
-            </div>
+        </div>
+        </div>
+        </form>
 
+        {# Diseases #}
+        <form action="/query" method="post" name="query_diseases" enctype="multipart/form-data">
+        <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h4>Diseases</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-3"><p>Select a disease: </p></div>
+                        {# TODO: come rendere la lista dei disease? #}
+                        <div class="form-group col-sm-9">
+                            <select class="form-control" name="disease_input" id="disease_input">
+                                <option value="ORPHA:1775">ORPHA:1775 - Dyskeratosis congenita</option>
+                                <option value="ORPHA:2704">ORPHA:2704 - Ochoa syndrome</option>
+                                <option value="ORPHA:95">ORPHA:95 - Friedreich ataxia</option>
+                                <option value="OMIM:102000">OMIM:102000 - ACROLEUKOPATHY, SYMMETRIC</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button type="submit" class="btn btn-warning btn-lg center-block" name="disease_button" value="submit_disease">Submit</button>
+                </div>
+            </div>
+        </div>
+        </div>
         </form>
 
     </div>
