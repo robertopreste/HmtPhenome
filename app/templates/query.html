@@ -121,12 +121,19 @@
                         <div class="col-sm-3"><p>Select a phenotype: </p></div>
                         <div class="form-group col-sm-9">
                             {# TODO: come rendere la lista dei fenotipi? #}
-                            <select class="form-control" name="pheno_input" id="pheno_input">
-                                <option value="0002013">HP:0002013 - Vomiting</option>
-                                <option value="0002014">HP:0002014 - Diarrhea</option>
-                                <option value="0000921">HP:0000921 - Missing ribs</option>
-                                <option value="0000028">HP:0000028 - Cryptorchidism</option>
-                            </select>
+{#                            <select class="form-control" name="pheno_input" id="pheno_input">#}
+{#                                <option value="0002013">HP:0002013 - Vomiting</option>#}
+{#                                <option value="0002014">HP:0002014 - Diarrhea</option>#}
+{#                                <option value="0000921">HP:0000921 - Missing ribs</option>#}
+{#                                <option value="0000028">HP:0000028 - Cryptorchidism</option>#}
+{#                            </select>#}
+                            <input type="text" name="pheno_input" id="pheno_input" placeholder="Phenotype" class="awesomplete" list="mylist">
+                            <datalist id="mylist">
+                                <option value="Allocco">Allocco</option>
+                                <option value="Ballo">Ballo</option>
+                                <option value="Culo">Culo</option>
+                                <option value="Diocane">Diocane</option>
+                            </datalist>
                         </div>
                     </div>
                 </div>
