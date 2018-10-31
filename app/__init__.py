@@ -3,6 +3,7 @@
 # Created by Roberto Preste
 import quart.flask_patch
 import click
+import datetime
 import imp
 import os
 from quart import Quart
@@ -60,7 +61,7 @@ def create_db():
     click.echo("Done.")
 
 
-from app.site.scripts import get_genes
+from app.site.scripts import populate_genes
 
 
 @app.cli.command()
@@ -80,9 +81,15 @@ def migrate_db():
 
     v = api.db_version(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
 
+    with open("app/static/js/script.js", "w") as f:
+        # genes = get_genes()
+        f.write(populate_genes())
+        f.write("\n")
+
     with open("app/static/dbdata.py", "w") as f:
-        genes = get_genes()
-        f.write("genes = " + repr(genes) + "\n")
+        latest_update = "{} {}".format(datetime.date.today().strftime("%B"),
+                                       str(datetime.date.today().year))
+        f.write("latest_update = " + repr(latest_update) + "\n")
 
     click.echo("New migration saved as {}".format(migration))
     click.echo("Current database version: {}".format(v))

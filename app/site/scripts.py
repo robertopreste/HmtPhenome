@@ -24,6 +24,52 @@ def get_genes():
     return chr_dict
 
 
+def populate_genes():
+    base_string = """
+function populateGenes(s1, s2) {
+    // Populate the genes dropdown menu based on selected chromosome
+    s1 = document.getElementById(s1);
+    s2 = document.getElementById(s2);
+    var optionArray;
+
+    s2.innerHTML = "--All Genes--";
+    """
+
+    chr_dict = get_genes()
+    for n, chrom in enumerate(chr_dict):
+        if n == 0:
+            base_string += """
+    if (s1.value == "%s") {
+        optionArray = ["A|--All Genes--", """ % chrom
+            for el in chr_dict[chrom]:
+                base_string += """
+        "%s|%s", """ % (el, el)
+        else:
+            base_string += """]; 
+    } else if (s1.value == "%s") {
+        optionArray = ["A|--All Genes--", """ % chrom
+
+            for el in chr_dict[chrom]:
+                base_string += """
+        "%s|%s", """ % (el, el)
+
+    base_string += """]; 
+    }
+
+    for (var option in optionArray) {
+        var pair = optionArray[option].split("|");
+        var newOption = document.createElement("option");
+
+        newOption.value = pair[0];
+        newOption.innerHTML = pair[1];
+        s2.options.add(newOption);
+    }
+}
+"""
+
+    return base_string
+
+
 # def get_vars_from_gene_name(gene_name):
 #     """Retrieve all variants associated with a specific gene, using Biomart.
 #     :param gene_name: name of the query gene

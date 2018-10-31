@@ -79,41 +79,37 @@
                                 <td><div class="form-group row">
                                     <div class="col-sm-3">Select a gene:</div>
                                     <div class="col-sm-3">
-                                        <select class="form-control" name="gene_chr" id="gene_chr">
-                                            <option value="1">chr1</option>
-                                            <option value="2">chr2</option>
-                                            <option value="3">chr3</option>
-                                            <option value="4">chr4</option>
-                                            <option value="5">chr5</option>
-                                            <option value="6">chr6</option>
-                                            <option value="7">chr7</option>
-                                            <option value="8">chr8</option>
-                                            <option value="9">chr9</option>
-                                            <option value="10">chr10</option>
-                                            <option value="11">chr11</option>
-                                            <option value="12">chr12</option>
-                                            <option value="13">chr13</option>
-                                            <option value="14">chr14</option>
-                                            <option value="15">chr15</option>
-                                            <option value="16">chr16</option>
-                                            <option value="17">chr17</option>
-                                            <option value="18">chr18</option>
-                                            <option value="19">chr19</option>
-                                            <option value="20">chr20</option>
-                                            <option value="21">chr21</option>
-                                            <option value="22">chr22</option>
-                                            <option value="X">chrX</option>
-                                            <option value="M">chrM</option>
+                                        <select class="form-control" name="gene_chr" id="gene_chr" onchange="populateGenes(this.id, 'gene_input');">
+                                            <option value="chr1">chr1</option>
+                                            <option value="chr2">chr2</option>
+                                            <option value="chr3">chr3</option>
+                                            <option value="chr4">chr4</option>
+                                            <option value="chr5">chr5</option>
+                                            <option value="chr6">chr6</option>
+                                            <option value="chr7">chr7</option>
+                                            <option value="chr8">chr8</option>
+                                            <option value="chr9">chr9</option>
+                                            <option value="chr10">chr10</option>
+                                            <option value="chr11">chr11</option>
+                                            <option value="chr12">chr12</option>
+                                            <option value="chr13">chr13</option>
+                                            <option value="chr14">chr14</option>
+                                            <option value="chr15">chr15</option>
+                                            <option value="chr16">chr16</option>
+                                            <option value="chr17">chr17</option>
+                                            <option value="chr18">chr18</option>
+                                            <option value="chr19">chr19</option>
+                                            <option value="chr20">chr20</option>
+                                            <option value="chr21">chr21</option>
+                                            <option value="chr22">chr22</option>
+                                            <option value="chrX">chrX</option>
+                                            <option value="chrM">chrM</option>
                                         </select>
                                     </div>
                                     <div class="col-sm-6">
-{#                                      TODO: qui bisogna mettere qualcosa che prenda la lista dei geni dal db sulla base del chr scelto  #}
                                         <select class="form-control" name="gene_input" id="gene_input">
-                                            <option value="ATP6">ATP6</option>
-                                            <option value="ATP8">ATP8</option>
-                                            <option value="COX1">COX1</option>
-                                            <option value="COX2">COX2</option>
-                                            <option value="COX3">COX3</option>
+                                            <option value="A">--All Genes--</option>
+                                            {# populated by populateGenes #}
                                         </select>
                                     </div>
                                 </div></td>
@@ -190,4 +186,17 @@
     </div>
 
     {{ super() }}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+
+    <script type="text/javascript">
+
+        window.onload = function () {
+            populateGenes('gene_chr', 'gene_input');
+        };
+
+    </script>
+
 {% endblock %}
