@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
-from .models import Mitocarta, Phenotypes
+from .models import Mitocarta, Phenotypes, Diseases
 # import pandas as pd
 # import numpy as np
 # import requests
@@ -38,13 +38,31 @@ def get_phenos():
     pheno_list = []
     q = Phenotypes.query.all()
     for el in q:
-        # pheno_list.append([el.hpo_id, el.hpo_term_name])
         pheno_list.append([el.hpo_term_name, el.hpo_id])
 
     return pheno_list
 
 
+def get_diseases():
+    """
+    Retrieve diseases from the database and create a list that will be used to populate the
+    related dropdown menu in the query page.
+    :return: list of diseases
+    """
+    disease_list = []
+    q = Diseases.query.all()
+    for el in q:
+        disease_list.append([el.disease_name, el.disease_id])
+
+    return disease_list
+
+
 def populate_phenos():
+    """
+    Add phenotypes data for the autocomplete function in the script.js file, during the update of
+    the database.
+    :return: JavaScript autocomplete function for phenotypes
+    """
     phenos = get_phenos()
     base_string = """
 var pheno_compl = document.getElementById("pheno_input"); 
@@ -54,7 +72,27 @@ new Awesomplete(pheno_compl, {list: %s});
     return base_string
 
 
+def populate_diseases():
+    """
+    Add diseases data for the autocomplete function in the script.js file, during the update of the
+    database.
+    :return: JavaScript autocomplete function for diseases
+    """
+    diseases = get_diseases()
+    base_string = """
+var disease_compl = document.getElementById("disease_input"); 
+new Awesomplete(disease_compl, {list: %s});     
+    """ % repr(diseases)
+
+    return base_string
+
+
 def populate_genes():
+    """
+    Add genes for each chromosome in the script.js file, during the update of the database, in
+    order to populate the related dropdown menu in the query page.
+    :return: JavaScript function for genes/chromosomes
+    """
     base_string = """
 function populateGenes(s1, s2) {
     // Populate the genes dropdown menu based on selected chromosome

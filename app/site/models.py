@@ -12,15 +12,15 @@ from app import db
 # from config import ADMINS
 
 
-# class Diseases(db.Model):
-#     __tablename__ = "Diseases"
-#
-#     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
-#     disease_sym = db.Column(db.String, index=True, unique=True, nullable=False)
-#     disease_name = db.Column(db.String, index=True, unique=True, nullable=False)
-#
-#     def __repr__(self):
-#         return """Diseases(id: {self.id}, disease_sym: {self.disease_sym}, disease_name: {self.disease_name})""".format(self=self)
+class Diseases(db.Model):
+    __tablename__ = "Diseases"
+
+    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
+    disease_id = db.Column(db.String, index=True, unique=True, nullable=False)
+    disease_name = db.Column(db.String, index=True, unique=True, nullable=False)
+
+    def __repr__(self):
+        return """Diseases(id: {self.id}, disease_id: {self.disease_id}, disease_name: {self.disease_name})""".format(self=self)
 
 
 class Mitocarta(db.Model):
