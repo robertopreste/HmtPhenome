@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
-from .models import Mitocarta
+from .models import Mitocarta, Phenotypes
 # import pandas as pd
 # import numpy as np
 # import requests
@@ -10,6 +10,11 @@ from .models import Mitocarta
 
 
 def get_genes():
+    """
+    Retrieve Mitocarta genes from the database and create a dictionary that will be used to
+    populate the related dropdown menu in query page.
+    :return: dictionary with chromosome as keys and genes as values
+    """
     chr_dict = {}
     chrs = ["chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10",
             "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19",
@@ -22,6 +27,31 @@ def get_genes():
         chr_dict[chrom] = sorted(list(lista))
 
     return chr_dict
+
+
+def get_phenos():
+    """
+    Retrieve phenotypes from the database and create a list that will be used to populate the
+    related dropdown menu in the query page.
+    :return: list of phenotypes
+    """
+    pheno_list = []
+    q = Phenotypes.query.all()
+    for el in q:
+        # pheno_list.append([el.hpo_id, el.hpo_term_name])
+        pheno_list.append([el.hpo_term_name, el.hpo_id])
+
+    return pheno_list
+
+
+def populate_phenos():
+    phenos = get_phenos()
+    base_string = """
+var pheno_compl = document.getElementById("pheno_input"); 
+new Awesomplete(pheno_compl, {list: %s});     
+    """ % repr(phenos)
+
+    return base_string
 
 
 def populate_genes():

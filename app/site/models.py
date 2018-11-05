@@ -39,15 +39,15 @@ class Mitocarta(db.Model):
         return """Genes(id: {self.id}, gene_id: {self.gene_id}, ensembl_id: {self.ensembl_id}, gene_symbol: {self.gene_symbol}, description: {self.description}, hg_chr: {self.hg_chr}, hg_start: {self.hg_start}, hg_stop: {self.hg_stop})""".format(self=self)
 
 
-# class Phenotypes(db.Model):
-#     __tablename__ = "Phenotypes"
-#
-#     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
-#     hpo_id = db.Column(db.String, index=True, unique=True, nullable=False)
-#     hpo_term = db.Column(db.String, index=True, unique=True, nullable=False)
-#
-#     def __repr__(self):
-#         return """Phenotypes(id: {self.id}, hpo_id: {self.hpo_id}, hpo_term: {self.hpo_term})""".format(self=self)
+class Phenotypes(db.Model):
+    __tablename__ = "Phenotypes"
+
+    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
+    hpo_id = db.Column(db.String, index=True, unique=True, nullable=False)
+    hpo_term_name = db.Column(db.String, index=True, unique=True, nullable=False)
+
+    def __repr__(self):
+        return """Phenotypes(id: {self.id}, hpo_id: {self.hpo_id}, hpo_term_name: {self.hpo_term_name})""".format(self=self)
 
 
 # class Variants(db.Model):

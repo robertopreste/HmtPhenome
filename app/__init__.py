@@ -44,7 +44,7 @@ app.register_blueprint(www)
 # app.register_blueprint(www, static_folder="site/static")
 # app.register_blueprint(res, url_prefix="/api")
 
-from app.site.models import Mitocarta
+from app.site.models import Mitocarta, Phenotypes
 
 
 @app.cli.command()
@@ -61,7 +61,7 @@ def create_db():
     click.echo("Done.")
 
 
-from app.site.scripts import populate_genes
+from app.site.scripts import populate_genes, populate_phenos
 
 
 @app.cli.command()
@@ -84,6 +84,8 @@ def migrate_db():
     with open("app/static/js/script.js", "w") as f:
         # genes = get_genes()
         f.write(populate_genes())
+        f.write("\n")
+        f.write(populate_phenos())
         f.write("\n")
 
     with open("app/static/dbdata.py", "w") as f:
