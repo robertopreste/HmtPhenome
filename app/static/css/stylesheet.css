@@ -15,6 +15,7 @@
     --gargoyle_gas: #F9CF45;
     --yellow_crayola: #FFEE82;
     --blond: #FFF2C1;
+    --warning_orange: rgb(238, 172, 87);
     /* Palette 3 */
     --rosy_brown: #C68D92;
     --english_red: #A63A50;
@@ -30,7 +31,7 @@ html {
 
 body {
     background-color: var(--blond);
-    font-family: Verdana, Arial, sans-serif;
+    /*font-family: Verdana, Arial, sans-serif;*/
     font-size: 15px;
     padding-top: 70px;
 }
@@ -39,8 +40,39 @@ body {
     display: none;
 }
 
+.jumbotron {
+    background-color: var(--linen);
+    border-style: solid;
+    border-color: var(--warning_orange);
+}
+
 .navbar {
     background-color: var(--yellow_crayola);
+}
+
+.navbar a {
+    font-weight: bold;
+    color: var(--warning_orange);
+}
+
+.navbar a:hover {
+    font-weight: bold;
+    color: var(--yellow_crayola);
+    background-color: var(--warning_orange);
+}
+
+.navbar li>a:hover {
+    font-weight: bold;
+    color: var(--yellow_crayola);
+    background-color: var(--warning_orange);
+}
+
+.page-header {
+    background-color: var(--linen);
+    border-style: solid;
+    border-color: var(--warning_orange);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
 
 .footer {
