@@ -221,3 +221,6 @@ fabric.properties
 .idea/httpRequests
 
 .idea/
+
+app/static/dbdata.py
+db_repo/
