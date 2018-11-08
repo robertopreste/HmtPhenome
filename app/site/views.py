@@ -6,6 +6,7 @@
 from quart import Blueprint, render_template, request, redirect, url_for
 from app.static import dbdata
 from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, QueryDiseasesForm
+from app.site.scripts import get_gene_from_variant, get_pheno_from_variant
 # from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g, jsonify, send_file
 # from werkzeug.urls import url_parse
 
@@ -54,20 +55,48 @@ async def query():
 
         return redirect(url_for("site.results",
                                 variant_input=form_var.variant_input.data,
+                                variant_submit=form_var.variant_submit.data,
                                 gene_chr=form_gene.gene_chr.data,
                                 gene_input=form_gene.gene_input.data,
+                                gene_submit=form_gene.gene_submit.data,
                                 pheno_input=form_phen.pheno_input.data,
-                                disease_input=form_dis.disease_input.data))
+                                pheno_submit=form_phen.pheno_submit.data,
+                                disease_input=form_dis.disease_input.data,
+                                disease_submit=form_dis.disease_submit.data))
 
 
 @www.route("/results", methods=["GET"])
 async def results():
 
     variant_input = request.args.get("variant_input", "", type=str)
+    variant_submit = request.args.get("variant_submit")
     gene_chr = request.args.get("gene_chr", "", type=str)
     gene_input = request.args.get("gene_input", "", type=str)
+    gene_submit = request.args.get("gene_submit")
     pheno_input = request.args.get("pheno_input", "", type=str)
+    pheno_submit = request.args.get("pheno_submit")
     disease_input = request.args.get("disease_input", "", type=str)
+    disease_submit = request.args.get("disease_submit")
+
+    if variant_submit:  # TODO: start query from variant
+        var_chrom, var_rest = variant_input.split(":")
+        if "-" in var_rest:
+            var_start, var_end = var_rest.split("-")
+        else:
+            var_end = var_start = var_rest
+
+        genes_df = get_gene_from_variant(var_chrom, var_start, var_end)
+        phenos_df = get_pheno_from_variant(var_chrom, var_start, var_end)
+        print(phenos_df)
+
+
+    elif gene_submit:
+        pass  # TODO: start query from gene
+    elif pheno_submit:
+        pass  # TODO: start query from phenotype
+    elif disease_submit:
+        pass  # TODO: start query from disease
+
 
     return await render_template("results.html",
                                  title="Results")
