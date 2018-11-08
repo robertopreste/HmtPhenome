@@ -2,8 +2,8 @@
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
 from .models import Mitocarta, Phenotypes, Diseases
-# import pandas as pd
-# import numpy as np
+import pandas as pd
+import numpy as np
 # import requests
 # import sys
 from pybiomart import Server
@@ -197,6 +197,8 @@ def get_pheno_from_variant(chrom, var_start, var_end=None):
         res = res[res["alt_allele"] != "HGMD_MUTATION"]
         res = res[["chromosome", "ref_allele", "start_pos", "alt_allele", "phenotype"]]
         res.drop_duplicates(subset="phenotype", inplace=True)
+    else:
+        res = pd.DataFrame(columns=["chromosome", "ref_allele", "start_pos", "alt_allele", "phenotype"])
 
     return res
 
