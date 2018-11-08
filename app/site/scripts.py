@@ -6,7 +6,7 @@ from .models import Mitocarta, Phenotypes, Diseases
 # import numpy as np
 # import requests
 # import sys
-# from pybiomart import Server
+from pybiomart import Server
 
 
 def get_genes():
@@ -138,6 +138,33 @@ function populateGenes(s1, s2) {
     return base_string
 
 
+def get_gene_from_variant(chrom, var_start, var_end=None):
+    """
+    Retrieve the gene to which the provided variant belongs, using Biomart.
+    :param chrom: chromosome name (chr + 1:22, X, Y, M)
+    :param var_start: variant starting position
+    :param var_end: variant ending position
+    :return:
+    """
+
+    chrom = chrom.lstrip("chr").upper()
+    if chrom == "M":
+        chrom = "MT"
+    if var_end is None:
+        var_end = var_start
+
+    server = Server(host="http://www.ensembl.org")
+    dataset = server.marts["ENSEMBL_MART_ENSEMBL"].datasets["hsapiens_gene_ensembl"]
+
+    res = dataset.query(attributes=["ensembl_gene_id", "external_gene_name"],
+                        filters={"chromosome_name": chrom, "start": var_start, "end": var_end})
+
+    res.rename({"Gene stable ID": "ensembl_gene_id", "Gene name": "gene_name"},
+               axis=1, inplace=True)
+
+    return res
+
+
 # def get_vars_from_gene_name(gene_name):
 #     """Retrieve all variants associated with a specific gene, using Biomart.
 #     :param gene_name: name of the query gene
@@ -204,28 +231,6 @@ function populateGenes(s1, s2) {
 #     return df
 #
 #
-# def get_gene_from_variant(chrom, var_start, var_end=None):
-#     """Retrieve the gene to which the provided variant belongs, using Biomart.
-#     :param chrom: chromosome name (1:22, X, Y, MT)
-#     :param var_start: variant starting position
-#     :param var_end: variant ending position
-#     :return:
-#     """
-#
-#     chrom = chrom.upper()
-#     if var_end is None:
-#         var_end = var_start
-#
-#     server = Server(host="http://www.ensembl.org")
-#     dataset = server.marts["ENSEMBL_MART_ENSEMBL"].datasets["hsapiens_gene_ensembl"]
-#
-#     res = dataset.query(attributes=["ensembl_gene_id", "external_gene_name"],
-#                         filters={"chromosome_name": chrom, "start": var_start, "end": var_end})
-#
-#     res.rename({"Gene stable ID": "ensembl_gene_id", "Gene name": "gene_name"},
-#                axis=1, inplace=True)
-#
-#     return res
 #
 #
 # def get_pheno_from_variant(chrom, var_start, var_end=None):

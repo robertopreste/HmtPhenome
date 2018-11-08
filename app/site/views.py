@@ -3,8 +3,9 @@
 # Created by Roberto Preste
 # import requests
 # import json
-from quart import Blueprint, render_template
+from quart import Blueprint, render_template, request, redirect, url_for
 from app.static import dbdata
+from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, QueryDiseasesForm
 # from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g, jsonify, send_file
 # from werkzeug.urls import url_parse
 
@@ -41,8 +42,35 @@ async def contacts():
 
 @www.route("/query", methods=["GET", "POST"])
 async def query():
-    return await render_template("query.html",
-                                 title="Query")
+    if request.method == "GET":
+        return await render_template("query.html",
+                                     title="Query")
+
+    elif request.method == "POST":
+        form_var = QueryVariantsForm()
+        form_gene = QueryGenesForm()
+        form_phen = QueryPhenosForm()
+        form_dis = QueryDiseasesForm()
+
+        return redirect(url_for("site.results",
+                                variant_input=form_var.variant_input.data,
+                                gene_chr=form_gene.gene_chr.data,
+                                gene_input=form_gene.gene_input.data,
+                                pheno_input=form_phen.pheno_input.data,
+                                disease_input=form_dis.disease_input.data))
+
+
+@www.route("/results", methods=["GET"])
+async def results():
+
+    variant_input = request.args.get("variant_input", "", type=str)
+    gene_chr = request.args.get("gene_chr", "", type=str)
+    gene_input = request.args.get("gene_input", "", type=str)
+    pheno_input = request.args.get("pheno_input", "", type=str)
+    disease_input = request.args.get("disease_input", "", type=str)
+
+    return await render_template("results.html",
+                                 title="Results")
 
 
 @www.errorhandler(404)

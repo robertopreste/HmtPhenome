@@ -1,10 +1,29 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
-# from flask_wtf import Form, FlaskForm
+from flask_wtf import FlaskForm
+from wtforms import StringField, SelectField
 # from wtforms import StringField, SelectField, SelectMultipleField, RadioField, BooleanField, PasswordField, widgets
 # from wtforms.validators import InputRequired, Length, NumberRange, Optional, AnyOf, DataRequired, Email, EqualTo, ValidationError
 # from .models import User
+
+
+class QueryVariantsForm(FlaskForm):
+    variant_input = StringField("variant_input", default=None)
+
+
+class QueryGenesForm(FlaskForm):
+    gene_chr = SelectField("gene_chr", default=None)
+    gene_input = SelectField("gene_input", default=None)
+
+
+class QueryPhenosForm(FlaskForm):
+    pheno_input = StringField("pheno_input", default=None)
+
+
+class QueryDiseasesForm(FlaskForm):
+    disease_input = StringField("disease_input", default=None)
+
 
 
 # class MultiCheckboxField(SelectMultipleField):
