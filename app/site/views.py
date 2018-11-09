@@ -6,7 +6,7 @@
 from quart import Blueprint, render_template, request, redirect, url_for
 from app.static import dbdata
 from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, QueryDiseasesForm
-from app.site.scripts import get_gene_from_variant, get_pheno_from_variant
+from app.site.scripts import get_gene_from_variant, get_pheno_from_variant, get_vars_from_gene_name, get_diseases_from_gene_name
 # from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g, jsonify, send_file
 # from werkzeug.urls import url_parse
 
@@ -78,7 +78,7 @@ async def results():
     disease_input = request.args.get("disease_input", "", type=str)
     disease_submit = request.args.get("disease_submit")
 
-    if variant_submit:  # TODO: start query from variant
+    if variant_submit == "True":
         var_chrom, var_rest = variant_input.split(":")
         if "-" in var_rest:
             var_start, var_end = var_rest.split("-")
@@ -87,14 +87,16 @@ async def results():
 
         genes_df = get_gene_from_variant(var_chrom, var_start, var_end)
         phenos_df = get_pheno_from_variant(var_chrom, var_start, var_end)
-        print(phenos_df)
+        # TODO: usare get_disease_from_gene()?
 
+    elif gene_submit == "True":
+        vars_df = get_vars_from_gene_name(gene_input)
+        phenos_df = get_diseases_from_gene_name(gene_input)  # TODO: get only phenotypes
+        disease_df = get_diseases_from_gene_name(gene_input)  # TODO: get only diseases
 
-    elif gene_submit:
-        pass  # TODO: start query from gene
-    elif pheno_submit:
+    elif pheno_submit == "True":
         pass  # TODO: start query from phenotype
-    elif disease_submit:
+    elif disease_submit == "True":
         pass  # TODO: start query from disease
 
 
