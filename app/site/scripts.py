@@ -311,7 +311,6 @@ def get_vars_from_phenotype(phenotype):
     rel_genes = get_genes_from_phenotype(phenotype)
     try:
         pheno_names = rel_genes["description"].unique().tolist()
-        # pheno_name = rel_genes.iloc[0]["description"]
     except KeyError:
         return pd.DataFrame(columns=["gene", "ensembl_gene_id", "chromosome", "ref_allele",
                                      "start_pos", "alt_allele", "phenotype"])
@@ -320,7 +319,6 @@ def get_vars_from_phenotype(phenotype):
     for el in set(rel_genes["gene_name"]):
         rel_vars = rel_vars.append(get_vars_from_gene_name(el))
 
-    # rel_vars = rel_vars[rel_vars["phenotype"] == pheno_name]
     try:
         rel_vars = rel_vars[rel_vars["phenotype"].isin(pheno_names)]
     except KeyError:
@@ -328,6 +326,34 @@ def get_vars_from_phenotype(phenotype):
                                      "start_pos", "alt_allele", "phenotype"])
 
     return rel_vars
+
+
+def get_diseases_from_phenotype(phenotype):
+    """
+    Retrieve diseases related to a phenotype, exploiting the get_genes_from_phenotype() and
+    get_diseases_from_gene_name() functions.
+    :param phenotype: accession id of the phenotype to search for
+    :return: pd.DataFrame
+    """
+    rel_genes = get_genes_from_phenotype(phenotype)
+    try:
+        pheno_names = rel_genes["description"].unique().tolist()
+    except KeyError:
+        return pd.DataFrame(columns=["gene", "ensembl_gene_id", "chromosome", "ref_allele",
+                                     "start_pos", "alt_allele", "phenotype"])
+
+    rel_diseases = pd.DataFrame()
+    for el in set(rel_genes["gene_name"]):
+        rel_diseases = rel_diseases.append(get_diseases_from_gene_name(el))
+
+    try:
+        rel_diseases = rel_diseases[rel_diseases["phenotypes"].astype(str).str.contains(phenotype)]
+    except KeyError:
+        return pd.DataFrame(columns=["gene", "ensembl_gene_id", "chromosome", "ref_allele",
+                                     "start_pos", "alt_allele", "phenotype"])
+
+    return rel_diseases
+
 
 
 #
