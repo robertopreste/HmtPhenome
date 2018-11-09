@@ -6,7 +6,7 @@
 from quart import Blueprint, render_template, request, redirect, url_for
 from app.static import dbdata
 from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, QueryDiseasesForm
-from app.site.scripts import get_gene_from_variant, get_pheno_from_variant, get_vars_from_gene_name, get_diseases_from_gene_name
+from app.site.scripts import get_gene_from_variant, get_pheno_from_variant, get_vars_from_gene_name, get_diseases_from_gene_name, get_genes_from_phenotype, get_vars_from_phenotype
 # from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g, jsonify, send_file
 # from werkzeug.urls import url_parse
 
@@ -95,7 +95,9 @@ async def results():
         disease_df = get_diseases_from_gene_name(gene_input)  # TODO: get only diseases
 
     elif pheno_submit == "True":
-        pass  # TODO: start query from phenotype
+        genes_df = get_genes_from_phenotype(pheno_input)  # TODO: get only genes
+        vars_df = get_vars_from_phenotype(pheno_input)
+        print(vars_df)
     elif disease_submit == "True":
         pass  # TODO: start query from disease
 

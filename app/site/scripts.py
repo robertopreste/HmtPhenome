@@ -269,6 +269,67 @@ def get_diseases_from_gene_name(gene_name, with_vars=False):
     df.drop_duplicates(subset="disease", inplace=True)
 
     return df
+
+
+def get_genes_from_phenotype(phenotype):
+    """
+    Retrieve genes relatd to a phenotype, using Ensembl.
+    :param phenotype: accession id of the phenotype to search for
+    :return: pd.DataFrame with columns ["gene_name", "variation", "phenotypes", "description"]
+    """
+    server = "https://rest.ensembl.org"
+    ext = "/phenotype/accession/homo_sapiens/{}?".format(phenotype)
+    r = requests.get(server + ext, headers={"Content-Type": "application/json"})
+
+    # if not r.ok:
+    #     r.raise_for_status()
+    #     print("Wrong request.")
+    #     sys.exit()
+    res = r.json()
+
+    df = pd.DataFrame(columns=["gene_name", "variation", "phenotypes", "description"])
+    for el in res:
+        if "attributes" in el.keys() and "associated_gene" in el["attributes"].keys():
+            row = pd.DataFrame({"gene_name": [el["attributes"]["associated_gene"]],
+                                "variation": [el["Variation"]],
+                                "phenotypes": [el["mapped_to_accession"]],
+                                "description": [el["description"]]})
+            df = df.append(row, ignore_index=True)
+    df.drop_duplicates(inplace=True)
+
+    return df
+
+
+def get_vars_from_phenotype(phenotype):
+    """
+    Retrieve variants related to a phenotype, exploiting the get_genes_from_phenotype() and
+    get_vars_from_gene_name() functions.
+    :param phenotype: accession id of the phenotype to search for
+    :return: pd.DataFrame with columns ["gene", "ensembl_gene_id", "chromosome", "ref_allele",
+    "start_pos", "alt_allele", "phenotype"]
+    """
+    rel_genes = get_genes_from_phenotype(phenotype)
+    try:
+        pheno_names = rel_genes["description"].unique().tolist()
+        # pheno_name = rel_genes.iloc[0]["description"]
+    except KeyError:
+        return pd.DataFrame(columns=["gene", "ensembl_gene_id", "chromosome", "ref_allele",
+                                     "start_pos", "alt_allele", "phenotype"])
+
+    rel_vars = pd.DataFrame()
+    for el in set(rel_genes["gene_name"]):
+        rel_vars = rel_vars.append(get_vars_from_gene_name(el))
+
+    # rel_vars = rel_vars[rel_vars["phenotype"] == pheno_name]
+    try:
+        rel_vars = rel_vars[rel_vars["phenotype"].isin(pheno_names)]
+    except KeyError:
+        return pd.DataFrame(columns=["gene", "ensembl_gene_id", "chromosome", "ref_allele",
+                                     "start_pos", "alt_allele", "phenotype"])
+
+    return rel_vars
+
+
 #
 #
 #
