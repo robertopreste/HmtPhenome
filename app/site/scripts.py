@@ -356,6 +356,17 @@ def get_diseases_from_phenotype(phenotype):
     return rel_diseases
 
 
+def disease_id_to_name(disease_id):
+    """
+    Convert a given disease ID into its common name.
+    :param disease_id: query disease ID
+    :return: related disease name
+    """
+    q = Diseases.query.filter(Diseases.disease_id == disease_id).first()
+
+    return q.disease_name
+
+
 def get_genes_from_disease_name(disease_name):
     """
     Retrieve genes related to a disease, using Biomart.
