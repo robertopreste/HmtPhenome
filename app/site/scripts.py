@@ -399,11 +399,22 @@ def get_vars_from_disease_name(disease_name):
     """
     rel_genes = get_genes_from_disease_name(disease_name)
     try:
-        gene_names = rel_genes["Gene name"].unique().to_list()
+        gene_names = rel_genes["gene_name"].unique()
     except KeyError:
         return pd.DataFrame()
 
     rel_vars = pd.DataFrame()
+    for el in set(gene_names):
+        rel_vars = rel_vars.append(get_vars_from_gene_name(el))
+
+    try:
+        rel_vars = rel_vars[rel_vars["gene"].isin(gene_names)]
+    except KeyError:
+        return pd.DataFrame(columns=["gene", "ensembl_gene_id", "chromosome", "ref_allele",
+                                     "start_pos", "alt_allele", "phenotype"])
+
+    return rel_vars
+
 
 
 

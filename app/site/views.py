@@ -6,7 +6,7 @@
 from quart import Blueprint, render_template, request, redirect, url_for
 from app.static import dbdata
 from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, QueryDiseasesForm
-from app.site.scripts import get_gene_from_variant, get_pheno_from_variant, get_vars_from_gene_name, get_diseases_from_gene_name, get_genes_from_phenotype, get_vars_from_phenotype, get_diseases_from_phenotype, get_genes_from_disease_name, disease_id_to_name
+from app.site.scripts import get_gene_from_variant, get_pheno_from_variant, get_vars_from_gene_name, get_diseases_from_gene_name, get_genes_from_phenotype, get_vars_from_phenotype, get_diseases_from_phenotype, get_genes_from_disease_name, disease_id_to_name, get_vars_from_disease_name
 # from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g, jsonify, send_file
 # from werkzeug.urls import url_parse
 
@@ -102,7 +102,8 @@ async def results():
     elif disease_submit == "True":
         disease_input_name = disease_id_to_name(disease_input)
         genes_df = get_genes_from_disease_name(disease_input_name)
-
+        vars_df = get_vars_from_disease_name(disease_input_name)  # TODO: search using ensembl_gene_id instead of gene_name
+        print(vars_df)
 
 
     return await render_template("results.html",
