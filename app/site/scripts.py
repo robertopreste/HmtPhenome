@@ -333,7 +333,8 @@ def get_diseases_from_phenotype(phenotype):
     Retrieve diseases related to a phenotype, exploiting the get_genes_from_phenotype() and
     get_diseases_from_gene_name() functions.
     :param phenotype: accession id of the phenotype to search for
-    :return: pd.DataFrame
+    :return: pd.DataFrame with columns ["gene", "ensembl_gene_id", "chromosome", "ref_allele",
+    "start_pos", "alt_allele", "phenotype"]
     """
     rel_genes = get_genes_from_phenotype(phenotype)
     try:
@@ -355,34 +356,43 @@ def get_diseases_from_phenotype(phenotype):
     return rel_diseases
 
 
+def get_genes_from_disease_name(disease_name):
+    """
+    Retrieve genes related to a disease, using Biomart.
+    :param disease_name: name of the query disease
+    :return: pd.DataFrame with columns ["ensembl_gene_id", "gene_name", "gene_descr", "chromosome",
+    "start_pos", "stop_pos", "phenotype"]
+    """
+    server = Server(host="http://www.ensembl.org")
+    dataset = server.marts["ENSEMBL_MART_ENSEMBL"].datasets["hsapiens_gene_ensembl"]
+    res = dataset.query(attributes=["ensembl_gene_id", "external_gene_name", "description",
+                                    "chromosome_name", "start_position", "end_position",
+                                    "phenotype_description"],
+                        filters={"phenotype_description": disease_name})
 
-#
-#
-#
-#
-#
-#
-# def get_genes_from_disease_name(disease_name):
-#     """Retrieve genes related to a disease, using Biomart.
-#     :param disease_name: name of the query disease
-#     :return:
-#     """
-#
-#     server = Server(host="http://www.ensembl.org")
-#     dataset = server.marts["ENSEMBL_MART_ENSEMBL"].datasets["hsapiens_gene_ensembl"]
-#     res = dataset.query(attributes=["ensembl_gene_id", "external_gene_name", "description",
-#                                     "chromosome_name", "start_position", "end_position",
-#                                     "phenotype_description"],
-#                         filters={"phenotype_description": disease_name})
-#
-#     res.rename({"Gene stable ID": "ensembl_gene_id", "Gene name": "gene_name",
-#                 "Gene description": "gene_descr", "Chromosome/scaffold name": "chromosome",
-#                 "Gene start (bp)": "start_pos", "Gene end (bp)": "stop_pos",
-#                 "Phenotype description": "phenotype"}, axis=1, inplace=True)
-#     res.drop_duplicates(inplace=True)
-#
-#     return res
+    res.rename({"Gene stable ID": "ensembl_gene_id", "Gene name": "gene_name",
+                "Gene description": "gene_descr", "Chromosome/scaffold name": "chromosome",
+                "Gene start (bp)": "start_pos", "Gene end (bp)": "stop_pos",
+                "Phenotype description": "phenotype"}, axis=1, inplace=True)
+    res.drop_duplicates(inplace=True)
 
+    return res
+
+
+def get_vars_from_disease_name(disease_name):
+    """
+    Retrieve variants related to a specific disease, exploiting the get_genes_from_disease_name()
+    and get_vars_from_gene_name() functions.
+    :param disease_name: name of the query disease
+    :return: pd.DataFrame with columns []
+    """
+    rel_genes = get_genes_from_disease_name(disease_name)
+    try:
+        gene_names = rel_genes["Gene name"].unique().to_list()
+    except KeyError:
+        return pd.DataFrame()
+
+    rel_vars = pd.DataFrame()
 
 
 
