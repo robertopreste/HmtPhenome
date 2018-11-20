@@ -241,6 +241,41 @@ def get_vars_from_gene_name(gene_name):
     return res
 
 
+def get_vars_from_gene_id(ens_gene_id):
+    """
+    Retrieve all variants associated with a specific Ensembl gene ID, using Biomart.
+    :param ens_gene_id: query Ensembl gene ID
+    :return: pd.DataFrame with columns ["gene", "ensembl_gene_id", "chromosome", "ref_allele",
+    "start_pos", "alt_allele", "phenotype"]
+    """
+    try:
+        gene_name = Mitocarta.query.filter(Mitocarta.ensembl_id == ens_gene_id).first().gene_symbol
+    except AttributeError:  # gene not in Mitocarta
+        return pd.DataFrame()
+
+    server = Server(host="http://www.ensembl.org")
+    dataset = server.marts["ENSEMBL_MART_SNP"].datasets["hsapiens_snp"]
+
+    res = dataset.query(attributes=["chr_name", "chrom_start", "consequence_allele_string",
+                                    "phenotype_description"],
+                        filters={"ensembl_gene": ens_gene_id})
+
+    res.rename({"Chromosome/scaffold name": "chromosome",
+                "Chromosome/scaffold position start (bp)": "start_pos",
+                "Consequence specific allele": "ref/alt allele",
+                "Phenotype description": "phenotype"}, axis=1, inplace=True)
+    res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
+    res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
+    res = res[res["alt_allele"] != "HGMD_MUTATION"]
+    res["gene"] = gene_name
+    res["ensembl_gene_id"] = ens_gene_id
+
+    res = res[["gene", "ensembl_gene_id", "chromosome", "ref_allele", "start_pos", "alt_allele",
+               "phenotype"]]
+
+    return res
+
+
 def get_diseases_from_gene_name(gene_name, with_vars=False):
     """Retrieve diseases associated to a specific gene, using Ensembl.
     :param gene_name: name of the query gene
@@ -258,6 +293,33 @@ def get_diseases_from_gene_name(gene_name, with_vars=False):
     #     r.raise_for_status()
     #     print("Wrong request.")
     #     sys.exit()
+    res = r.json()
+
+    df = pd.DataFrame(columns=["gene_name", "ensembl_gene_id", "location", "disease", "phenotypes"])
+    for el in res:
+        row = pd.DataFrame({"gene_name": gene_name, "ensembl_gene_id": [el["Gene"]],
+                            "location": el["location"], "disease": [el["description"]],
+                            "phenotypes": [el["ontology_accessions"]]})
+        df = df.append(row, ignore_index=True)
+    df.drop_duplicates(subset="disease", inplace=True)
+
+    return df
+
+
+def get_diseases_from_gene_id(ens_gene_id, with_vars=False):
+    """
+    Retrieve diseases associated with a specific Ensembl gene id, using Ensembl.
+    :param ens_gene_id: query Ensembl gene id
+    :return: pd.DataFrame
+    """
+    try:
+        gene_name = Mitocarta.query.filter(Mitocarta.ensembl_id == ens_gene_id).first().gene_symbol
+    except AttributeError:  # gene not in Mitocarta
+        return pd.DataFrame()
+
+    server = "https://rest.ensembl.org"
+    ext = "/phenotype/gene/homo_sapiens/{}?include_associated={}".format(gene_name, int(with_vars))
+    r = requests.get(server + ext, headers={"Content-Type": "application/json"})
     res = r.json()
 
     df = pd.DataFrame(columns=["gene_name", "ensembl_gene_id", "location", "disease", "phenotypes"])
@@ -395,23 +457,27 @@ def get_vars_from_disease_name(disease_name):
     Retrieve variants related to a specific disease, exploiting the get_genes_from_disease_name()
     and get_vars_from_gene_name() functions.
     :param disease_name: name of the query disease
-    :return: pd.DataFrame with columns []
+    :return: pd.DataFrame with columns ["gene", "ensembl_gene_id", "chromosome", "ref_allele",
+    "start_pos", "alt_allele", "phenotype"]
     """
     rel_genes = get_genes_from_disease_name(disease_name)
     try:
-        gene_names = rel_genes["gene_name"].unique()
+        gene_ids = rel_genes["ensembl_gene_id"].unique()
     except KeyError:
         return pd.DataFrame()
 
     rel_vars = pd.DataFrame()
-    for el in set(gene_names):
-        rel_vars = rel_vars.append(get_vars_from_gene_name(el))
+    for el in set(gene_ids):
+        rel_vars = rel_vars.append(get_vars_from_gene_id(el))
 
     try:
-        rel_vars = rel_vars[rel_vars["gene"].isin(gene_names)]
+        rel_vars = rel_vars[rel_vars["ensembl_gene_id"].isin(gene_ids)]
     except KeyError:
         return pd.DataFrame(columns=["gene", "ensembl_gene_id", "chromosome", "ref_allele",
                                      "start_pos", "alt_allele", "phenotype"])
+
+    # TODO: find a better way to retrieve variants related to a specific disease
+    # rel_vars = rel_vars[rel_vars["phenotype"] == disease_name]
 
     return rel_vars
 
