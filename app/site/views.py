@@ -103,7 +103,7 @@ async def results():
         disease_input_name = disease_id_to_name(disease_input)
         genes_df = get_genes_from_disease_name(disease_input_name)
         vars_df = get_vars_from_disease_name(disease_input_name)  # TODO: restrict results to selected disease
-        phenos_df =
+        # phenos_df =
 
 
     return await render_template("results.html",

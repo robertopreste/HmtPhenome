@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
-from .models import Mitocarta, Phenotypes, Diseases
+from app.site.models import Mitocarta, Phenotypes, Diseases
 import pandas as pd
 import numpy as np
 import requests
@@ -141,10 +141,10 @@ function populateGenes(s1, s2) {
 def get_gene_from_variant(chrom, var_start, var_end=None):
     """
     Retrieve the gene to which the provided variant belongs, using Biomart.
-    :param chrom: chromosome name (chr + 1:22, X, Y, M)
-    :param var_start: variant starting position
-    :param var_end: variant ending position
-    :return:
+    :param chrom: [str] chromosome name (chr + 1:22, X, Y, M)
+    :param var_start: [str, int] variant starting position
+    :param var_end: [str, int] variant ending position
+    :return: pd.DataFrame with columns ["ensembl_gene_id", "gene_name"]
     """
 
     chrom = chrom.lstrip("chr").upper()
@@ -168,9 +168,9 @@ def get_gene_from_variant(chrom, var_start, var_end=None):
 def get_pheno_from_variant(chrom, var_start, var_end=None):
     """
     Retrieve phenotypes associated with a specific variant, using Biomart.
-    :param chrom: chromosome name (chr + 1:22, X, Y, M)
-    :param var_start: variant starting position
-    :param var_end: variant ending position
+    :param chrom: [str] chromosome name (chr + 1:22, X, Y, M)
+    :param var_start: [str, int] variant starting position
+    :param var_end: [str, int] variant ending position
     :return: pd.DataFrame with columns ["chromosome", "ref_allele", "start_pos", "alt_allele",
     "phenotype"]
     """
@@ -204,11 +204,14 @@ def get_pheno_from_variant(chrom, var_start, var_end=None):
     return res
 
 
+# TODO: missing get_disease_from_variant function
+
+
 def get_vars_from_gene_name(gene_name):
     """
     Retrieve all variants associated with a specific gene, using Biomart.
-    :param gene_name: name of the query gene
-    :return: pd.DataFrame with columns ["gene", "ensembl_gene_id", "chromosome", "ref_allele",
+    :param gene_name: [str] name of the query gene
+    :return: pd.DataFrame with columns ["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
     "start_pos", "alt_allele", "phenotype"]
     """
     gene_name = gene_name.upper().lstrip("MT-")
@@ -232,10 +235,10 @@ def get_vars_from_gene_name(gene_name):
     res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
     res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
     res = res[res["alt_allele"] != "HGMD_MUTATION"]
-    res["gene"] = gene_name
+    res["gene_name"] = gene_name
     res["ensembl_gene_id"] = ens_gene_id
 
-    res = res[["gene", "ensembl_gene_id", "chromosome", "ref_allele", "start_pos", "alt_allele",
+    res = res[["ensembl_gene_id", "gene_name", "chromosome", "ref_allele", "start_pos", "alt_allele",
                "phenotype"]]
 
     return res
@@ -244,8 +247,8 @@ def get_vars_from_gene_name(gene_name):
 def get_vars_from_gene_id(ens_gene_id):
     """
     Retrieve all variants associated with a specific Ensembl gene ID, using Biomart.
-    :param ens_gene_id: query Ensembl gene ID
-    :return: pd.DataFrame with columns ["gene", "ensembl_gene_id", "chromosome", "ref_allele",
+    :param ens_gene_id: [str] query Ensembl gene ID
+    :return: pd.DataFrame with columns ["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
     "start_pos", "alt_allele", "phenotype"]
     """
     try:
@@ -267,10 +270,10 @@ def get_vars_from_gene_id(ens_gene_id):
     res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
     res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
     res = res[res["alt_allele"] != "HGMD_MUTATION"]
-    res["gene"] = gene_name
+    res["gene_name"] = gene_name
     res["ensembl_gene_id"] = ens_gene_id
 
-    res = res[["gene", "ensembl_gene_id", "chromosome", "ref_allele", "start_pos", "alt_allele",
+    res = res[["ensembl_gene_id", "gene_name", "chromosome", "ref_allele", "start_pos", "alt_allele",
                "phenotype"]]
 
     return res
@@ -278,10 +281,11 @@ def get_vars_from_gene_id(ens_gene_id):
 
 def get_diseases_from_gene_name(gene_name, with_vars=False):
     """Retrieve diseases associated to a specific gene, using Ensembl.
-    :param gene_name: name of the query gene
-    :param with_vars: True to also retrieve phenotypes associated to variants of the gene
-    :return: pd.DataFrame with columns ["gene_name", "ensembl_gene_id", "location", "disease",
-    "phenotypes"]
+    :param gene_name: [str] name of the query gene
+    :param with_vars: [bool] True to also retrieve phenotypes associated to variants of the gene
+    :return: pd.DataFrame with columns ["ensembl_gene_id", "gene_name", "location", "disease",
+    "phenotypes"] or ["ensembl_gene_id", "gene_name", "location", "variation", "diseases",
+    "phenotypes"] if with_vars=True
     """
     gene_name = gene_name.upper().lstrip("MT-")
 
@@ -295,12 +299,36 @@ def get_diseases_from_gene_name(gene_name, with_vars=False):
     #     sys.exit()
     res = r.json()
 
-    df = pd.DataFrame(columns=["gene_name", "ensembl_gene_id", "location", "disease", "phenotypes"])
+    if with_vars:
+        df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "location", "variation", "disease", "phenotypes"])
+        try:
+            ensembl_gene_id = Mitocarta.query.filter(Mitocarta.gene_symbol == gene_name).first().ensembl_id
+        except AttributeError:  # gene not in Mitocarta
+            return pd.DataFrame()
+    else:
+        df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "location", "disease", "phenotypes"])
+
     for el in res:
-        row = pd.DataFrame({"gene_name": gene_name, "ensembl_gene_id": [el["Gene"]],
-                            "location": el["location"], "disease": [el["description"]],
-                            "phenotypes": [el["ontology_accessions"]]})
-        df = df.append(row, ignore_index=True)
+        if el == "error":
+            return df
+
+        if with_vars:
+            if "attributes" in el and "associated_gene" in el["attributes"].keys() and "Variation" in el and "ontology_accessions" in el:
+                row = pd.DataFrame({"ensembl_gene_id": ensembl_gene_id,
+                                    "gene_name": [el["attributes"]["associated_gene"]],
+                                    "location": el["location"],
+                                    "variation": [el["Variation"]],
+                                    "disease": [el["description"]],
+                                    "phenotypes": [el["ontology_accessions"]]})
+        else:
+            if "ontology_accessions" in el:
+                row = pd.DataFrame({"ensembl_gene_id": [el["Gene"]], "gene_name": gene_name,
+                                    "location": el["location"], "disease": [el["description"]],
+                                    "phenotypes": [el["ontology_accessions"]]})
+        try:
+            df = df.append(row, ignore_index=True)
+        except UnboundLocalError:
+            return df
     df.drop_duplicates(subset="disease", inplace=True)
 
     return df
@@ -309,34 +337,38 @@ def get_diseases_from_gene_name(gene_name, with_vars=False):
 def get_diseases_from_gene_id(ens_gene_id, with_vars=False):
     """
     Retrieve diseases associated with a specific Ensembl gene id, using Ensembl.
-    :param ens_gene_id: query Ensembl gene id
-    :return: pd.DataFrame
+    :param ens_gene_id: [str] query Ensembl gene id
+    :param with_vars: [bool] True to also retrieve phenotypes associated to variants of the gene
+    :return: pd.DataFrame with columns ["ensembl_gene_id", "gene_name", "location", "disease",
+    "phenotypes"]
     """
     try:
         gene_name = Mitocarta.query.filter(Mitocarta.ensembl_id == ens_gene_id).first().gene_symbol
     except AttributeError:  # gene not in Mitocarta
         return pd.DataFrame()
 
-    server = "https://rest.ensembl.org"
-    ext = "/phenotype/gene/homo_sapiens/{}?include_associated={}".format(gene_name, int(with_vars))
-    r = requests.get(server + ext, headers={"Content-Type": "application/json"})
-    res = r.json()
+    # server = "https://rest.ensembl.org"
+    # ext = "/phenotype/gene/homo_sapiens/{}?include_associated={}".format(gene_name, int(with_vars))
+    # r = requests.get(server + ext, headers={"Content-Type": "application/json"})
+    # res = r.json()
+    #
+    # df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "location", "disease", "phenotypes"])
+    # for el in res:
+    #     row = pd.DataFrame({"ensembl_gene_id": [el["Gene"]], "gene_name": gene_name,
+    #                         "location": el["location"], "disease": [el["description"]],
+    #                         "phenotypes": [el["ontology_accessions"]]})
+    #     df = df.append(row, ignore_index=True)
+    # df.drop_duplicates(subset="disease", inplace=True)
 
-    df = pd.DataFrame(columns=["gene_name", "ensembl_gene_id", "location", "disease", "phenotypes"])
-    for el in res:
-        row = pd.DataFrame({"gene_name": gene_name, "ensembl_gene_id": [el["Gene"]],
-                            "location": el["location"], "disease": [el["description"]],
-                            "phenotypes": [el["ontology_accessions"]]})
-        df = df.append(row, ignore_index=True)
-    df.drop_duplicates(subset="disease", inplace=True)
+    df = get_diseases_from_gene_name(gene_name, with_vars)
 
     return df
 
 
 def get_genes_from_phenotype(phenotype):
     """
-    Retrieve genes relatd to a phenotype, using Ensembl.
-    :param phenotype: accession id of the phenotype to search for
+    Retrieve genes related to a phenotype, using Ensembl.
+    :param phenotype: [str] accession id of the phenotype to search for
     :return: pd.DataFrame with columns ["gene_name", "variation", "phenotypes", "description"]
     """
     server = "https://rest.ensembl.org"
@@ -351,7 +383,7 @@ def get_genes_from_phenotype(phenotype):
 
     df = pd.DataFrame(columns=["gene_name", "variation", "phenotypes", "description"])
     for el in res:
-        if "attributes" in el.keys() and "associated_gene" in el["attributes"].keys():
+        if "attributes" in el and "associated_gene" in el["attributes"].keys() and "Variation" in el:
             row = pd.DataFrame({"gene_name": [el["attributes"]["associated_gene"]],
                                 "variation": [el["Variation"]],
                                 "phenotypes": [el["mapped_to_accession"]],
@@ -366,16 +398,16 @@ def get_vars_from_phenotype(phenotype):
     """
     Retrieve variants related to a phenotype, exploiting the get_genes_from_phenotype() and
     get_vars_from_gene_name() functions.
-    :param phenotype: accession id of the phenotype to search for
-    :return: pd.DataFrame with columns ["gene", "ensembl_gene_id", "chromosome", "ref_allele",
-    "start_pos", "alt_allele", "phenotype"]
+    :param phenotype: [str] accession id of the phenotype to search for
+    :return: pd.DataFrame with columns ["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
+    "start_pos", "alt_allele", "phenotype", "phenotype_id"]
     """
     rel_genes = get_genes_from_phenotype(phenotype)
     try:
         pheno_names = rel_genes["description"].unique().tolist()
     except KeyError:
-        return pd.DataFrame(columns=["gene", "ensembl_gene_id", "chromosome", "ref_allele",
-                                     "start_pos", "alt_allele", "phenotype"])
+        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
+                                     "start_pos", "alt_allele", "phenotype", "phenotype_id"])
 
     rel_vars = pd.DataFrame()
     for el in set(rel_genes["gene_name"]):
@@ -383,9 +415,10 @@ def get_vars_from_phenotype(phenotype):
 
     try:
         rel_vars = rel_vars[rel_vars["phenotype"].isin(pheno_names)]
+        rel_vars["phenotype_id"] = phenotype
     except KeyError:
-        return pd.DataFrame(columns=["gene", "ensembl_gene_id", "chromosome", "ref_allele",
-                                     "start_pos", "alt_allele", "phenotype"])
+        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
+                                     "start_pos", "alt_allele", "phenotype", "phenotype_id"])
 
     return rel_vars
 
@@ -394,16 +427,16 @@ def get_diseases_from_phenotype(phenotype):
     """
     Retrieve diseases related to a phenotype, exploiting the get_genes_from_phenotype() and
     get_diseases_from_gene_name() functions.
-    :param phenotype: accession id of the phenotype to search for
-    :return: pd.DataFrame with columns ["gene", "ensembl_gene_id", "chromosome", "ref_allele",
-    "start_pos", "alt_allele", "phenotype"]
+    :param phenotype: [str] accession id of the phenotype to search for
+    :return: pd.DataFrame with columns ["ensembl_gene_id", "gene_name", "location", "disease",
+    "phenotype_ids"]
     """
     rel_genes = get_genes_from_phenotype(phenotype)
-    try:
-        pheno_names = rel_genes["description"].unique().tolist()
-    except KeyError:
-        return pd.DataFrame(columns=["gene", "ensembl_gene_id", "chromosome", "ref_allele",
-                                     "start_pos", "alt_allele", "phenotype"])
+    # try:
+    #     pheno_names = rel_genes["description"].unique().tolist()
+    # except KeyError:
+    #     return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
+    #                                  "start_pos", "alt_allele", "phenotype"])
 
     rel_diseases = pd.DataFrame()
     for el in set(rel_genes["gene_name"]):
@@ -411,9 +444,10 @@ def get_diseases_from_phenotype(phenotype):
 
     try:
         rel_diseases = rel_diseases[rel_diseases["phenotypes"].astype(str).str.contains(phenotype)]
+        rel_diseases.rename({"phenotypes": "phenotype_ids"}, axis=1, inplace=True)
     except KeyError:
-        return pd.DataFrame(columns=["gene", "ensembl_gene_id", "chromosome", "ref_allele",
-                                     "start_pos", "alt_allele", "phenotype"])
+        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "location", "disease",
+                                     "phenotype_ids"])
 
     return rel_diseases
 
@@ -421,7 +455,7 @@ def get_diseases_from_phenotype(phenotype):
 def disease_id_to_name(disease_id):
     """
     Convert a given disease ID into its common name.
-    :param disease_id: query disease ID
+    :param disease_id: [str] query disease ID
     :return: related disease name
     """
     q = Diseases.query.filter(Diseases.disease_id == disease_id).first()
@@ -432,9 +466,9 @@ def disease_id_to_name(disease_id):
 def get_genes_from_disease_name(disease_name):
     """
     Retrieve genes related to a disease, using Biomart.
-    :param disease_name: name of the query disease
+    :param disease_name: [str] name of the query disease
     :return: pd.DataFrame with columns ["ensembl_gene_id", "gene_name", "gene_descr", "chromosome",
-    "start_pos", "stop_pos", "phenotype"]
+    "start_pos", "stop_pos", "disease"]
     """
     server = Server(host="http://www.ensembl.org")
     dataset = server.marts["ENSEMBL_MART_ENSEMBL"].datasets["hsapiens_gene_ensembl"]
@@ -446,7 +480,7 @@ def get_genes_from_disease_name(disease_name):
     res.rename({"Gene stable ID": "ensembl_gene_id", "Gene name": "gene_name",
                 "Gene description": "gene_descr", "Chromosome/scaffold name": "chromosome",
                 "Gene start (bp)": "start_pos", "Gene end (bp)": "stop_pos",
-                "Phenotype description": "phenotype"}, axis=1, inplace=True)
+                "Phenotype description": "disease"}, axis=1, inplace=True)
     res.drop_duplicates(inplace=True)
 
     return res
@@ -456,9 +490,9 @@ def get_vars_from_disease_name(disease_name):
     """
     Retrieve variants related to a specific disease, exploiting the get_genes_from_disease_name()
     and get_vars_from_gene_name() functions.
-    :param disease_name: name of the query disease
+    :param disease_name: [str] name of the query disease
     :return: pd.DataFrame with columns ["gene", "ensembl_gene_id", "chromosome", "ref_allele",
-    "start_pos", "alt_allele", "phenotype"]
+    "start_pos", "alt_allele", "disease"]
     """
     rel_genes = get_genes_from_disease_name(disease_name)
     try:
@@ -474,10 +508,11 @@ def get_vars_from_disease_name(disease_name):
         rel_vars = rel_vars[rel_vars["ensembl_gene_id"].isin(gene_ids)]
     except KeyError:
         return pd.DataFrame(columns=["gene", "ensembl_gene_id", "chromosome", "ref_allele",
-                                     "start_pos", "alt_allele", "phenotype"])
+                                     "start_pos", "alt_allele", "disease"])
 
     # TODO: find a better way to retrieve variants related to a specific disease
-    # rel_vars = rel_vars[rel_vars["phenotype"] == disease_name]
+    rel_vars = rel_vars[rel_vars["phenotype"] == disease_name]
+    rel_vars.rename({"phenotype": "disease"}, axis=1, inplace=True)
 
     return rel_vars
 
