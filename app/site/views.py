@@ -6,7 +6,7 @@
 from quart import Blueprint, render_template, request, redirect, url_for
 from app.static import dbdata
 from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, QueryDiseasesForm
-from app.site.scripts import get_gene_from_variant, get_pheno_from_variant, get_vars_from_gene_name, get_diseases_from_gene_name, get_genes_from_phenotype, get_vars_from_phenotype, get_diseases_from_phenotype, get_genes_from_disease_name, disease_id_to_name, get_vars_from_disease_name
+from app.site.scripts import get_gene_from_variant, get_pheno_from_variant, get_diseases_from_variant, get_vars_from_gene_name, get_diseases_from_gene_name, get_genes_from_phenotype, get_vars_from_phenotype, get_diseases_from_phenotype, get_genes_from_disease_name, disease_id_to_name, get_vars_from_disease_name
 # from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g, jsonify, send_file
 # from werkzeug.urls import url_parse
 
@@ -87,7 +87,15 @@ async def results():
 
         genes_df = get_gene_from_variant(var_chrom, var_start, var_end)
         phenos_df = get_pheno_from_variant(var_chrom, var_start, var_end)
-        # disease_df = # TODO: usare get_disease_from_gene()?
+        disease_df = get_diseases_from_variant(var_chrom, var_start, var_end)
+
+        # TODO: move the following part to scripts, creating a proper class
+        full_df = (disease_df.set_index("disease")
+                   .join(phenos_df.set_index("phenotype"))
+                   .reset_index())
+        full_df["variant"] = full_df["ref_allele"] + full_df["start_pos"].astype(str) + full_df["alt_allele"]
+        full_df = full_df[["ensembl_gene_id", "gene_name", "variation", "variant", "disease",
+                           "phenotypes"]]
 
     elif gene_submit == "True":
         vars_df = get_vars_from_gene_name(gene_input)

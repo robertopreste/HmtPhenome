@@ -138,6 +138,28 @@ function populateGenes(s1, s2) {
     return base_string
 
 
+def pheno_name_to_id(pheno_name):
+    """
+    Retrieve the related HP id from a given phenotype name.
+    :param pheno_name: [str] phenotype name
+    :return: [list] with the related id(s)
+    """
+    r = requests.get("https://hpo.jax.org/api/hpo/search?q={}".format(pheno_name),
+                     headers={"Content-Type": "application/json"})
+    res = r.json()
+    ids = []
+
+    if res["termsTotalCount"] == 0:
+        pass
+    elif res["termsTotalCount"] == 1:
+        ids.append(res["terms"][0]["id"])
+    else:
+        for el in res["terms"]:
+            ids.append(el["id"])
+
+    return ids
+
+
 def get_gene_from_variant(chrom, var_start, var_end=None):
     """
     Retrieve the gene to which the provided variant belongs, using Biomart.
@@ -200,11 +222,32 @@ def get_pheno_from_variant(chrom, var_start, var_end=None):
         res.drop_duplicates(subset="phenotype", inplace=True)
     else:
         res = pd.DataFrame(columns=["chromosome", "ref_allele", "start_pos", "alt_allele", "phenotype"])
+    res["phenotype_id"] = res["phenotype"].apply(pheno_name_to_id)
 
     return res
 
 
-# TODO: missing get_disease_from_variant function
+def get_diseases_from_variant(chrom, var_start, var_end=None):
+    """
+    Retrieve diseases associated with the given variant, exploiting the get_gene_from_variant and
+    get_diseases_from_gene_name functions.
+    :param chrom: [str] chromosome name (chr + 1:22, X, Y, M)
+    :param var_start: [str, int] variant starting position
+    :param var_end: [str, int] variant ending position
+    :return:
+    """
+    gene_name = get_gene_from_variant(chrom, var_start, var_end)["gene_name"][0]
+    diseases = get_diseases_from_gene_name(gene_name, True)
+
+    if var_end is not None:
+        diseases = diseases[(diseases["location"].str.startswith(chrom)) &
+                            (diseases["location"].str.contains(var_start)) &
+                            (diseases["location"].str.contains(var_end))]
+    else:
+        diseases = diseases[(diseases["location"].str.startswith(chrom)) &
+                            (diseases["location"].str.contains(var_start))]
+
+    return diseases
 
 
 def get_vars_from_gene_name(gene_name):
