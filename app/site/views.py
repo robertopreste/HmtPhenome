@@ -96,6 +96,7 @@ async def results():
         full_df["variant"] = full_df["ref_allele"] + full_df["start_pos"].astype(str) + full_df["alt_allele"]
         full_df = full_df[["ensembl_gene_id", "gene_name", "variation", "variant", "disease",
                            "phenotypes"]]
+        # TODO: create a `phenotype_names` column based on data from `phenotypes`
 
     elif gene_submit == "True":
         vars_df = get_vars_from_gene_name(gene_input)
@@ -113,9 +114,8 @@ async def results():
         vars_df = get_vars_from_disease_name(disease_input_name)  # TODO: restrict results to selected disease
         # phenos_df = # TODO
 
-
     return await render_template("results.html",
-                                 title="Results")
+                                 title="Results", full_df=full_df)
 
 
 @www.errorhandler(404)

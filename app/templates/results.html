@@ -52,6 +52,35 @@
 
                     <h3>Variants</h3>
 
+                    <table class="table table-hover">
+
+                        <thead>
+                            <tr>
+                                <th scope="col">Variant</th>
+                                <th scope="col">dbSNP ID</th>
+                                <th scope="col">Ensembl Gene ID</th>
+                                <th scope="col">Gene Name</th>
+                                <th scope="col">Disease</th>
+                                <th scope="col">Phenotypes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in full_df.itertuples() %}
+                                <tr class="bg-warning">
+                                    <td>{{ row.variant }}</td>
+                                    <td>
+                                        <a href="https://www.ncbi.nlm.nih.gov/snp/{{ row.variation }}" title="dbSNP" target="_blank">{{ row.variation }}</a>
+                                    </td>
+                                    <td>{{ row.ensembl_gene_id }}</td>
+                                    <td>{{ row.gene_name }}</td>
+                                    <td>{{ row.disease }}</td>
+                                    <td>{{ row.phenotypes }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+
+                    </table>
+
                 </div>
 
                 <div id="genes" class="tab-pane fade">
