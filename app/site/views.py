@@ -87,7 +87,7 @@ async def results():
 
         genes_df = get_gene_from_variant(var_chrom, var_start, var_end)
         phenos_df = get_pheno_from_variant(var_chrom, var_start, var_end)
-        # TODO: usare get_disease_from_gene()?
+        # disease_df = # TODO: usare get_disease_from_gene()?
 
     elif gene_submit == "True":
         vars_df = get_vars_from_gene_name(gene_input)
@@ -103,7 +103,7 @@ async def results():
         disease_input_name = disease_id_to_name(disease_input)
         genes_df = get_genes_from_disease_name(disease_input_name)
         vars_df = get_vars_from_disease_name(disease_input_name)  # TODO: restrict results to selected disease
-        # phenos_df =
+        # phenos_df = # TODO
 
 
     return await render_template("results.html",
