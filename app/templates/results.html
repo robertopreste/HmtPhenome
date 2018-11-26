@@ -61,11 +61,12 @@
                                 <th scope="col">Ensembl Gene ID</th>
                                 <th scope="col">Gene Name</th>
                                 <th scope="col">Disease</th>
-                                <th scope="col">Phenotypes</th>
+                                <th scope="col">Phenotype</th>
+                                <th scope="col">Phenotype ID</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for row in full_df.itertuples() %}
+                            {% for row in final_df.itertuples() %}
                                 <tr class="bg-warning">
                                     <td>{{ row.variant }}</td>
                                     <td>
@@ -74,7 +75,8 @@
                                     <td>{{ row.ensembl_gene_id }}</td>
                                     <td>{{ row.gene_name }}</td>
                                     <td>{{ row.disease }}</td>
-                                    <td>{{ row.phenotypes }}</td>
+                                    <td>{{ row.phenotype_name }}</td>
+                                    <td>{{ row.phenotype_id }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>

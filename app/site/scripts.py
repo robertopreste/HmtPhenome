@@ -160,6 +160,26 @@ def pheno_name_to_id(pheno_name):
     return ids
 
 
+def pheno_id_to_term(pheno_id):
+    """
+    Retrieve the common phenotype name from a given ID. It can retrieve the data either from the
+    local database (for HP: IDs) or from the web (for EFO: IDs).
+    :param pheno_id: [str] HP: or EFO: ID
+    :return: [str] with the related common name
+    """
+    if pheno_id.startswith("HP:"):
+        pheno_name = Phenotypes.query.filter(Phenotypes.hpo_id == pheno_id).first().hpo_term_name
+    else:
+        efo_id = pheno_id.strip("EFO:")
+        base_url = "https://www.ebi.ac.uk/ols/api/ontologies/efo/terms?"
+        iri_url = "iri=http://www.ebi.ac.uk/efo/EFO_{}".format(efo_id)
+        r = requests.get(base_url + iri_url, headers={"Content-Type": "application/json"})
+        res = r.json()
+        pheno_name = res["_embedded"]["terms"][0]["label"]
+
+    return pheno_name
+
+
 def get_gene_from_variant(chrom, var_start, var_end=None):
     """
     Retrieve the gene to which the provided variant belongs, using Biomart.
@@ -248,6 +268,35 @@ def get_diseases_from_variant(chrom, var_start, var_end=None):
                             (diseases["location"].str.contains(var_start))]
 
     return diseases
+
+
+def final_from_variant(gene_df, pheno_df, disease_df):
+    """
+    Create the final dataframe for variant data.
+    :param gene_df: result of get_gene_from_variant()
+    :param pheno_df: result of get_pheno_from_variant()
+    :param disease_df: result of get_diseases_from_variant()
+    :return: pd.DataFrame with columns ["variant", "ensembl_gene_id", "gene_name", "variation",
+    "disease", "phenotype_id", "phenotype_name"]
+    """
+    df = (disease_df.set_index("disease")
+          .join(pheno_df.set_index("phenotype"))
+          .reset_index())
+    df["variant"] = df["ref_allele"] + df["start_pos"].astype(str) + df["alt_allele"]
+    # full_df = full_df[["ensembl_gene_id", "gene_name", "variation", "variant", "disease",
+    #                    "phenotypes"]]
+    final_df = pd.DataFrame(columns=["variant", "ensembl_gene_id", "gene_name", "variation",
+                                     "disease", "phenotype_id", "phenotype_name"])
+
+    for row in df.itertuples():
+        for pheno in row.phenotypes:
+            new_row = pd.DataFrame({"variant": row.variant, "ensembl_gene_id": row.ensembl_gene_id,
+                                    "gene_name": row.gene_name, "variation": row.variation,
+                                    "disease": row.disease, "phenotype_id": pheno,
+                                    "phenotype_name": pheno_id_to_term(pheno)}, index=[row.variant])
+            final_df = final_df.append(new_row, ignore_index=True)
+
+    return final_df
 
 
 def get_vars_from_gene_name(gene_name):
