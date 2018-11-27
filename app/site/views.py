@@ -89,16 +89,7 @@ async def results():
         pheno_df = get_pheno_from_variant(var_chrom, var_start, var_end)
         disease_df = get_diseases_from_variant(var_chrom, var_start, var_end)
 
-        # TODO: move the following part to scripts, creating a proper class
-        # full_df = (disease_df.set_index("disease")
-        #            .join(phenos_df.set_index("phenotype"))
-        #            .reset_index())
-        # full_df["variant"] = full_df["ref_allele"] + full_df["start_pos"].astype(str) + full_df["alt_allele"]
-        # full_df = full_df[["ensembl_gene_id", "gene_name", "variation", "variant", "disease",
-        #                    "phenotypes"]]
-        # TODO: create a `phenotype_names` column based on data from `phenotypes`
         final_df = final_from_variant(genes_df, pheno_df, disease_df)
-        print(final_df)
 
     elif gene_submit == "True":
         vars_df = get_vars_from_gene_name(gene_input)

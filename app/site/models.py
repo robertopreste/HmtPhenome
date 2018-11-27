@@ -50,6 +50,30 @@ class Phenotypes(db.Model):
         return """Phenotypes(id: {self.id}, hpo_id: {self.hpo_id}, hpo_term_name: {self.hpo_term_name})""".format(self=self)
 
 
+class Omim(db.Model):
+    __tablename__ = "Omim"
+
+    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
+    mim_number = db.Column(db.Integer, nullable=False, index=True)
+    mim_name = db.Column(db.String, nullable=False, index=True)
+    prefix = db.Column(db.String, nullable=True, default=None)
+
+    def __repr__(self):
+        return """Omim(id: {self.id}, mim_number: {self.mim_number}, mim_name: {self.mim_name}, prefix: {self.prefix})""".format(self=self)
+
+
+class Orpha(db.Model):
+    __tablename__ = "Orpha"
+
+    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
+    orpha_num = db.Column(db.Integer, nullable=False, index=True)
+    orpha_name = db.Column(db.String, nullable=False, index=True)
+
+    def __repr__(self):
+        return """Orpha(id: {self.id}, orpha_num: {self.orpha_num}, orpha_name: {self.orpha_name})""".format(self=self)
+
+
+
 # class Variants(db.Model):
 #     __tablename__ = "Variants"
 #

@@ -283,8 +283,7 @@ def final_from_variant(gene_df, pheno_df, disease_df):
           .join(pheno_df.set_index("phenotype"))
           .reset_index())
     df["variant"] = df["ref_allele"] + df["start_pos"].astype(str) + df["alt_allele"]
-    # full_df = full_df[["ensembl_gene_id", "gene_name", "variation", "variant", "disease",
-    #                    "phenotypes"]]
+
     final_df = pd.DataFrame(columns=["variant", "ensembl_gene_id", "gene_name", "variation",
                                      "disease", "phenotype_id", "phenotype_name"])
 
@@ -295,6 +294,8 @@ def final_from_variant(gene_df, pheno_df, disease_df):
                                     "disease": row.disease, "phenotype_id": pheno,
                                     "phenotype_name": pheno_id_to_term(pheno)}, index=[row.variant])
             final_df = final_df.append(new_row, ignore_index=True)
+
+    # TODO: find disease ID
 
     return final_df
 
