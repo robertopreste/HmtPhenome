@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
-from app.site.models import Mitocarta, Phenotypes, Diseases
+from app.site.models import Mitocarta, Phenotypes, Diseases, Omim, Orpha
 import pandas as pd
 import numpy as np
 import requests
@@ -277,7 +277,7 @@ def final_from_variant(gene_df, pheno_df, disease_df):
     :param pheno_df: result of get_pheno_from_variant()
     :param disease_df: result of get_diseases_from_variant()
     :return: pd.DataFrame with columns ["variant", "ensembl_gene_id", "gene_name", "variation",
-    "disease", "phenotype_id", "phenotype_name"]
+    "disease_id", "disease", "phenotype_id", "phenotype_name"]
     """
     df = (disease_df.set_index("disease")
           .join(pheno_df.set_index("phenotype"))
@@ -285,13 +285,15 @@ def final_from_variant(gene_df, pheno_df, disease_df):
     df["variant"] = df["ref_allele"] + df["start_pos"].astype(str) + df["alt_allele"]
 
     final_df = pd.DataFrame(columns=["variant", "ensembl_gene_id", "gene_name", "variation",
-                                     "disease", "phenotype_id", "phenotype_name"])
+                                     "disease_id", "disease", "phenotype_id", "phenotype_name"])
 
     for row in df.itertuples():
+        disease_id = disease_name_to_id(row.disease)
         for pheno in row.phenotypes:
             new_row = pd.DataFrame({"variant": row.variant, "ensembl_gene_id": row.ensembl_gene_id,
                                     "gene_name": row.gene_name, "variation": row.variation,
-                                    "disease": row.disease, "phenotype_id": pheno,
+                                    "disease_id": disease_id, "disease": row.disease,
+                                    "phenotype_id": pheno,
                                     "phenotype_name": pheno_id_to_term(pheno)}, index=[row.variant])
             final_df = final_df.append(new_row, ignore_index=True)
 
@@ -549,11 +551,42 @@ def disease_id_to_name(disease_id):
     """
     Convert a given disease ID into its common name.
     :param disease_id: [str] query disease ID
-    :return: related disease name
+    :return: [str] related disease name
     """
-    q = Diseases.query.filter(Diseases.disease_id == disease_id).first()
+    try:
+        q = Diseases.query.filter(Diseases.disease_id == disease_id).first()
+        return q.disease_name
+    except AttributeError:
+        try:
+            if disease_id.startswith("OMIM:"):
+                q = Omim.query.filter(Omim.mim_number == int(disease_id.strip("OMIM:"))).first()
+                return q.mim_name
+            elif disease_id.startswith("ORPHA:"):
+                q = Orpha.query.filter(Orpha.orpha_num == int(disease_id.strip("ORPHA:"))).first()
+                return q.orpha_name
+        except AttributeError:
+            return ""
 
-    return q.disease_name
+
+def disease_name_to_id(disease_name):
+    """
+    Convert a given disease name into the related Omim or Orphanet ID.
+    :param disease_name: [str] query disease name
+    :return: [str] related disease ID from OMIM or ORPHANET
+    """
+    try:
+        q = Diseases.query.filter(Diseases.disease_name == disease_name).first()
+        return q.disease_id
+    except AttributeError:
+        try:
+            q = Omim.query.filter(Omim.mim_name == disease_name).first()
+            return "OMIM:{}".format(q.mim_number)  # TODO: check also mim symbol
+        except AttributeError:
+            try:
+                q = Orpha.query.filter(Orpha.orpha_name == disease_name).first()
+                return "ORPHA:{}".format(q.orpha_num)
+            except AttributeError:
+                return ""
 
 
 def get_genes_from_disease_name(disease_name):
