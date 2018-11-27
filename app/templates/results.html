@@ -75,10 +75,31 @@
                                     </td>
                                     <td>{{ row.ensembl_gene_id }}</td>
                                     <td>{{ row.gene_name }}</td>
-                                    <td>{{ row.disease_id }}</td>
+                                    <td>
+                                        {% if row.disease_id.startswith("OMIM:") %}
+                                            {% set disease_num = row.disease_id.strip("OMIM:") %}
+                                            <a href="https://www.omim.org/entry/{{ disease_num }}" title="OMIM" target="_blank">{{ row.disease_id }}</a>
+                                        {% elif row.disease_id.startswith("ORPHA:") %}
+                                            {% set disease_num = row.disease_id.strip("ORPHA:") %}
+{#                                          TODO: find a proper url for Orphanet pages  #}
+                                            {{ row.disease_id }}
+                                        {% else %}
+                                            {{ row.disease_id }}
+                                        {% endif %}
+                                    </td>
                                     <td>{{ row.disease }}</td>
                                     <td>{{ row.phenotype_name }}</td>
-                                    <td>{{ row.phenotype_id }}</td>
+                                    <td>
+                                        {% if row.phenotype_id.startswith("HP:") %}
+                                            {% set phenotype_num = row.phenotype_id.replace(":", "_") %}
+                                            <a href="http://purl.obolibrary.org/obo/{{ phenotype_num }}" title="HPO" target="_blank">{{ row.phenotype_id }}</a>
+                                        {% elif row.phenotype_id.startswith("EFO:") %}
+                                            {% set phenotype_num = row.phenotype_id.replace(":", "_") %}
+                                            <a href="http://www.ebi.ac.uk/efo/{{ phenotype_num }}" title="EFO" target="_blank">{{ row.phenotype_id }}</a>
+                                        {% else %}
+                                            {{ row.phenotype_id }}
+                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
