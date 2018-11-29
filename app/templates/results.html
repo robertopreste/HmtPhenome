@@ -31,107 +31,74 @@
         <div class="container-fluid">
         <div class="row">
 
-            <ul class="nav nav-tabs">
-                <li class="active">
-                    <a data-toggle="tab" href="#variants">Variants</a>
-                </li>
-                <li>
-                    <a data-toggle="tab" href="#genes">Genes</a>
-                </li>
-                <li>
-                    <a data-toggle="tab" href="#phenos">Phenotypes</a>
-                </li>
-                <li>
-                    <a data-toggle="tab" href="#diseases">Diseases</a>
-                </li>
-            </ul>
+            <h2>Table view</h2>
 
-            <div class="tab-content">
+                <table class="table table-hover">
 
-                <div id="variants" class="tab-pane fade in active">
-
-                    <h3>Variants</h3>
-
-                    <table class="table table-hover">
-
-                        <thead>
-                            <tr>
-                                <th scope="col">Variant</th>
-                                <th scope="col">dbSNP ID</th>
-                                <th scope="col">Ensembl Gene ID</th>
-                                <th scope="col">Gene Name</th>
-                                <th scope="col">Disease ID</th>
-                                <th scope="col">Disease</th>
-                                <th scope="col">Phenotype</th>
-                                <th scope="col">Phenotype ID</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for row in final_df.itertuples() %}
-                                <tr class="bg-warning">
-                                    <td>{{ row.variant }}</td>
-                                    <td>
-                                        <a href="https://www.ncbi.nlm.nih.gov/snp/{{ row.variation }}" title="dbSNP" target="_blank">{{ row.variation }}</a>
-                                    </td>
-                                    <td>{{ row.ensembl_gene_id }}</td>
-                                    <td>{{ row.gene_name }}</td>
-                                    <td>
-                                        {% if row.disease_id.startswith("OMIM:") %}
-                                            {% set disease_num = row.disease_id.strip("OMIM:") %}
-                                            <a href="https://www.omim.org/entry/{{ disease_num }}" title="OMIM" target="_blank">{{ row.disease_id }}</a>
-                                        {% elif row.disease_id.startswith("ORPHA:") %}
-                                            {% set disease_num = row.disease_id.strip("ORPHA:") %}
+                    <thead>
+                        <tr>
+                            <th scope="col">Variant</th>
+                            <th scope="col">dbSNP ID</th>
+                            <th scope="col">Ensembl Gene ID</th>
+                            <th scope="col">Gene Name</th>
+                            <th scope="col">Disease ID</th>
+                            <th scope="col">Disease</th>
+                            <th scope="col">Phenotype</th>
+                            <th scope="col">Phenotype ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in final_df.itertuples() %}
+                            <tr class="bg-warning">
+                                <td>{{ row.variant }}</td>
+                                <td>
+                                    <a href="https://www.ncbi.nlm.nih.gov/snp/{{ row.variation }}" title="dbSNP" target="_blank">{{ row.variation }}</a>
+                                </td>
+                                <td>{{ row.ensembl_gene_id }}</td>
+                                <td>{{ row.gene_name }}</td>
+                                <td>
+                                    {% if row.disease_id.startswith("OMIM:") %}
+                                        {% set disease_num = row.disease_id.strip("OMIM:") %}
+                                        <a href="https://www.omim.org/entry/{{ disease_num }}" title="OMIM" target="_blank">{{ row.disease_id }}</a>
+                                    {% elif row.disease_id.startswith("ORPHA:") %}
+                                        {% set disease_num = row.disease_id.strip("ORPHA:") %}
 {#                                          TODO: find a proper url for Orphanet pages  #}
-                                            {{ row.disease_id }}
-                                        {% else %}
-                                            {{ row.disease_id }}
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ row.disease }}</td>
-                                    <td>{{ row.phenotype_name }}</td>
-                                    <td>
-                                        {% if row.phenotype_id.startswith("HP:") %}
-                                            {% set phenotype_num = row.phenotype_id.replace(":", "_") %}
-                                            <a href="http://purl.obolibrary.org/obo/{{ phenotype_num }}" title="HPO" target="_blank">{{ row.phenotype_id }}</a>
-                                        {% elif row.phenotype_id.startswith("EFO:") %}
-                                            {% set phenotype_num = row.phenotype_id.replace(":", "_") %}
-                                            <a href="http://www.ebi.ac.uk/efo/{{ phenotype_num }}" title="EFO" target="_blank">{{ row.phenotype_id }}</a>
-                                        {% else %}
-                                            {{ row.phenotype_id }}
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
+                                        {{ row.disease_id }}
+                                    {% else %}
+                                        {{ row.disease_id }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ row.disease }}</td>
+                                <td>{{ row.phenotype_name }}</td>
+                                <td>
+                                    {% if row.phenotype_id.startswith("HP:") %}
+                                        {% set phenotype_num = row.phenotype_id.replace(":", "_") %}
+                                        <a href="http://purl.obolibrary.org/obo/{{ phenotype_num }}" title="HPO" target="_blank">{{ row.phenotype_id }}</a>
+                                    {% elif row.phenotype_id.startswith("EFO:") %}
+                                        {% set phenotype_num = row.phenotype_id.replace(":", "_") %}
+                                        <a href="http://www.ebi.ac.uk/efo/{{ phenotype_num }}" title="EFO" target="_blank">{{ row.phenotype_id }}</a>
+                                    {% else %}
+                                        {{ row.phenotype_id }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
 
-                    </table>
-
-                </div>
-
-                <div id="genes" class="tab-pane fade">
-
-                    <h3>Genes</h3>
-
-                </div>
-
-                <div id="phenos" class="tab-pane fade">
-
-                    <h3>Phenotypes</h3>
-
-                </div>
-
-                <div id="diseases" class="tab-pane fade">
-
-                    <h3>Diseases</h3>
-
-                </div>
-
-            </div>
+                </table>
 
         </div>
         </div>
 
-        <div id="mynetwork" style="min-height: 800px; border: 1px solid #F9CF45;"></div>
+        <div class="container-fluid">
+        <div class="row">
+
+            <h2>Network view</h2>
+
+            <div id="mynetwork" style="min-height: 800px; border: 2px solid #F9CF45; border-radius: 10px;" class="bg-warning"></div>
+
+        </div>
+        </div>
 
     </div>
 
