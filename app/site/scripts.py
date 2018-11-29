@@ -168,8 +168,14 @@ def pheno_id_to_term(pheno_id):
     :return: [str] with the related common name
     """
     if pheno_id.startswith("HP:"):
-        pheno_name = Phenotypes.query.filter(Phenotypes.hpo_id == pheno_id).first().hpo_term_name
-    else:
+        try:
+            pheno_name = Phenotypes.query.filter(Phenotypes.hpo_id == pheno_id).first().hpo_term_name
+        except AttributeError:
+            pheno_name = ""
+    elif pheno_id.startswith("Orphanet:"):
+        orpha_id = pheno_id.strip("Orphanet:")
+        pheno_name = Orpha.query.filter(Orpha.orpha_num == orpha_id).first().orpha_name
+    elif pheno_id.startswith("EFO:"):
         efo_id = pheno_id.strip("EFO:")
         base_url = "https://www.ebi.ac.uk/ols/api/ontologies/efo/terms?"
         iri_url = "iri=http://www.ebi.ac.uk/efo/EFO_{}".format(efo_id)
@@ -296,8 +302,6 @@ def final_from_variant(gene_df, pheno_df, disease_df):
                                     "phenotype_id": pheno,
                                     "phenotype_name": pheno_id_to_term(pheno)}, index=[row.variant])
             final_df = final_df.append(new_row, ignore_index=True)
-
-    # TODO: find disease ID
 
     return final_df
 
@@ -458,6 +462,41 @@ def get_diseases_from_gene_id(ens_gene_id, with_vars=False):
     df = get_diseases_from_gene_name(gene_name, with_vars)
 
     return df
+
+
+def final_from_gene_name(vars_df, disease_df):
+    """
+    Create the final dataframe for gene data.
+    :param vars_df: result of get_vars_from_gene_name()
+    :param disease_df: result of get_diseases_from_gene_name()
+    :return: pd.DataFrame with columns ["variant", "chromosome", "ensembl_gene_id", "gene_name",
+    "variation", "disease_id", "disease", "phenotype_id", "phenotype_name"]
+    """
+    disease_df = disease_df[disease_df["location"].str.startswith(vars_df["chromosome"].value_counts().idxmax())]
+    disease_df["position"] = disease_df["location"].str.split("-", expand=True)[0]
+    vars_df["position"] = vars_df["chromosome"] + ":" + vars_df["start_pos"].astype(str)
+    vars_df.drop(["ensembl_gene_id", "gene_name"], axis=1, inplace=True)
+    df = (disease_df.set_index("position")
+          .join(vars_df.set_index("position"))
+          .reset_index())
+    df["variant"] = df["ref_allele"] + df["start_pos"].astype(str) + df["alt_allele"]
+
+    final_df = pd.DataFrame(columns=["variant", "chromosome", "ensembl_gene_id", "gene_name",
+                                     "variation", "disease_id", "disease", "phenotype_id",
+                                     "phenotype_name"])
+
+    for row in df.itertuples():
+        disease_id = disease_name_to_id(row.disease)
+        for pheno in row.phenotypes:
+            new_row = pd.DataFrame({"variant": row.variant, "chromosome": row.chromosome,
+                                    "ensembl_gene_id": row.ensembl_gene_id,
+                                    "gene_name": row.gene_name, "variation": row.variation,
+                                    "disease_id": disease_id, "disease": row.disease,
+                                    "phenotype_id": pheno,
+                                    "phenotype_name": pheno_id_to_term(pheno)}, index=[row.variant])
+            final_df = final_df.append(new_row, ignore_index=True)
+
+    return final_df
 
 
 def get_genes_from_phenotype(phenotype):
