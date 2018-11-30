@@ -6,7 +6,7 @@
 from quart import Blueprint, render_template, request, redirect, url_for
 from app.static import dbdata
 from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, QueryDiseasesForm
-from app.site.scripts import get_gene_from_variant, get_pheno_from_variant, get_diseases_from_variant, get_vars_from_gene_name, get_diseases_from_gene_name, get_genes_from_phenotype, get_vars_from_phenotype, get_diseases_from_phenotype, get_genes_from_disease_name, disease_id_to_name, get_vars_from_disease_name, final_from_variant, final_from_gene_name
+from app.site.scripts import get_gene_from_variant, get_pheno_from_variant, get_diseases_from_variant, get_vars_from_gene_name, get_diseases_from_gene_name, get_genes_from_phenotype, get_vars_from_phenotype, get_diseases_from_phenotype, get_genes_from_disease_name, disease_id_to_name, get_vars_from_disease_name, final_from_variant, final_from_gene_name, network_from_variant
 # from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g, jsonify, send_file
 # from werkzeug.urls import url_parse
 
@@ -90,6 +90,7 @@ async def results():
         disease_df = get_diseases_from_variant(var_chrom, var_start, var_end)
 
         final_df = final_from_variant(genes_df, pheno_df, disease_df)
+        networks = network_from_variant(final_df)
 
     elif gene_submit == "True":
         vars_df = get_vars_from_gene_name(gene_input)
@@ -110,7 +111,8 @@ async def results():
         # phenos_df = # TODO
 
     return await render_template("results.html",
-                                 title="Results", final_df=final_df)
+                                 title="Results", final_df=final_df,
+                                 nodes=networks["nodes"], edges=networks["edges"])
 
 
 @www.errorhandler(404)

@@ -83,6 +83,15 @@ body {
     border-top-right-radius: 10px;
 }
 
+#networkview {
+    background-color: var(--linen);
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--warning_orange);
+    border-radius: 10px;
+    min-height: 800px;
+}
+
 .footer {
     position: absolute;
     bottom: 0;

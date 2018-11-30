@@ -101,7 +101,7 @@
 
             <h2>Network view</h2>
 
-            <div id="mynetwork" style="min-height: 800px; border: 2px solid #F9CF45; border-radius: 10px;" class="bg-warning"></div>
+            <div id="networkview"></div>
 
         </div>
         </div>
@@ -113,46 +113,19 @@
     {% block scripts %}
 
         <script type="text/javascript">
-            // create an array with nodes
-            {#var nodes = new vis.DataSet([#}
-            {#    {id: 1, label: 'Node 1'},#}
-            {#    {id: 2, label: 'Node 2'},#}
-            {#    {id: 3, label: 'Node 3'},#}
-            {#    {id: 4, label: 'Node 4'},#}
-            {#    {id: 5, label: 'Node 5'}#}
-            {#]);#}
-
             var nodes = new vis.DataSet([
-                {id: 1, label: 'MT-ND1', color: '#739E82'}, // gene
-                {id: 2, label: 'T3308A', color: '#F9CF45'}, // variant
-                {id: 3, label: 'SUDDEN INFANT DEATH SYNDROME', color: '#D7816A'}, // disease
-                {id: 4, label: 'colorectal adenocarcinoma', color: '#93B5C6'}, // pheno
-                {id: 5, label: 'colon carcinoma', color: '#93B5C6'},
-                {id: 6, label: 'Carcinoma of colon', color: '#D7816A'},
-                {id: 7, label: 'Apneic episodes in infancy', color: '#93B5C6'},
-                {id: 8, label: 'sudden death', color: '#93B5C6'}
+                {% for node in nodes %}
+                    {id: {{ node["id"] }}, label: '{{ node["label"] }}', color: '{{ node["color"] }}' },
+                {% endfor %}
             ]);
-
             var edges = new vis.DataSet([
-                {from: 2, to: 1},
-                {from: 2, to: 6},
-                {from: 2, to: 3},
-                {from: 6, to: 4},
-                {from: 6, to: 5},
-                {from: 3, to: 8},
-                {from: 3, to: 7}
+                {% for edge in edges %}
+                    {from: {{ edge["from"] }}, to: {{ edge["to"] }} },
+                {% endfor %}
             ]);
-
-            // create an array with edges
-            {#var edges = new vis.DataSet([#}
-            {#    {from: 1, to: 3},#}
-            {#    {from: 1, to: 2},#}
-            {#    {from: 2, to: 4},#}
-            {#    {from: 2, to: 5}#}
-            {#]);#}
 
             // create a network
-            var container = document.getElementById('mynetwork');
+            var container = document.getElementById('networkview');
 
             // provide the data in the vis format
             var data = {

@@ -690,5 +690,53 @@ def get_vars_from_disease_name(disease_name):
     return rel_vars
 
 
+def network_from_variant(final_df):
+    """
+    Create nodes and edges lists for the creation of the network starting from variants.
+    :param final_df: final dataframe returned by final_from_variant()
+    :return: dictionary with a nodes list and an edges list
+    """
+    nodes = []
+    edges = []
+    ids = 0
+    id_dict = {}
+    variants = final_df["variant"].unique()
+    for el in variants:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": "#F9CF45"})
+        id_dict[el] = ids
+    genes = final_df["gene_name"].unique()
+    for el in genes:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": "#739E82"})
+        id_dict[el] = ids
+    diseases = final_df["disease"].unique()
+    for el in diseases:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": "#D7816A"})
+        id_dict[el] = ids
+    phenotypes = final_df["phenotype_name"].unique()
+    for el in phenotypes:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": "#93B5C6"})
+        id_dict[el] = ids
+
+    for var in variants:
+        gene_names = final_df[final_df["variant"] == var].gene_name.unique()
+        dis_names = final_df[final_df["variant"] == var].disease.unique()
+        for gene in gene_names:
+            edges.append({"from": id_dict[var], "to": id_dict[gene]})
+        for dis in dis_names:
+            edges.append({"from": id_dict[var], "to": id_dict[dis]})
+    for dis in diseases:
+        pheno_names = final_df[final_df["disease"] == dis].phenotype_name.unique()
+        for pheno in pheno_names:
+            edges.append({"from": id_dict[dis], "to": id_dict[pheno]})
+
+    return {"nodes": nodes, "edges": edges}
+
+
+
+
 
 
