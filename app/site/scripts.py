@@ -703,22 +703,26 @@ def network_from_variant(final_df):
     variants = final_df["variant"].unique()
     for el in variants:
         ids += 1
-        nodes.append({"id": ids, "label": el, "color": "#F9CF45"})
+        nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
+                                                        "border": "#CCAA39"}})
         id_dict[el] = ids
     genes = final_df["gene_name"].unique()
     for el in genes:
         ids += 1
-        nodes.append({"id": ids, "label": el, "color": "#739E82"})
+        nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
+                                                        "border": "#5F826B"}})
         id_dict[el] = ids
     diseases = final_df["disease"].unique()
     for el in diseases:
         ids += 1
-        nodes.append({"id": ids, "label": el, "color": "#D7816A"})
+        nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
+                                                        "border": "#B06A57"}})
         id_dict[el] = ids
     phenotypes = final_df["phenotype_name"].unique()
     for el in phenotypes:
         ids += 1
-        nodes.append({"id": ids, "label": el, "color": "#93B5C6"})
+        nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
+                                                        "border": "#7995A3"}})
         id_dict[el] = ids
 
     for var in variants:
