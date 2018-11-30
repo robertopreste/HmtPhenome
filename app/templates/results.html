@@ -31,6 +31,8 @@
         <div class="container-fluid">
         <div class="row">
 
+            <div class="col-sm-12">
+
             <h2>Table view</h2>
 
                 <table class="table table-hover">
@@ -39,6 +41,7 @@
                         <tr>
                             <th scope="col">Variant</th>
                             <th scope="col">dbSNP ID</th>
+                            <th scope="col">Chromosome</th>
                             <th scope="col">Ensembl Gene ID</th>
                             <th scope="col">Gene Name</th>
                             <th scope="col">Disease ID</th>
@@ -54,6 +57,7 @@
                                 <td>
                                     <a href="https://www.ncbi.nlm.nih.gov/snp/{{ row.variation }}" title="dbSNP" target="_blank">{{ row.variation }}</a>
                                 </td>
+                                <td>{{ row.chromosome }}</td>
                                 <td>{{ row.ensembl_gene_id }}</td>
                                 <td>{{ row.gene_name }}</td>
                                 <td>
@@ -86,6 +90,8 @@
                     </tbody>
 
                 </table>
+
+            </div>
 
         </div>
         </div>

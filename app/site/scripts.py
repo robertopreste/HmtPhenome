@@ -262,6 +262,12 @@ def get_diseases_from_variant(chrom, var_start, var_end=None):
     :param var_end: [str, int] variant ending position
     :return:
     """
+    chrom = chrom.lstrip("chr").upper()
+    if chrom == "M":
+        chrom = "MT"
+    # if var_end is None:
+    #     var_end = var_start
+
     gene_name = get_gene_from_variant(chrom, var_start, var_end)["gene_name"][0]
     diseases = get_diseases_from_gene_name(gene_name, True)
 
@@ -282,21 +288,23 @@ def final_from_variant(gene_df, pheno_df, disease_df):
     :param gene_df: result of get_gene_from_variant()
     :param pheno_df: result of get_pheno_from_variant()
     :param disease_df: result of get_diseases_from_variant()
-    :return: pd.DataFrame with columns ["variant", "ensembl_gene_id", "gene_name", "variation",
-    "disease_id", "disease", "phenotype_id", "phenotype_name"]
+    :return: pd.DataFrame with columns ["variant", "chromosome", "ensembl_gene_id", "gene_name",
+    "variation", "disease_id", "disease", "phenotype_id", "phenotype_name"]
     """
     df = (disease_df.set_index("disease")
           .join(pheno_df.set_index("phenotype"))
           .reset_index())
     df["variant"] = df["ref_allele"] + df["start_pos"].astype(str) + df["alt_allele"]
 
-    final_df = pd.DataFrame(columns=["variant", "ensembl_gene_id", "gene_name", "variation",
-                                     "disease_id", "disease", "phenotype_id", "phenotype_name"])
+    final_df = pd.DataFrame(columns=["variant", "chromosome", "ensembl_gene_id", "gene_name",
+                                     "variation", "disease_id", "disease", "phenotype_id",
+                                     "phenotype_name"])
 
     for row in df.itertuples():
         disease_id = disease_name_to_id(row.disease)
         for pheno in row.phenotypes:
-            new_row = pd.DataFrame({"variant": row.variant, "ensembl_gene_id": row.ensembl_gene_id,
+            new_row = pd.DataFrame({"variant": row.variant, "chromosome": row.chromosome,
+                                    "ensembl_gene_id": row.ensembl_gene_id,
                                     "gene_name": row.gene_name, "variation": row.variation,
                                     "disease_id": disease_id, "disease": row.disease,
                                     "phenotype_id": pheno,
