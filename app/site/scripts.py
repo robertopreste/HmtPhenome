@@ -273,11 +273,11 @@ def get_diseases_from_variant(chrom, var_start, var_end=None):
 
     if var_end is not None:
         diseases = diseases[(diseases["location"].str.startswith(chrom)) &
-                            (diseases["location"].str.contains(var_start)) &
+                            (diseases["location"].str.contains(str(var_start))) &
                             (diseases["location"].str.contains(var_end))]
     else:
         diseases = diseases[(diseases["location"].str.startswith(chrom)) &
-                            (diseases["location"].str.contains(var_start))]
+                            (diseases["location"].str.contains(str(var_start)))]
 
     return diseases
 
