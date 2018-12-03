@@ -260,7 +260,8 @@ def get_diseases_from_variant(chrom, var_start, var_end=None):
     :param chrom: [str] chromosome name (chr + 1:22, X, Y, M)
     :param var_start: [str, int] variant starting position
     :param var_end: [str, int] variant ending position
-    :return:
+    :return: pd.DataFrame with columns ["ensembl_gene_id", "gene_name", "location", "variation",
+    "disease", "phenotypes"]
     """
     chrom = chrom.lstrip("chr").upper()
     if chrom == "M":

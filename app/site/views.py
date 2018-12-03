@@ -85,6 +85,7 @@ async def results():
         else:
             var_end = var_start = var_rest
 
+        # TODO: remove : from variant selection because it won't work with https
         genes_df = get_gene_from_variant(var_chrom, var_start, var_end)
         pheno_df = get_pheno_from_variant(var_chrom, var_start, var_end)
         disease_df = get_diseases_from_variant(var_chrom, var_start, var_end)
