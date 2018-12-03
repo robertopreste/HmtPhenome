@@ -3,10 +3,16 @@
 
 ## Installation  
 
-Create a new virtual machine (using Python 3):  
+Create a new virtual environment (using Python 3):  
 
 ```
 virtualenv -p python3.6 venv
+```
+
+Activate the virtual environment:  
+
+```
+source venv/bin/activate
 ```
 
 Install all required modules:  
@@ -23,3 +29,9 @@ Export the Quart app using `export QUART_APP=app:app`, then:
 * migrate the database (after having populated it): `quart migrate-db`  
 
 
+
+When finished, deactivate the virtual environment:  
+
+```
+deactivate
+```
