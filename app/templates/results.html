@@ -44,8 +44,8 @@
                             <th scope="col">Chromosome</th>
                             <th scope="col">Ensembl Gene ID</th>
                             <th scope="col">Gene Name</th>
-                            <th scope="col">Disease ID</th>
                             <th scope="col">Disease</th>
+                            <th scope="col">Disease ID</th>
                             <th scope="col">Phenotype</th>
                             <th scope="col">Phenotype ID</th>
                         </tr>
@@ -60,19 +60,20 @@
                                 <td>{{ row.chromosome }}</td>
                                 <td>{{ row.ensembl_gene_id }}</td>
                                 <td>{{ row.gene_name }}</td>
+                                <td>{{ row.disease }}</td>
                                 <td>
                                     {% if row.disease_id.startswith("OMIM:") %}
                                         {% set disease_num = row.disease_id.strip("OMIM:") %}
                                         <a href="https://www.omim.org/entry/{{ disease_num }}" title="OMIM" target="_blank">{{ row.disease_id }}</a>
                                     {% elif row.disease_id.startswith("ORPHA:") %}
                                         {% set disease_num = row.disease_id.strip("ORPHA:") %}
+                                        <a href="#" title="ORPHA" target="_blank">{{ disease_num }}</a>
 {#                                          TODO: find a proper url for Orphanet pages  #}
-                                        {{ row.disease_id }}
+{#                                        {{ row.disease_id }}#}
                                     {% else %}
                                         {{ row.disease_id }}
                                     {% endif %}
                                 </td>
-                                <td>{{ row.disease }}</td>
                                 <td>{{ row.phenotype_name }}</td>
                                 <td>
                                     {% if row.phenotype_id.startswith("HP:") %}
