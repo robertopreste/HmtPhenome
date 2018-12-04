@@ -54,6 +54,7 @@ async def query():
         form_dis = QueryDiseasesForm()
 
         return redirect(url_for("site.results",
+                                variant_chr=form_var.variant_chr.data,
                                 variant_input=form_var.variant_input.data,
                                 variant_submit=form_var.variant_submit.data,
                                 gene_chr=form_gene.gene_chr.data,
@@ -68,6 +69,7 @@ async def query():
 @www.route("/results", methods=["GET"])
 async def results():
 
+    variant_chr = request.args.get("variant_chr", "", type=str)
     variant_input = request.args.get("variant_input", "", type=str)
     variant_submit = request.args.get("variant_submit")
     gene_chr = request.args.get("gene_chr", "", type=str)
@@ -79,16 +81,14 @@ async def results():
     disease_submit = request.args.get("disease_submit")
 
     if variant_submit == "True":
-        var_chrom, var_rest = variant_input.split(":")
-        if "-" in var_rest:
-            var_start, var_end = var_rest.split("-")
+        if "-" in variant_input:
+            var_start, var_end = variant_input.split("-")
         else:
-            var_end = var_start = var_rest
+            var_end = var_start = variant_input
 
-        # TODO: remove : from variant selection because it won't work with https
-        genes_df = get_gene_from_variant(var_chrom, var_start, var_end)
-        pheno_df = get_pheno_from_variant(var_chrom, var_start, var_end)
-        disease_df = get_diseases_from_variant(var_chrom, var_start, var_end)
+        genes_df = get_gene_from_variant(variant_chr, var_start, var_end)
+        pheno_df = get_pheno_from_variant(variant_chr, var_start, var_end)
+        disease_df = get_diseases_from_variant(variant_chr, var_start, var_end)
 
         final_df = final_from_variant(genes_df, pheno_df, disease_df)
         networks = network_from_variant(final_df)

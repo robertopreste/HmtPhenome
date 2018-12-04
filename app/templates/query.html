@@ -31,18 +31,48 @@
         <div class="container-fluid">
         <div class="row">
 
-        {# Variants #}
+        {# Position #}
         <form action="/query" method="post" name="query_variants" enctype="multipart/form-data">
         <div class="col-sm-6">
         <div class="row">
             <div class="panel panel-warning">
                 <div class="panel-heading">
-                    <h4>Variants</h4>
+                    <h4>Position</h4>
                 </div>
                 <div class="panel-body">
-                    <p>Insert a variant: </p>
-                    <div class="form-group">
-                        <input type="text" class="form-control" name="variant_input" id="variant_input">
+                    <p>Insert a variant position: </p>
+                    <div class="row">
+                        <div class="form-group col-sm-6">
+                            <select class="form-control" name="variant_chr" id="variant_chr">
+                                <option value="chr1">chr1</option>
+                                <option value="chr2">chr2</option>
+                                <option value="chr3">chr3</option>
+                                <option value="chr4">chr4</option>
+                                <option value="chr5">chr5</option>
+                                <option value="chr6">chr6</option>
+                                <option value="chr7">chr7</option>
+                                <option value="chr8">chr8</option>
+                                <option value="chr9">chr9</option>
+                                <option value="chr10">chr10</option>
+                                <option value="chr11">chr11</option>
+                                <option value="chr12">chr12</option>
+                                <option value="chr13">chr13</option>
+                                <option value="chr14">chr14</option>
+                                <option value="chr15">chr15</option>
+                                <option value="chr16">chr16</option>
+                                <option value="chr17">chr17</option>
+                                <option value="chr18">chr18</option>
+                                <option value="chr19">chr19</option>
+                                <option value="chr20">chr20</option>
+                                <option value="chr21">chr21</option>
+                                <option value="chr22">chr22</option>
+                                <option value="chrX">chrX</option>
+                                <option value="chrM" selected>chrM</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="variant_input" id="variant_input">
+                        </div>
                     </div>
                 </div>
                 <div class="panel-footer panel-warning">
