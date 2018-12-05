@@ -315,6 +315,7 @@ def final_from_variant(gene_df, pheno_df, disease_df):
     return final_df
 
 
+# TODO: check why the fuck this does not work when called with "TG" but it does with singular commands
 def get_vars_from_gene_name(gene_name):
     """
     Retrieve all variants associated with a specific gene, using Biomart.
@@ -533,6 +534,11 @@ def get_genes_from_phenotype(phenotype):
                                 "description": [el["description"]]})
             df = df.append(row, ignore_index=True)
     df.drop_duplicates(inplace=True)
+
+    # TODO: find a better way to retrieve the list of Mitocarta genes from the table
+    mito_genes = pd.read_sql("select * from Mitocarta", "sqlite:///database.db")
+    df["gene_name"] = df["gene_name"].str.split("-", expand=True)[1]
+    df = df[df["gene_name"].isin(mito_genes["gene_symbol"])]
 
     return df
 

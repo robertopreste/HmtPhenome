@@ -102,7 +102,7 @@ async def results():
         networks = network_from_gene_name(final_df)
 
     elif pheno_submit == "True":
-        genes_df = get_genes_from_phenotype(pheno_input)  # TODO: get only genes
+        genes_df = get_genes_from_phenotype(pheno_input)  # TODO: useless since it gets called when creating vars_df
         vars_df = get_vars_from_phenotype(pheno_input)
         disease_df = get_diseases_from_phenotype(pheno_input)
 
