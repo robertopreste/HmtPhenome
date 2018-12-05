@@ -691,6 +691,55 @@ def get_vars_from_disease_name(disease_name):
     return rel_vars
 
 
+def network_from_gene_name(final_df):
+    """
+    Create nodes and edges lists for the creation of the network, starting from a gene name.
+    :param final_df: final dataframe returned by final_from_gene_name()
+    :return: dictionary with a nodes list and an edges list
+    """
+    nodes = []
+    edges = []
+    ids = 0
+    id_dict = {}
+    genes = final_df["gene_name"].unique()
+    for el in genes:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
+                                                        "border": "#5F826B"}})
+        id_dict[el] = ids
+    variants = final_df["variant"].unique()
+    for el in variants:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
+                                                        "border": "#CCAA39"}})
+        id_dict[el] = ids
+    diseases = final_df["disease"].unique()
+    for el in diseases:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
+                                                        "border": "#B06A57"}})
+        id_dict[el] = ids
+    phenotypes = final_df["phenotype_name"].unique()
+    for el in phenotypes:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
+                                                        "border": "#7995A3"}})
+        id_dict[el] = ids
+
+    gene = genes[0]
+    var_list = final_df[final_df["gene_name"] == gene].variant.unique()
+    for var in var_list:
+        edges.append({"from": id_dict[gene], "to": id_dict[var]})
+        dis_names = final_df[final_df["variant"] == var].disease.unique()
+        for dis in dis_names:
+            edges.append({"from": id_dict[var], "to": id_dict[dis]})
+            pheno_names = final_df[final_df["disease"] == dis].phenotype_name.unique()
+            for pheno in pheno_names:
+                edges.append({"from": id_dict[dis], "to": id_dict[pheno]})
+
+    return {"nodes": nodes, "edges": edges}
+
+
 def network_from_variant(final_df):
     """
     Create nodes and edges lists for the creation of the network starting from variants.

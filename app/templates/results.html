@@ -35,7 +35,7 @@
 
             <h2>Table view</h2>
 
-                <table class="table table-hover">
+                <table class="table table-hover" id="res_table">
 
                     <thead>
                         <tr>
@@ -140,6 +140,8 @@
 
     {% block scripts %}
 
+        {{ super() }}
+
         <script type="text/javascript">
             var nodes = new vis.DataSet([
                 {% for node in nodes %}
@@ -166,6 +168,12 @@
 
             // initialize your network!
             var network = new vis.Network(container, data, options);
+        </script>
+
+        <script type="text/javascript">
+            $(document).ready( function () {
+                $('#res_table').DataTable();
+            } );
         </script>
 
     {% endblock %}

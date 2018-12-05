@@ -6,7 +6,7 @@
 from quart import Blueprint, render_template, request, redirect, url_for
 from app.static import dbdata
 from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, QueryDiseasesForm
-from app.site.scripts import get_gene_from_variant, get_pheno_from_variant, get_diseases_from_variant, get_vars_from_gene_name, get_diseases_from_gene_name, get_genes_from_phenotype, get_vars_from_phenotype, get_diseases_from_phenotype, get_genes_from_disease_name, disease_id_to_name, get_vars_from_disease_name, final_from_variant, final_from_gene_name, network_from_variant
+from app.site.scripts import get_gene_from_variant, get_pheno_from_variant, get_diseases_from_variant, get_vars_from_gene_name, get_diseases_from_gene_name, get_genes_from_phenotype, get_vars_from_phenotype, get_diseases_from_phenotype, get_genes_from_disease_name, disease_id_to_name, get_vars_from_disease_name, final_from_variant, final_from_gene_name, network_from_variant, network_from_gene_name
 # from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g, jsonify, send_file
 # from werkzeug.urls import url_parse
 
@@ -99,6 +99,7 @@ async def results():
         disease_df = get_diseases_from_gene_name(gene_input, True)
 
         final_df = final_from_gene_name(vars_df, disease_df)
+        networks = network_from_gene_name(final_df)
 
     elif pheno_submit == "True":
         genes_df = get_genes_from_phenotype(pheno_input)  # TODO: get only genes

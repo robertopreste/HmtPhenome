@@ -30,13 +30,8 @@
             <!-- vis.js library -->
             <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" type="text/css">
-{#            <style type="text/css">#}
-{#                #mynetwork {#}
-{#                    width: 600px;#}
-{#                    height: 400px;#}
-{#                    border: 1px solid lightgray;#}
-{#                }#}
-{#            </style>#}
+            <!-- DataTables -->
+            <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
         {%- endblock styles %}
 
     {% endblock head %}
@@ -85,6 +80,8 @@
             <script src="{{ url_for('static', filename='js/awesomplete.js') }}"></script>
             <!-- Custom -->
             <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+            <!-- DataTables -->
+            <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
         {% endblock scripts %}
 
         <!--<br /><br />-->
