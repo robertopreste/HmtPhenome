@@ -27,7 +27,7 @@ class Mitocarta(db.Model):
     __tablename__ = "Mitocarta"
 
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
-    gene_id = db.Column(db.Integer, index=True, unique=True, nullable=False)
+    # gene_id = db.Column(db.Integer, index=True, unique=True, nullable=False)
     ensembl_id = db.Column(db.String, nullable=True, default=None)
     gene_symbol = db.Column(db.String, index=True, unique=True, nullable=False)
     description = db.Column(db.Text, nullable=False)
@@ -36,7 +36,7 @@ class Mitocarta(db.Model):
     hg_stop = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return """Genes(id: {self.id}, gene_id: {self.gene_id}, ensembl_id: {self.ensembl_id}, gene_symbol: {self.gene_symbol}, description: {self.description}, hg_chr: {self.hg_chr}, hg_start: {self.hg_start}, hg_stop: {self.hg_stop})""".format(self=self)
+        return """Genes(id: {self.id}, ensembl_id: {self.ensembl_id}, gene_symbol: {self.gene_symbol}, description: {self.description}, hg_chr: {self.hg_chr}, hg_start: {self.hg_start}, hg_stop: {self.hg_stop})""".format(self=self)
 
 
 class Phenotypes(db.Model):

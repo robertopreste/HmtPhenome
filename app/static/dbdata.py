@@ -1,1 +1,1 @@
-latest_update = 'November 2018'
+latest_update = 'December 2018'
