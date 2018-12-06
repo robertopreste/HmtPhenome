@@ -549,6 +549,8 @@ def get_genes_from_phenotype(phenotype):
                                 "description": [el["description"]]})
             df = df.append(row, ignore_index=True)
     df.drop_duplicates(inplace=True)
+    if df.shape[0] == 0:
+        return df
 
     # TODO: find a better way to retrieve the list of Mitocarta genes from the table
     mito_genes = pd.read_sql("select * from Mitocarta", "sqlite:///database.db")
@@ -567,6 +569,9 @@ def get_vars_from_phenotype(phenotype):
     "start_pos", "alt_allele", "phenotype", "phenotype_id"]
     """
     rel_genes = get_genes_from_phenotype(phenotype)
+    if rel_genes.shape[0] == 0:
+        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
+                                     "start_pos", "alt_allele", "phenotype", "phenotype_id"])
     try:
         pheno_names = rel_genes["description"].unique().tolist()
     except KeyError:
@@ -616,6 +621,7 @@ def get_diseases_from_phenotype(phenotype):
     return rel_diseases
 
 
+# TODO: I'm leaving this one as the last step, it needs more work
 def final_from_phenotype(vars_df, disease_df):
     """
     Create the final dataframe for phenotype data.
