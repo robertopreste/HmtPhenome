@@ -67,7 +67,7 @@
                                         <a href="https://www.omim.org/entry/{{ disease_num }}" title="OMIM" target="_blank">{{ row.disease_id }}</a>
                                     {% elif row.disease_id.startswith("ORPHA:") %}
                                         {% set disease_num = row.disease_id.strip("ORPHA:") %}
-                                        <a href="http://www.orpha.net/ORDO/Orphanet_{{ disease_num }}" title="ORPHA" target="_blank">{{ row.disease_id }}</a>
+                                        <a href="http://www.orpha.net/ORDO/Orphanet_{{ disease_num }}" title="Orphanet" target="_blank">{{ row.disease_id }}</a>
                                     {% else %}
                                         {{ row.disease_id }}
                                     {% endif %}
@@ -80,6 +80,9 @@
                                     {% elif row.phenotype_id.startswith("EFO:") %}
                                         {% set phenotype_num = row.phenotype_id.replace(":", "_") %}
                                         <a href="http://www.ebi.ac.uk/efo/{{ phenotype_num }}" title="EFO" target="_blank">{{ row.phenotype_id }}</a>
+                                    {% elif row.phenotype_id.startswith("Orphanet:") %}
+                                        {% set phenotype_num = row.phenotype_id.replace(":", "_") %}
+                                        <a href="http://www.orpha.net/ORDO/{{ phenotype_num }}" title="Orphanet" target="_blank">{{ row.phenotype_id }}</a>
                                     {% else %}
                                         {{ row.phenotype_id }}
                                     {% endif %}
