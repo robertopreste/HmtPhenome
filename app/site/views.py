@@ -97,8 +97,11 @@ async def results():
         vars_df = get_vars_from_gene_name(gene_input)
         # phenos_df = get_diseases_from_gene_name(gene_input)  # this is useless
         disease_df = get_diseases_from_gene_name(gene_input, True)
-
-        final_df = final_from_gene_name(vars_df, disease_df)
+        if disease_df.shape[0] == 0:
+            disease_df = get_diseases_from_gene_name(gene_input)
+            final_df = final_from_gene_name(vars_df, disease_df)
+        else:
+            final_df = final_from_gene_name(vars_df, disease_df, True)
         networks = network_from_gene_name(final_df)
 
     elif pheno_submit == "True":

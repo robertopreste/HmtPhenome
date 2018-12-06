@@ -315,7 +315,6 @@ def final_from_variant(gene_df, pheno_df, disease_df):
     return final_df
 
 
-# TODO: check why the fuck this does not work when called with "TG" but it does with singular commands
 def get_vars_from_gene_name(gene_name):
     """
     Retrieve all variants associated with a specific gene, using Biomart.
@@ -323,7 +322,9 @@ def get_vars_from_gene_name(gene_name):
     :return: pd.DataFrame with columns ["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
     "start_pos", "alt_allele", "phenotype"]
     """
-    gene_name = gene_name.upper().lstrip("MT-")
+    # gene_name = gene_name.upper().lstrip("MT-")
+    if gene_name.startswith("MT-"):
+        gene_name = gene_name.upper().split("-")[1]
 
     try:
         ens_gene_id = Mitocarta.query.filter(Mitocarta.gene_symbol == gene_name).first().ensembl_id
@@ -396,7 +397,9 @@ def get_diseases_from_gene_name(gene_name, with_vars=False):
     "phenotypes"] or ["ensembl_gene_id", "gene_name", "location", "variation", "diseases",
     "phenotypes"] if with_vars=True
     """
-    gene_name = gene_name.upper().lstrip("MT-")
+    # gene_name = gene_name.upper().lstrip("MT-")
+    if gene_name.startswith("MT-"):
+        gene_name = gene_name.upper().split("-")[1]
 
     server = "https://rest.ensembl.org"
     ext = "/phenotype/gene/homo_sapiens/{}?include_associated={}".format(gene_name, int(with_vars))
@@ -474,7 +477,7 @@ def get_diseases_from_gene_id(ens_gene_id, with_vars=False):
     return df
 
 
-def final_from_gene_name(vars_df, disease_df):
+def final_from_gene_name(vars_df, disease_df, with_vars=False):
     """
     Create the final dataframe for gene data.
     :param vars_df: result of get_vars_from_gene_name()
@@ -491,19 +494,31 @@ def final_from_gene_name(vars_df, disease_df):
           .reset_index())
     df["variant"] = df["ref_allele"] + df["start_pos"].astype(str) + df["alt_allele"]
 
-    final_df = pd.DataFrame(columns=["variant", "chromosome", "ensembl_gene_id", "gene_name",
-                                     "variation", "disease_id", "disease", "phenotype_id",
-                                     "phenotype_name"])
+    if with_vars:
+        final_df = pd.DataFrame(columns=["variant", "chromosome", "ensembl_gene_id", "gene_name",
+                                         "variation", "disease_id", "disease", "phenotype_id",
+                                         "phenotype_name"])
+    else:
+        final_df = pd.DataFrame(columns=["variant", "chromosome", "ensembl_gene_id", "gene_name",
+                                         "disease_id", "disease", "phenotype_id", "phenotype_name"])
 
     for row in df.itertuples():
         disease_id = disease_name_to_id(row.disease)
         for pheno in row.phenotypes:
-            new_row = pd.DataFrame({"variant": row.variant, "chromosome": row.chromosome,
-                                    "ensembl_gene_id": row.ensembl_gene_id,
-                                    "gene_name": row.gene_name, "variation": row.variation,
-                                    "disease_id": disease_id, "disease": row.disease,
-                                    "phenotype_id": pheno,
-                                    "phenotype_name": pheno_id_to_term(pheno)}, index=[row.variant])
+            if with_vars:
+                new_row = pd.DataFrame({"variant": row.variant, "chromosome": row.chromosome,
+                                        "ensembl_gene_id": row.ensembl_gene_id,
+                                        "gene_name": row.gene_name, "variation": row.variation,
+                                        "disease_id": disease_id, "disease": row.disease,
+                                        "phenotype_id": pheno,
+                                        "phenotype_name": pheno_id_to_term(pheno)}, index=[row.variant])
+            else:
+                new_row = pd.DataFrame({"variant": row.variant, "chromosome": row.chromosome,
+                                        "ensembl_gene_id": row.ensembl_gene_id,
+                                        "gene_name": row.gene_name, "disease_id": disease_id,
+                                        "disease": row.disease, "phenotype_id": pheno,
+                                        "phenotype_name": pheno_id_to_term(pheno)},
+                                       index=[row.variant])
             final_df = final_df.append(new_row, ignore_index=True)
 
     return final_df
@@ -599,6 +614,41 @@ def get_diseases_from_phenotype(phenotype):
                                      "phenotype_ids"])
 
     return rel_diseases
+
+
+def final_from_phenotype(vars_df, disease_df):
+    """
+    Create the final dataframe for phenotype data.
+    :param vars_df: result of get_vars_from_phenotype()
+    :param disease_df: result of get_diseases_from_phenotype()
+    :return: pd.DataFrame with columns ["variant", "chromosome", "ensembl_gene_id", "gene_name",
+    "variation", "disease_id", "disease", "phenotype_id", "phenotype_name"]
+    """
+    disease_df = disease_df[disease_df["location"].str.startswith(vars_df["chromosome"].value_counts().idxmax())]
+    disease_df["position"] = disease_df["location"].str.split("-", expand=True)[0]
+    vars_df["position"] = vars_df["chromosome"] + ":" + vars_df["start_pos"].astype(str)
+    vars_df.drop(["ensembl_gene_id", "gene_name"], axis=1, inplace=True)
+    df = (disease_df.set_index("position")
+          .join(vars_df.set_index("position"))
+          .reset_index())
+    df["variant"] = df["ref_allele"] + df["start_pos"].astype(str) + df["alt_allele"]
+
+    final_df = pd.DataFrame(columns=["variant", "chromosome", "ensembl_gene_id", "gene_name",
+                                     "variation", "disease_id", "disease", "phenotype_id",
+                                     "phenotype_name"])
+
+    for row in df.itertuples():
+        disease_id = disease_name_to_id(row.disease)
+        for pheno in row.phenotypes:
+            new_row = pd.DataFrame({"variant": row.variant, "chromosome": row.chromosome,
+                                    "ensembl_gene_id": row.ensembl_gene_id,
+                                    "gene_name": row.gene_name, "variation": row.variation,
+                                    "disease_id": disease_id, "disease": row.disease,
+                                    "phenotype_id": pheno,
+                                    "phenotype_name": pheno_id_to_term(pheno)}, index=[row.variant])
+            final_df = final_df.append(new_row, ignore_index=True)
+
+    return final_df
 
 
 def disease_id_to_name(disease_id):
