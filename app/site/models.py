@@ -72,6 +72,45 @@ class Orpha(db.Model):
         return """Orpha(id: {self.id}, orpha_num: {self.orpha_num}, orpha_name: {self.orpha_name})""".format(self=self)
 
 
+class GeneDiseaseAss(db.Model):
+    __tablename__ = "GeneDiseaseAss"
+
+    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
+    entrez_gene_id = db.Column(db.String, nullable=True, default=None)
+    gene_symbol = db.Column(db.String, nullable=False, index=True)
+    umls_disease_id = db.Column(db.String, nullable=False)
+    disease_name = db.Column(db.String, nullable=False, index=True)
+
+    def __repr__(self):
+        return """GeneDiseaseAss(id: {self.id}, entrez_gene_id: {self.entrez_gene_id}, gene_symbol: {self.gene_symbol}, umls_disease_id: {self.umls_disease_id}, disease_name: {self.disease_name})""".format(self=self)
+
+
+class VarDiseaseAss(db.Model):
+    __tablename__ = "VarDiseaseAss"
+
+    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
+    dbsnp_id = db.Column(db.String, nullable=False, index=True)
+    umls_disease_id = db.Column(db.String, nullable=False)
+    disease_name = db.Column(db.String, nullable=False, index=True)
+
+    def __repr__(self):
+        return """VarDiseaseAss(id: {self.id}, dbsnp_id: {self.dbsnp_id}, umls_disease_id: {self.umls_disease_id}, disease_name: {self.disease_name})""".format(self=self)
+
+
+class DiseaseMappings(db.Model):
+    __tablename__ = "DiseaseMappings"
+
+    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
+    umls_disease_id = db.Column(db.String, nullable=False)
+    disease_name = db.Column(db.String, nullable=False, index=True)
+    vocabulary = db.Column(db.String, nullable=True, default=None)
+    disease_id = db.Column(db.String, nullable=False, index=True)
+    alt_disease_name = db.Column(db.String, nullable=False, index=True)
+
+    def __repr__(self):
+        return """DiseaseMappings(id: {self.id}, umls_disease_id: {self.umls_disease_id}, disease_name: {self.disease_name}, vocabulary: {self.vocabulary}, disease_id: {self.vocabulary}, alt_disease_name: {self.alt_disease_name})""".format(self=self)
+
+
 
 # class Variants(db.Model):
 #     __tablename__ = "Variants"
