@@ -27,7 +27,6 @@ class Mitocarta(db.Model):
     __tablename__ = "Mitocarta"
 
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
-    # gene_id = db.Column(db.Integer, index=True, unique=True, nullable=False)
     ensembl_id = db.Column(db.String, nullable=True, default=None)
     gene_symbol = db.Column(db.String, index=True, unique=True, nullable=False)
     description = db.Column(db.Text, nullable=False)
