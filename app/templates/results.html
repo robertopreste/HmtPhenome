@@ -31,69 +31,69 @@
         <div class="container-fluid">
         <div class="row">
 
-            <div class="col-sm-12">
-
-            <h2>Table view</h2>
-
-                <table class="table table-hover" id="res_table">
-
-                    <thead>
-                        <tr>
-                            <th scope="col">Variant</th>
-                            <th scope="col">dbSNP ID</th>
-                            <th scope="col">Chromosome</th>
-                            <th scope="col">Ensembl Gene ID</th>
-                            <th scope="col">Gene Name</th>
-                            <th scope="col">Disease</th>
-                            <th scope="col">Disease ID</th>
-                            <th scope="col">Phenotype</th>
-                            <th scope="col">Phenotype ID</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in final_df.itertuples() %}
-                            <tr class="bg-warning">
-                                <td>{{ row.variant }}</td>
-                                <td>
-                                    <a href="https://www.ncbi.nlm.nih.gov/snp/{{ row.variation }}" title="dbSNP" target="_blank">{{ row.variation }}</a>
-                                </td>
-                                <td>{{ row.chromosome }}</td>
-                                <td>{{ row.ensembl_gene_id }}</td>
-                                <td>{{ row.gene_name }}</td>
-                                <td>{{ row.disease }}</td>
-                                <td>
-                                    {% if row.disease_id.startswith("OMIM:") %}
-                                        {% set disease_num = row.disease_id.strip("OMIM:") %}
-                                        <a href="https://www.omim.org/entry/{{ disease_num }}" title="OMIM" target="_blank">{{ row.disease_id }}</a>
-                                    {% elif row.disease_id.startswith("ORPHA:") %}
-                                        {% set disease_num = row.disease_id.strip("ORPHA:") %}
-                                        <a href="http://www.orpha.net/ORDO/Orphanet_{{ disease_num }}" title="Orphanet" target="_blank">{{ row.disease_id }}</a>
-                                    {% else %}
-                                        {{ row.disease_id }}
-                                    {% endif %}
-                                </td>
-                                <td>{{ row.phenotype_name }}</td>
-                                <td>
-                                    {% if row.phenotype_id.startswith("HP:") %}
-                                        {% set phenotype_num = row.phenotype_id.replace(":", "_") %}
-                                        <a href="http://purl.obolibrary.org/obo/{{ phenotype_num }}" title="HPO" target="_blank">{{ row.phenotype_id }}</a>
-                                    {% elif row.phenotype_id.startswith("EFO:") %}
-                                        {% set phenotype_num = row.phenotype_id.replace(":", "_") %}
-                                        <a href="http://www.ebi.ac.uk/efo/{{ phenotype_num }}" title="EFO" target="_blank">{{ row.phenotype_id }}</a>
-                                    {% elif row.phenotype_id.startswith("Orphanet:") %}
-                                        {% set phenotype_num = row.phenotype_id.replace(":", "_") %}
-                                        <a href="http://www.orpha.net/ORDO/{{ phenotype_num }}" title="Orphanet" target="_blank">{{ row.phenotype_id }}</a>
-                                    {% else %}
-                                        {{ row.phenotype_id }}
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-
-                </table>
-
-            </div>
+{#            <div class="col-sm-12">#}
+{##}
+{#            <h2>Table view</h2>#}
+{##}
+{#                <table class="table table-hover" id="res_table">#}
+{##}
+{#                    <thead>#}
+{#                        <tr>#}
+{#                            <th scope="col">Variant</th>#}
+{#                            <th scope="col">dbSNP ID</th>#}
+{#                            <th scope="col">Chromosome</th>#}
+{#                            <th scope="col">Ensembl Gene ID</th>#}
+{#                            <th scope="col">Gene Name</th>#}
+{#                            <th scope="col">Disease</th>#}
+{#                            <th scope="col">Disease ID</th>#}
+{#                            <th scope="col">Phenotype</th>#}
+{#                            <th scope="col">Phenotype ID</th>#}
+{#                        </tr>#}
+{#                    </thead>#}
+{#                    <tbody>#}
+{#                        {% for row in final_df.itertuples() %}#}
+{#                            <tr class="bg-warning">#}
+{#                                <td>{{ row.variant }}</td>#}
+{#                                <td>#}
+{#                                    <a href="https://www.ncbi.nlm.nih.gov/snp/{{ row.variation }}" title="dbSNP" target="_blank">{{ row.variation }}</a>#}
+{#                                </td>#}
+{#                                <td>{{ row.chromosome }}</td>#}
+{#                                <td>{{ row.ensembl_gene_id }}</td>#}
+{#                                <td>{{ row.gene_name }}</td>#}
+{#                                <td>{{ row.disease }}</td>#}
+{#                                <td>#}
+{#                                    {% if row.disease_id.startswith("OMIM:") %}#}
+{#                                        {% set disease_num = row.disease_id.strip("OMIM:") %}#}
+{#                                        <a href="https://www.omim.org/entry/{{ disease_num }}" title="OMIM" target="_blank">{{ row.disease_id }}</a>#}
+{#                                    {% elif row.disease_id.startswith("ORPHA:") %}#}
+{#                                        {% set disease_num = row.disease_id.strip("ORPHA:") %}#}
+{#                                        <a href="http://www.orpha.net/ORDO/Orphanet_{{ disease_num }}" title="Orphanet" target="_blank">{{ row.disease_id }}</a>#}
+{#                                    {% else %}#}
+{#                                        {{ row.disease_id }}#}
+{#                                    {% endif %}#}
+{#                                </td>#}
+{#                                <td>{{ row.phenotype_name }}</td>#}
+{#                                <td>#}
+{#                                    {% if row.phenotype_id.startswith("HP:") %}#}
+{#                                        {% set phenotype_num = row.phenotype_id.replace(":", "_") %}#}
+{#                                        <a href="http://purl.obolibrary.org/obo/{{ phenotype_num }}" title="HPO" target="_blank">{{ row.phenotype_id }}</a>#}
+{#                                    {% elif row.phenotype_id.startswith("EFO:") %}#}
+{#                                        {% set phenotype_num = row.phenotype_id.replace(":", "_") %}#}
+{#                                        <a href="http://www.ebi.ac.uk/efo/{{ phenotype_num }}" title="EFO" target="_blank">{{ row.phenotype_id }}</a>#}
+{#                                    {% elif row.phenotype_id.startswith("Orphanet:") %}#}
+{#                                        {% set phenotype_num = row.phenotype_id.replace(":", "_") %}#}
+{#                                        <a href="http://www.orpha.net/ORDO/{{ phenotype_num }}" title="Orphanet" target="_blank">{{ row.phenotype_id }}</a>#}
+{#                                    {% else %}#}
+{#                                        {{ row.phenotype_id }}#}
+{#                                    {% endif %}#}
+{#                                </td>#}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                    </tbody>#}
+{##}
+{#                </table>#}
+{##}
+{#            </div>#}
 
         </div>
         </div>
