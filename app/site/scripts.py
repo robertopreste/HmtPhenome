@@ -272,13 +272,17 @@ def get_diseases_from_variant(chrom, var_start, var_end=None):
     gene_name = get_gene_from_variant(chrom, var_start, var_end)["gene_name"][0]
     diseases = get_diseases_from_gene_name(gene_name, True)
 
-    if var_end is not None:
-        diseases = diseases[(diseases["location"].str.startswith(chrom)) &
-                            (diseases["location"].str.contains(str(var_start))) &
-                            (diseases["location"].str.contains(var_end))]
-    else:
-        diseases = diseases[(diseases["location"].str.startswith(chrom)) &
-                            (diseases["location"].str.contains(str(var_start)))]
+    try:
+        if var_end is not None:
+            diseases = diseases[(diseases["location"].str.startswith(chrom)) &
+                                (diseases["location"].str.contains(str(var_start))) &
+                                (diseases["location"].str.contains(var_end))]
+        else:
+            diseases = diseases[(diseases["location"].str.startswith(chrom)) &
+                                (diseases["location"].str.contains(str(var_start)))]
+    except KeyError:
+        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "location", "variation",
+                                     "disease", "phenotypes"])
 
     return diseases
 
@@ -350,6 +354,7 @@ def get_vars_from_gene_name(gene_name):
 
     res = res[["ensembl_gene_id", "gene_name", "chromosome", "ref_allele", "start_pos", "alt_allele",
                "phenotype"]]
+    res = res[res["phenotype"].notnull()]
 
     return res
 
@@ -385,6 +390,7 @@ def get_vars_from_gene_id(ens_gene_id):
 
     res = res[["ensembl_gene_id", "gene_name", "chromosome", "ref_allele", "start_pos", "alt_allele",
                "phenotype"]]
+    res = res[res["phenotype"].notnull()]
 
     return res
 
