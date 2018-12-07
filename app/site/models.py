@@ -80,9 +80,10 @@ class GeneDiseaseAss(db.Model):
     gene_symbol = db.Column(db.String, nullable=False, index=True)
     umls_disease_id = db.Column(db.String, nullable=False)
     disease_name = db.Column(db.String, nullable=False, index=True)
+    score = db.Column(db.Float, nullable=True, default=None)
 
     def __repr__(self):
-        return """GeneDiseaseAss(id: {self.id}, entrez_gene_id: {self.entrez_gene_id}, gene_symbol: {self.gene_symbol}, umls_disease_id: {self.umls_disease_id}, disease_name: {self.disease_name})""".format(self=self)
+        return """GeneDiseaseAss(id: {self.id}, entrez_gene_id: {self.entrez_gene_id}, gene_symbol: {self.gene_symbol}, umls_disease_id: {self.umls_disease_id}, disease_name: {self.disease_name}, score: {self.score})""".format(self=self)
 
 
 class VarDiseaseAss(db.Model):
@@ -92,9 +93,10 @@ class VarDiseaseAss(db.Model):
     dbsnp_id = db.Column(db.String, nullable=False, index=True)
     umls_disease_id = db.Column(db.String, nullable=False)
     disease_name = db.Column(db.String, nullable=False, index=True)
+    score = db.Column(db.Float, nullable=True, default=None)
 
     def __repr__(self):
-        return """VarDiseaseAss(id: {self.id}, dbsnp_id: {self.dbsnp_id}, umls_disease_id: {self.umls_disease_id}, disease_name: {self.disease_name})""".format(self=self)
+        return """VarDiseaseAss(id: {self.id}, dbsnp_id: {self.dbsnp_id}, umls_disease_id: {self.umls_disease_id}, disease_name: {self.disease_name}, score: {self.score})""".format(self=self)
 
 
 class DiseaseMappings(db.Model):
