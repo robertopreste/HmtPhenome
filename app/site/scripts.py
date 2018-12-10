@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
-from app.site.models import Mitocarta, Phenotypes, Diseases, Omim, Orpha, GeneDiseaseAss
+from app.site.models import Mitocarta, Phenotypes, Diseases, Omim, Orpha, GeneDiseaseAss, VarDiseaseAss
 import pandas as pd
 import numpy as np
 import requests
 # import sys
 from pybiomart import Server
+from fuzzywuzzy import fuzz
+import json
 
 
 def get_genes():
@@ -285,6 +287,45 @@ def get_diseases_from_variant(chrom, var_start, var_end=None):
                                      "disease", "phenotypes"])
 
     return diseases
+
+
+def json_from_variant(disease_df, pheno_df):
+    """
+    Create the final json structure from variant data.
+    :param disease_df: result of get_diseases_from_variant()
+    :param pheno_df: result of get_pheno_from_variant()
+    :return:
+    """
+    df = (disease_df.set_index("disease")
+          .join(pheno_df.set_index("phenotype"))
+          .reset_index())
+    df["variant"] = df["ref_allele"] + df["start_pos"].astype(str) + df["alt_allele"]
+
+    # final_df = pd.DataFrame(columns=["variant", "chromosome", "ensembl_gene_id", "gene_name",
+    #                                  "variation", "disease_id", "disease", "phenotype_id",
+    #                                  "phenotype_name"])
+
+    disgen_disease = VarDiseaseAss.query.filter(VarDiseaseAss.dbsnp_id.in_(df.variation)).all()
+    for idx in df.index:
+        for item in disgen_disease:
+            if fuzz.token_sort_ratio(df.at[idx, "disease"].capitalize(),
+                                     item.disease_name.capitalize()) >= 90:
+                df.at[idx, "disease"] = item.disease_name
+
+    df.drop(["location", "ref_allele", "start_pos", "alt_allele", "phenotype_id"], axis=1,
+            inplace=True)
+    df.rename({"disease": "disease_name", "variation": "dbsnp_id", "phenotypes": "phenotype_ids"},
+              axis=1, inplace=True)
+
+    df_json = df.to_json(orient="records")
+    dfj = json.loads(df_json)
+    for el in dfj:
+        el["phenotype_names"] = []
+        for pheno in el["phenotype_ids"]:
+            el["phenotype_names"].append(pheno_id_to_term(pheno))
+        el["disease_id"] = disease_name_to_id(el["disease_name"])  # TODO: correct this to grep disease id from the db table
+
+    return dfj
 
 
 def final_from_variant(gene_df, pheno_df, disease_df):
@@ -918,6 +959,70 @@ def network_from_variant(final_df):
             edges.append({"from": id_dict[dis], "to": id_dict[pheno]})
 
     return {"nodes": nodes, "edges": edges}
+
+
+def network_from_variant_json(var_json):
+    """
+    Create the required nodes and edges dictionaries to build the network from variant data.
+    :param var_json: output from json_from_variant()
+    :return: dictionary with nodes and edges for network construction
+    """
+    variants = []
+    variants.extend([el["variant"] for el in var_json])
+    variants = set(variants)
+
+    genes = []
+    genes.extend([el["gene_name"] for el in var_json])
+    genes = set(genes)
+
+    diseases = []
+    diseases.extend([el["disease_name"] for el in var_json])
+    diseases = set(diseases)
+
+    phenotypes = []
+    for el in var_json:
+        phenotypes.extend(el["phenotype_names"])
+    phenotypes = set(phenotypes)
+
+    nodes = []
+    edges = []
+    ids = 0
+    id_dict = {}
+    for el in variants:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
+                                                        "border": "#CCAA39"}})
+        id_dict[el] = ids
+    for el in genes:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
+                                                        "border": "#5F826B"}})
+        id_dict[el] = ids
+    for el in diseases:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
+                                                        "border": "#B06A57"}})
+        id_dict[el] = ids
+    for el in phenotypes:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
+                                                        "border": "#7995A3"}})
+        id_dict[el] = ids
+
+    # TODO: remove duplicated entries from the edges list
+
+    for el in var_json:
+        # variant to gene
+        edges.append({"from": id_dict[el["variant"]], "to": id_dict[el["gene_name"]]})
+        # variant to diseases
+        edges.append({"from": id_dict[el["variant"]], "to": id_dict[el["disease_name"]]})
+        for pheno in el["phenotype_names"]:
+            # disease to phenotypes
+            edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[pheno]})
+
+    return {"nodes": nodes, "edges": edges}
+
+
 
 
 

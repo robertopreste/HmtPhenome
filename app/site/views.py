@@ -3,10 +3,11 @@
 # Created by Roberto Preste
 # import requests
 # import json
-from quart import Blueprint, render_template, request, redirect, url_for
+import pprint
+from quart import Blueprint, render_template, request, redirect, url_for, jsonify
 from app.static import dbdata
 from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, QueryDiseasesForm
-from app.site.scripts import get_gene_from_variant, get_pheno_from_variant, get_diseases_from_variant, get_vars_from_gene_name, get_diseases_from_gene_name, get_genes_from_phenotype, get_vars_from_phenotype, get_diseases_from_phenotype, get_genes_from_disease_name, disease_id_to_name, get_vars_from_disease_name, final_from_variant, final_from_gene_name, network_from_variant, network_from_gene_name, network_from_gene
+from app.site.scripts import get_gene_from_variant, get_pheno_from_variant, get_diseases_from_variant, get_vars_from_gene_name, get_diseases_from_gene_name, get_genes_from_phenotype, get_vars_from_phenotype, get_diseases_from_phenotype, get_genes_from_disease_name, disease_id_to_name, get_vars_from_disease_name, final_from_variant, final_from_gene_name, network_from_variant, network_from_gene_name, network_from_gene, json_from_variant, network_from_variant_json
 # from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g, jsonify, send_file
 # from werkzeug.urls import url_parse
 
@@ -86,12 +87,15 @@ async def results():
         else:
             var_end = var_start = variant_input
 
+        # TODO: genes_df and pheno_df are useless, everything is found through disease_df
         genes_df = get_gene_from_variant(variant_chr, var_start, var_end)
         pheno_df = get_pheno_from_variant(variant_chr, var_start, var_end)
         disease_df = get_diseases_from_variant(variant_chr, var_start, var_end)
 
-        final_df = final_from_variant(genes_df, pheno_df, disease_df)
-        networks = network_from_variant(final_df)
+        # final_df = final_from_variant(genes_df, pheno_df, disease_df)
+        # networks = network_from_variant(final_df)
+        json_data = json_from_variant(disease_df, pheno_df)
+        networks = network_from_variant_json(json_data)
 
     elif gene_submit == "True":
         vars_df = get_vars_from_gene_name(gene_input)
@@ -120,6 +124,7 @@ async def results():
 
     return await render_template("results.html",
                                  title="Results", # final_df=final_df,
+                                 json_data=pprint.pformat(json_data),
                                  nodes=networks["nodes"], edges=networks["edges"])
 
 
