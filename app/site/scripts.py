@@ -334,13 +334,16 @@ def get_diseases_from_variant(chrom, var_start, var_end=None):
     return diseases
 
 
-def json_from_variant(disease_df, pheno_df):
+def json_from_variant(variant_chr, variant_start, variant_end):
     """
     Create the final json structure from variant data.
     :param disease_df: result of get_diseases_from_variant()
     :param pheno_df: result of get_pheno_from_variant()
     :return:
     """
+    disease_df = get_diseases_from_variant(variant_chr, variant_start, variant_end)
+    pheno_df = get_pheno_from_variant(variant_chr, variant_start, variant_end)
+
     df = (disease_df.set_index("disease")
           .join(pheno_df.set_index("phenotype"))
           .reset_index())
@@ -358,15 +361,17 @@ def json_from_variant(disease_df, pheno_df):
     df.rename({"disease": "disease_name", "variation": "dbsnp_id", "phenotypes": "phenotype_ids"},
               axis=1, inplace=True)
 
-    df_json = df.to_json(orient="records")
-    dfj = json.loads(df_json)
-    for el in dfj:
+    df_json = json.loads(df.to_json(orient="records"))
+    for el in df_json:
         el["phenotype_names"] = []
         for pheno in el["phenotype_ids"]:
             el["phenotype_names"].append(pheno_id_to_term(pheno))
         el["disease_id"] = disease_name_to_id(el["disease_name"])  # TODO: correct this to grep disease id from the db table
 
-    return dfj
+    final_json = {}
+    final_json["variants"] = df_json
+
+    return final_json
 
 
 def final_from_variant(gene_df, pheno_df, disease_df):
@@ -457,6 +462,7 @@ def network_from_variant_json(var_json):
     :param var_json: output from json_from_variant()
     :return: dictionary with nodes and edges for network construction
     """
+    var_json = var_json["variants"]
     variants = []
     variants.extend([el["variant"] for el in var_json])
     variants = set(variants)
@@ -536,10 +542,10 @@ def get_vars_from_gene_name(gene_name):
     dataset = server.marts["ENSEMBL_MART_SNP"].datasets["hsapiens_snp"]
 
     res = dataset.query(attributes=["chr_name", "chrom_start", "consequence_allele_string",
-                                    "phenotype_description"],
+                                    "phenotype_description", "refsnp_id"],
                         filters={"ensembl_gene": ens_gene_id})
 
-    res.rename({"Chromosome/scaffold name": "chromosome",
+    res.rename({"Chromosome/scaffold name": "chromosome", "Variant name": "dbsnp_id",
                 "Chromosome/scaffold position start (bp)": "start_pos",
                 "Consequence specific allele": "ref/alt allele",
                 "Phenotype description": "phenotype"}, axis=1, inplace=True)
@@ -550,8 +556,10 @@ def get_vars_from_gene_name(gene_name):
     res["ensembl_gene_id"] = ens_gene_id
     res["variant"] = res["ref_allele"] + res["start_pos"].astype(str) + res["alt_allele"]
 
+    # TODO: add also variants found through the VarDiseaseAss table (then retrieve variant from dbsnp id)
+
     res = res[["ensembl_gene_id", "gene_name", "chromosome", "ref_allele", "start_pos", "alt_allele",
-               "variant", "phenotype"]]
+               "variant", "dbsnp_id", "phenotype"]]
     res = res[res["phenotype"].notnull()]
 
     return res
@@ -726,6 +734,54 @@ def final_from_gene_name(vars_df, disease_df, with_vars=False):
             final_df = final_df.append(new_row, ignore_index=True)
 
     return final_df
+
+
+def json_from_gene(gene_input):
+    """
+    Create the final json structure from gene data.
+    :param gene_input: gene name to use for the queries
+    :return:
+    """
+    vars_df = get_vars_from_gene_name(gene_input)
+    disease_df = get_diseases_from_gene_name(gene_input, True)
+    if disease_df.shape[0] == 0:
+        disease_df = get_diseases_from_gene_name(gene_input)
+
+    var_to_disease = VarDiseaseAss.query.filter(VarDiseaseAss.dbsnp_id.in_(vars_df.dbsnp_id)).all()
+    for idx in vars_df.index:
+        for item in var_to_disease:
+            if fuzz.token_sort_ratio(vars_df.at[idx, "phenotype"].capitalize(),
+                                     item.disease_name.capitalize()) >= 90:
+                vars_df.at[idx, "phenotype"] = item.disease_name
+
+    vars_df.drop(["ensembl_gene_id", "gene_name", "chromosome", "ref_allele", "start_pos",
+                  "alt_allele"], axis=1, inplace=True)
+    vars_json = json.loads(vars_df.to_json(orient="records"))
+
+    disease_df.drop(["ensembl_gene_id", "gene_name", "location"], axis=1, inplace=True)
+    disease_df.rename({"disease": "disease_name", "phenotypes": "phenotype_ids"},
+                      axis=1, inplace=True)
+
+    gene_to_disease = GeneDiseaseAss.query.filter(GeneDiseaseAss.gene_symbol == gene_input).all()
+    # TODO: it is possible to add more gene-related diseases from this table (but need to find phenotypes)
+    for idx in disease_df.index:
+        for item in gene_to_disease:
+            if fuzz.token_sort_ratio(disease_df.at[idx, "disease_name"].capitalize(),
+                                     item.disease_name.capitalize()) >= 90:
+                disease_df.at[idx, "disease_name"] = item.disease_name
+
+    disease_json = json.loads(disease_df.to_json(orient="records"))
+    for el in disease_json:
+        el["phenotype_names"] = []
+        for pheno in el["phenotype_ids"]:
+            el["phenotype_names"].append(pheno_id_to_term(pheno))
+        el["disease_id"] = disease_name_to_id(el["disease_name"])  # TODO: correct this to grep from db table
+
+    final_json = {}
+    final_json["variants"] = vars_json
+    final_json["diseases"] = disease_json
+
+    return final_json
 
 
 def network_from_gene(gene, vars_df, diseases_df):
