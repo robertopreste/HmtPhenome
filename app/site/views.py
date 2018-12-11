@@ -87,7 +87,7 @@ async def results():
         else:
             var_end = var_start = variant_input
 
-        # TODO: genes_df and pheno_df are useless, everything is found through disease_df
+        # TODO: genes_df is useless, everything is found through disease_df and pheno_df
         genes_df = get_gene_from_variant(variant_chr, var_start, var_end)
         pheno_df = get_pheno_from_variant(variant_chr, var_start, var_end)
         disease_df = get_diseases_from_variant(variant_chr, var_start, var_end)

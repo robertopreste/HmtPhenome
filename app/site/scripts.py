@@ -188,6 +188,51 @@ def pheno_id_to_term(pheno_id):
     return pheno_name
 
 
+def disease_id_to_name(disease_id):
+    """
+    Convert a given disease ID into its common name.
+    :param disease_id: [str] query disease ID
+    :return: [str] related disease name
+    """
+    try:
+        q = Diseases.query.filter(Diseases.disease_id == disease_id).first()
+        return q.disease_name
+    except AttributeError:
+        try:
+            if disease_id.startswith("OMIM:"):
+                q = Omim.query.filter(Omim.mim_number == int(disease_id.strip("OMIM:"))).first()
+                return q.mim_name
+            elif disease_id.startswith("ORPHA:"):
+                q = Orpha.query.filter(Orpha.orpha_num == int(disease_id.strip("ORPHA:"))).first()
+                return q.orpha_name
+        except AttributeError:
+            return ""
+
+
+def disease_name_to_id(disease_name):
+    """
+    Convert a given disease name into the related Omim or Orphanet ID.
+    :param disease_name: [str] query disease name
+    :return: [str] related disease ID from OMIM or ORPHANET
+    """
+    try:
+        q = Diseases.query.filter(Diseases.disease_name == disease_name).first()
+        return q.disease_id
+    except AttributeError:
+        try:
+            q = Omim.query.filter(Omim.mim_name == disease_name).first()
+            return "OMIM:{}".format(q.mim_number)  # TODO: check also mim symbol
+        except AttributeError:
+            try:
+                q = Orpha.query.filter(Orpha.orpha_name == disease_name).first()
+                return "ORPHA:{}".format(q.orpha_num)
+            except AttributeError:
+                return ""
+
+
+# FROM VARIANT POSITION #
+
+
 def get_gene_from_variant(chrom, var_start, var_end=None):
     """
     Retrieve the gene to which the provided variant belongs, using Biomart.
@@ -301,10 +346,6 @@ def json_from_variant(disease_df, pheno_df):
           .reset_index())
     df["variant"] = df["ref_allele"] + df["start_pos"].astype(str) + df["alt_allele"]
 
-    # final_df = pd.DataFrame(columns=["variant", "chromosome", "ensembl_gene_id", "gene_name",
-    #                                  "variation", "disease_id", "disease", "phenotype_id",
-    #                                  "phenotype_name"])
-
     disgen_disease = VarDiseaseAss.query.filter(VarDiseaseAss.dbsnp_id.in_(df.variation)).all()
     for idx in df.index:
         for item in disgen_disease:
@@ -360,12 +401,127 @@ def final_from_variant(gene_df, pheno_df, disease_df):
     return final_df
 
 
+def network_from_variant(final_df):
+    """
+    Create nodes and edges lists for the creation of the network starting from variants.
+    :param final_df: final dataframe returned by final_from_variant()
+    :return: dictionary with a nodes list and an edges list
+    """
+    nodes = []
+    edges = []
+    ids = 0
+    id_dict = {}
+    variants = final_df["variant"].unique()
+    for el in variants:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
+                                                        "border": "#CCAA39"}})
+        id_dict[el] = ids
+    genes = final_df["gene_name"].unique()
+    for el in genes:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
+                                                        "border": "#5F826B"}})
+        id_dict[el] = ids
+    diseases = final_df["disease"].unique()
+    for el in diseases:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
+                                                        "border": "#B06A57"}})
+        id_dict[el] = ids
+    phenotypes = final_df["phenotype_name"].unique()
+    for el in phenotypes:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
+                                                        "border": "#7995A3"}})
+        id_dict[el] = ids
+
+    for var in variants:
+        gene_names = final_df[final_df["variant"] == var].gene_name.unique()
+        dis_names = final_df[final_df["variant"] == var].disease.unique()
+        for gene in gene_names:
+            edges.append({"from": id_dict[var], "to": id_dict[gene]})
+        for dis in dis_names:
+            edges.append({"from": id_dict[var], "to": id_dict[dis]})
+    for dis in diseases:
+        pheno_names = final_df[final_df["disease"] == dis].phenotype_name.unique()
+        for pheno in pheno_names:
+            edges.append({"from": id_dict[dis], "to": id_dict[pheno]})
+
+    return {"nodes": nodes, "edges": edges}
+
+
+def network_from_variant_json(var_json):
+    """
+    Create the required nodes and edges dictionaries to build the network from variant data.
+    :param var_json: output from json_from_variant()
+    :return: dictionary with nodes and edges for network construction
+    """
+    variants = []
+    variants.extend([el["variant"] for el in var_json])
+    variants = set(variants)
+
+    genes = []
+    genes.extend([el["gene_name"] for el in var_json])
+    genes = set(genes)
+
+    diseases = []
+    diseases.extend([el["disease_name"] for el in var_json])
+    diseases = set(diseases)
+
+    phenotypes = []
+    for el in var_json:
+        phenotypes.extend(el["phenotype_names"])
+    phenotypes = set(phenotypes)
+
+    nodes = []
+    edges = []
+    ids = 0
+    id_dict = {}
+    for el in variants:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
+                                                        "border": "#CCAA39"}})
+        id_dict[el] = ids
+    for el in genes:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
+                                                        "border": "#5F826B"}})
+        id_dict[el] = ids
+    for el in diseases:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
+                                                        "border": "#B06A57"}})
+        id_dict[el] = ids
+    for el in phenotypes:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
+                                                        "border": "#7995A3"}})
+        id_dict[el] = ids
+
+    # TODO: remove duplicated entries from the edges list
+
+    for el in var_json:
+        # variant to gene
+        edges.append({"from": id_dict[el["variant"]], "to": id_dict[el["gene_name"]]})
+        # variant to diseases
+        edges.append({"from": id_dict[el["variant"]], "to": id_dict[el["disease_name"]]})
+        for pheno in el["phenotype_names"]:
+            # disease to phenotypes
+            edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[pheno]})
+
+    return {"nodes": nodes, "edges": edges}
+
+
+# FROM GENE #
+
+
 def get_vars_from_gene_name(gene_name):
     """
     Retrieve all variants associated with a specific gene, using Biomart.
     :param gene_name: [str] name of the query gene
     :return: pd.DataFrame with columns ["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
-    "start_pos", "alt_allele", "phenotype"]
+    "start_pos", "alt_allele", "variant", "phenotype"]
     """
     # gene_name = gene_name.upper().lstrip("MT-")
     if gene_name.startswith("MT-"):
@@ -392,9 +548,10 @@ def get_vars_from_gene_name(gene_name):
     res = res[res["alt_allele"] != "HGMD_MUTATION"]
     res["gene_name"] = gene_name
     res["ensembl_gene_id"] = ens_gene_id
+    res["variant"] = res["ref_allele"] + res["start_pos"].astype(str) + res["alt_allele"]
 
     res = res[["ensembl_gene_id", "gene_name", "chromosome", "ref_allele", "start_pos", "alt_allele",
-               "phenotype"]]
+               "variant", "phenotype"]]
     res = res[res["phenotype"].notnull()]
 
     return res
@@ -571,6 +728,120 @@ def final_from_gene_name(vars_df, disease_df, with_vars=False):
     return final_df
 
 
+def network_from_gene(gene, vars_df, diseases_df):
+    nodes = []
+    edges = []
+    ids = 1
+    id_dict = {}
+    # gene node
+    nodes.append({"id": ids, "label": gene, "color": {"background": "#739E82",
+                                                      "border": "#5F826B"}})
+    id_dict[gene] = ids
+    # disease nodes
+    ass_diseases = GeneDiseaseAss.query.filter(GeneDiseaseAss.gene_symbol == gene,
+                                               GeneDiseaseAss.score > 0.3).all()
+    diseases = diseases_df.disease.unique().tolist()
+    diseases.extend([el.disease_name for el in ass_diseases])
+    for el in set(diseases):
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
+                                                        "border": "#B06A57"}})
+        id_dict[el] = ids
+    # variant nodes
+    vars_df["variant"] = vars_df["ref_allele"] + vars_df["start_pos"].astype(str) + vars_df["alt_allele"]
+    vars_df.drop_duplicates(subset=["variant", "phenotype"], inplace=True)
+    for el in set(vars_df.variant):
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
+                                                        "border": "#CCAA39"}})
+        id_dict[el] = ids
+    # phenotype nodes
+    phenos = []
+    phenos_ids = []
+    for el in diseases_df.phenotypes:
+        phenos_ids.extend(el)
+    for el in phenos_ids:
+        phenos.append(pheno_id_to_term(el))
+    phenos.extend(vars_df.phenotype.unique().tolist())
+    for el in set(phenos):
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
+                                                        "border": "#7995A3"}})
+        id_dict[el] = ids
+
+    for el in vars_df.itertuples():
+        # gene to variant edge
+        edges.append({"from": id_dict[gene], "to": id_dict[el.variant]})
+        # variant to phenotype edge
+        edges.append({"from": id_dict[el.variant], "to": id_dict[el.phenotype]})
+    for el in diseases_df.itertuples():
+        # gene to disease edge
+        edges.append({"from": id_dict[gene], "to": id_dict[el.disease]})
+        # disease to phenotype edge
+        for ph in el.phenotypes:
+            edges.append({"from": id_dict[el.disease], "to": id_dict[pheno_id_to_term(ph)]})
+        # edges.append({"from": id_dict[el.disease], "to": id_dict[el.]}) # TODO
+
+    return {"nodes": nodes, "edges": edges}
+
+
+def network_from_gene_name(final_df):
+    """
+    Create nodes and edges lists for the creation of the network, starting from a gene name.
+    :param final_df: final dataframe returned by final_from_gene_name()
+    :return: dictionary with a nodes list and an edges list
+    """
+    nodes = []
+    edges = []
+    ids = 0
+    id_dict = {}
+    genes = final_df["gene_name"].unique()
+    for el in genes:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
+                                                        "border": "#5F826B"}})
+        id_dict[el] = ids
+    variants = final_df["variant"].unique()
+    for el in variants:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
+                                                        "border": "#CCAA39"}})
+        id_dict[el] = ids
+    diseases = final_df["disease"].unique()
+    for el in diseases:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
+                                                        "border": "#B06A57"}})
+        id_dict[el] = ids
+    phenotypes = final_df["phenotype_name"].unique()
+    for el in phenotypes:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
+                                                        "border": "#7995A3"}})
+        id_dict[el] = ids
+
+    gene = genes[0]
+    var_list = final_df[final_df["gene_name"] == gene].variant.unique()
+    for dis in diseases:
+        edges.append({"from": id_dict[gene], "to": id_dict[dis]})
+        pheno_names = final_df[final_df["disease"] == dis].phenotype_name.unique()
+        for pheno in pheno_names:
+            edges.append({"from": id_dict[dis], "to": id_dict[pheno]})
+    for var in var_list:
+        edges.append({"from": id_dict[gene], "to": id_dict[var]})
+        dis_names = final_df[final_df["variant"] == var].disease.unique()
+        for dis in dis_names:
+            edges.append({"from": id_dict[var], "to": id_dict[dis]})
+            pheno_names = final_df[final_df["disease"] == dis].phenotype_name.unique()
+            for pheno in pheno_names:
+                edges.append({"from": id_dict[dis], "to": id_dict[pheno]})
+
+    return {"nodes": nodes, "edges": edges}
+
+
+# FROM PHENOTYPE #
+
+
 def get_genes_from_phenotype(phenotype):
     """
     Retrieve genes related to a phenotype, using Ensembl.
@@ -704,46 +975,7 @@ def final_from_phenotype(vars_df, disease_df):
     return final_df
 
 
-def disease_id_to_name(disease_id):
-    """
-    Convert a given disease ID into its common name.
-    :param disease_id: [str] query disease ID
-    :return: [str] related disease name
-    """
-    try:
-        q = Diseases.query.filter(Diseases.disease_id == disease_id).first()
-        return q.disease_name
-    except AttributeError:
-        try:
-            if disease_id.startswith("OMIM:"):
-                q = Omim.query.filter(Omim.mim_number == int(disease_id.strip("OMIM:"))).first()
-                return q.mim_name
-            elif disease_id.startswith("ORPHA:"):
-                q = Orpha.query.filter(Orpha.orpha_num == int(disease_id.strip("ORPHA:"))).first()
-                return q.orpha_name
-        except AttributeError:
-            return ""
-
-
-def disease_name_to_id(disease_name):
-    """
-    Convert a given disease name into the related Omim or Orphanet ID.
-    :param disease_name: [str] query disease name
-    :return: [str] related disease ID from OMIM or ORPHANET
-    """
-    try:
-        q = Diseases.query.filter(Diseases.disease_name == disease_name).first()
-        return q.disease_id
-    except AttributeError:
-        try:
-            q = Omim.query.filter(Omim.mim_name == disease_name).first()
-            return "OMIM:{}".format(q.mim_number)  # TODO: check also mim symbol
-        except AttributeError:
-            try:
-                q = Orpha.query.filter(Orpha.orpha_name == disease_name).first()
-                return "ORPHA:{}".format(q.orpha_num)
-            except AttributeError:
-                return ""
+# FROM DISEASE #
 
 
 def get_genes_from_disease_name(disease_name):
@@ -798,229 +1030,6 @@ def get_vars_from_disease_name(disease_name):
     rel_vars.rename({"phenotype": "disease"}, axis=1, inplace=True)
 
     return rel_vars
-
-
-def network_from_gene(gene, vars_df, diseases_df):
-    nodes = []
-    edges = []
-    ids = 1
-    id_dict = {}
-    # gene node
-    nodes.append({"id": ids, "label": gene, "color": {"background": "#739E82",
-                                                      "border": "#5F826B"}})
-    id_dict[gene] = ids
-    # disease nodes
-    ass_diseases = GeneDiseaseAss.query.filter(GeneDiseaseAss.gene_symbol == gene,
-                                               GeneDiseaseAss.score > 0.3).all()
-    diseases = diseases_df.disease.unique().tolist()
-    diseases.extend([el.disease_name for el in ass_diseases])
-    for el in set(diseases):
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
-                                                        "border": "#B06A57"}})
-        id_dict[el] = ids
-    # variant nodes
-    vars_df["variant"] = vars_df["ref_allele"] + vars_df["start_pos"].astype(str) + vars_df["alt_allele"]
-    vars_df.drop_duplicates(subset=["variant", "phenotype"], inplace=True)
-    for el in set(vars_df.variant):
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
-                                                        "border": "#CCAA39"}})
-        id_dict[el] = ids
-    # phenotype nodes
-    phenos = []
-    phenos_ids = []
-    for el in diseases_df.phenotypes:
-        phenos_ids.extend(el)
-    for el in phenos_ids:
-        phenos.append(pheno_id_to_term(el))
-    phenos.extend(vars_df.phenotype.unique().tolist())
-    for el in set(phenos):
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
-                                                        "border": "#7995A3"}})
-        id_dict[el] = ids
-
-    for el in vars_df.itertuples():
-        # gene to variant edge
-        edges.append({"from": id_dict[gene], "to": id_dict[el.variant]})
-        # variant to phenotype edge
-        edges.append({"from": id_dict[el.variant], "to": id_dict[el.phenotype]})
-    for el in diseases_df.itertuples():
-        # gene to disease edge
-        edges.append({"from": id_dict[gene], "to": id_dict[el.disease]})
-        # disease to phenotype edge
-        for ph in el.phenotypes:
-            edges.append({"from": id_dict[el.disease], "to": id_dict[pheno_id_to_term(ph)]})
-        # edges.append({"from": id_dict[el.disease], "to": id_dict[el.]}) # TODO
-
-    return {"nodes": nodes, "edges": edges}
-
-
-def network_from_gene_name(final_df):
-    """
-    Create nodes and edges lists for the creation of the network, starting from a gene name.
-    :param final_df: final dataframe returned by final_from_gene_name()
-    :return: dictionary with a nodes list and an edges list
-    """
-    nodes = []
-    edges = []
-    ids = 0
-    id_dict = {}
-    genes = final_df["gene_name"].unique()
-    for el in genes:
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
-                                                        "border": "#5F826B"}})
-        id_dict[el] = ids
-    variants = final_df["variant"].unique()
-    for el in variants:
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
-                                                        "border": "#CCAA39"}})
-        id_dict[el] = ids
-    diseases = final_df["disease"].unique()
-    for el in diseases:
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
-                                                        "border": "#B06A57"}})
-        id_dict[el] = ids
-    phenotypes = final_df["phenotype_name"].unique()
-    for el in phenotypes:
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
-                                                        "border": "#7995A3"}})
-        id_dict[el] = ids
-
-    gene = genes[0]
-    var_list = final_df[final_df["gene_name"] == gene].variant.unique()
-    for dis in diseases:
-        edges.append({"from": id_dict[gene], "to": id_dict[dis]})
-        pheno_names = final_df[final_df["disease"] == dis].phenotype_name.unique()
-        for pheno in pheno_names:
-            edges.append({"from": id_dict[dis], "to": id_dict[pheno]})
-    for var in var_list:
-        edges.append({"from": id_dict[gene], "to": id_dict[var]})
-        dis_names = final_df[final_df["variant"] == var].disease.unique()
-        for dis in dis_names:
-            edges.append({"from": id_dict[var], "to": id_dict[dis]})
-            pheno_names = final_df[final_df["disease"] == dis].phenotype_name.unique()
-            for pheno in pheno_names:
-                edges.append({"from": id_dict[dis], "to": id_dict[pheno]})
-
-    return {"nodes": nodes, "edges": edges}
-
-
-def network_from_variant(final_df):
-    """
-    Create nodes and edges lists for the creation of the network starting from variants.
-    :param final_df: final dataframe returned by final_from_variant()
-    :return: dictionary with a nodes list and an edges list
-    """
-    nodes = []
-    edges = []
-    ids = 0
-    id_dict = {}
-    variants = final_df["variant"].unique()
-    for el in variants:
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
-                                                        "border": "#CCAA39"}})
-        id_dict[el] = ids
-    genes = final_df["gene_name"].unique()
-    for el in genes:
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
-                                                        "border": "#5F826B"}})
-        id_dict[el] = ids
-    diseases = final_df["disease"].unique()
-    for el in diseases:
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
-                                                        "border": "#B06A57"}})
-        id_dict[el] = ids
-    phenotypes = final_df["phenotype_name"].unique()
-    for el in phenotypes:
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
-                                                        "border": "#7995A3"}})
-        id_dict[el] = ids
-
-    for var in variants:
-        gene_names = final_df[final_df["variant"] == var].gene_name.unique()
-        dis_names = final_df[final_df["variant"] == var].disease.unique()
-        for gene in gene_names:
-            edges.append({"from": id_dict[var], "to": id_dict[gene]})
-        for dis in dis_names:
-            edges.append({"from": id_dict[var], "to": id_dict[dis]})
-    for dis in diseases:
-        pheno_names = final_df[final_df["disease"] == dis].phenotype_name.unique()
-        for pheno in pheno_names:
-            edges.append({"from": id_dict[dis], "to": id_dict[pheno]})
-
-    return {"nodes": nodes, "edges": edges}
-
-
-def network_from_variant_json(var_json):
-    """
-    Create the required nodes and edges dictionaries to build the network from variant data.
-    :param var_json: output from json_from_variant()
-    :return: dictionary with nodes and edges for network construction
-    """
-    variants = []
-    variants.extend([el["variant"] for el in var_json])
-    variants = set(variants)
-
-    genes = []
-    genes.extend([el["gene_name"] for el in var_json])
-    genes = set(genes)
-
-    diseases = []
-    diseases.extend([el["disease_name"] for el in var_json])
-    diseases = set(diseases)
-
-    phenotypes = []
-    for el in var_json:
-        phenotypes.extend(el["phenotype_names"])
-    phenotypes = set(phenotypes)
-
-    nodes = []
-    edges = []
-    ids = 0
-    id_dict = {}
-    for el in variants:
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
-                                                        "border": "#CCAA39"}})
-        id_dict[el] = ids
-    for el in genes:
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
-                                                        "border": "#5F826B"}})
-        id_dict[el] = ids
-    for el in diseases:
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
-                                                        "border": "#B06A57"}})
-        id_dict[el] = ids
-    for el in phenotypes:
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
-                                                        "border": "#7995A3"}})
-        id_dict[el] = ids
-
-    # TODO: remove duplicated entries from the edges list
-
-    for el in var_json:
-        # variant to gene
-        edges.append({"from": id_dict[el["variant"]], "to": id_dict[el["gene_name"]]})
-        # variant to diseases
-        edges.append({"from": id_dict[el["variant"]], "to": id_dict[el["disease_name"]]})
-        for pheno in el["phenotype_names"]:
-            # disease to phenotypes
-            edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[pheno]})
-
-    return {"nodes": nodes, "edges": edges}
 
 
 
