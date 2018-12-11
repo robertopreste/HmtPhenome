@@ -456,13 +456,13 @@ def network_from_variant(final_df):
     return {"nodes": nodes, "edges": edges}
 
 
-def network_from_variant_json(var_json):
+def network_from_variant_json(final_json):
     """
     Create the required nodes and edges dictionaries to build the network from variant data.
-    :param var_json: output from json_from_variant()
+    :param final_json: output from json_from_variant()
     :return: dictionary with nodes and edges for network construction
     """
-    var_json = var_json["variants"]
+    var_json = final_json["variants"]
     variants = []
     variants.extend([el["variant"] for el in var_json])
     variants = set(variants)
@@ -754,11 +754,12 @@ def json_from_gene(gene_input):
                                      item.disease_name.capitalize()) >= 90:
                 vars_df.at[idx, "phenotype"] = item.disease_name
 
-    vars_df.drop(["ensembl_gene_id", "gene_name", "chromosome", "ref_allele", "start_pos",
+    vars_df.drop(["ensembl_gene_id", "chromosome", "ref_allele", "start_pos",
                   "alt_allele"], axis=1, inplace=True)
+    vars_df.rename({"phenotype": "disease_name"}, axis=1, inplace=True)
     vars_json = json.loads(vars_df.to_json(orient="records"))
 
-    disease_df.drop(["ensembl_gene_id", "gene_name", "location"], axis=1, inplace=True)
+    disease_df.drop(["ensembl_gene_id", "location"], axis=1, inplace=True)
     disease_df.rename({"disease": "disease_name", "phenotypes": "phenotype_ids"},
                       axis=1, inplace=True)
 
@@ -782,6 +783,81 @@ def json_from_gene(gene_input):
     final_json["diseases"] = disease_json
 
     return final_json
+
+
+def network_from_gene_json(final_json):
+    """
+    Create the required nodes and edges dictionaries to build the network from gene data.
+    :param final_json: output from json_from_gene()
+    :return: dictionary with nodes and edges for network construction
+    """
+    var_json = final_json["variants"]
+    dis_json = final_json["diseases"]
+
+    v_variants = []
+    v_variants.extend([el["variant"] for el in var_json])
+    v_variants = set(v_variants)
+
+    genes = []
+    genes.extend([el["gene_name"] for el in var_json])
+    genes = set(genes)
+
+    v_diseases = []
+    v_diseases.extend([el["disease_name"] for el in var_json])
+    v_diseases = set(v_diseases)
+
+    d_diseases = []
+    d_diseases.extend([el["disease_name"] for el in dis_json])
+    d_diseases = set(d_diseases)
+
+    d_phenotypes = []
+    for el in dis_json:
+        d_phenotypes.extend(el["phenotype_names"])
+    d_phenotypes = set(d_phenotypes)
+
+    nodes = []
+    edges = []
+    ids = 0
+    id_dict = {}
+    for el in genes:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
+                                                        "border": "#5F826B"}})
+        id_dict[el] = ids
+    for el in v_variants:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
+                                                        "border": "#CCAA39"}})
+        id_dict[el] = ids
+    for el in v_diseases:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
+                                                        "border": "#B06A57"}})
+        id_dict[el] = ids
+    for el in d_diseases:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
+                                                        "border": "#B06A57"}})
+        id_dict[el] = ids
+    for el in d_phenotypes:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
+                                                        "border": "#7995A3"}})
+        id_dict[el] = ids
+
+    for el in var_json:
+        # gene to variants
+        edges.append({"from": id_dict[el["gene_name"]], "to": id_dict[el["variant"]]})
+        # variant to diseases
+        edges.append({"from": id_dict[el["variant"]], "to": id_dict[el["disease_name"]]})
+    for el in dis_json:
+        # gene to diseases
+        edges.append({"from": id_dict[el["gene_name"]], "to": id_dict[el["disease_name"]]})
+        # disease to phenotypes
+        for pheno in el["phenotype_names"]:
+            edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[pheno]})
+
+    return {"nodes": nodes, "edges": edges}
 
 
 def network_from_gene(gene, vars_df, diseases_df):
