@@ -66,8 +66,8 @@ class Omim(db.Model):
         prefix: {self.prefix})""".format(self=self)
 
 
-class Orpha(db.Model):
-    __tablename__ = "Orpha"
+class Orphanet(db.Model):
+    __tablename__ = "Orphanet"
 
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
     orpha_num = db.Column(db.Integer, nullable=False, index=True)

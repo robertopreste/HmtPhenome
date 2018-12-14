@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
-from app.site.models import Mitocarta, Phenotypes, Diseases, Omim, Orpha, GeneDiseaseAss, VarDiseaseAss
+from app.site.models import Mitocarta, Phenotypes, Diseases, Omim, Orphanet, GeneDiseaseAss, VarDiseaseAss
 import pandas as pd
 import numpy as np
 import requests
