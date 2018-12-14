@@ -20,7 +20,8 @@ class Diseases(db.Model):
     disease_name = db.Column(db.String, index=True, unique=True, nullable=False)
 
     def __repr__(self):
-        return """Diseases(id: {self.id}, disease_id: {self.disease_id}, disease_name: {self.disease_name})""".format(self=self)
+        return """Diseases(id: {self.id}, disease_id: {self.disease_id}, 
+        disease_name: {self.disease_name})""".format(self=self)
 
 
 class Mitocarta(db.Model):
@@ -35,7 +36,9 @@ class Mitocarta(db.Model):
     hg_stop = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return """Genes(id: {self.id}, ensembl_id: {self.ensembl_id}, gene_symbol: {self.gene_symbol}, description: {self.description}, hg_chr: {self.hg_chr}, hg_start: {self.hg_start}, hg_stop: {self.hg_stop})""".format(self=self)
+        return """Genes(id: {self.id}, ensembl_id: {self.ensembl_id}, 
+        gene_symbol: {self.gene_symbol}, description: {self.description}, hg_chr: {self.hg_chr}, 
+        hg_start: {self.hg_start}, hg_stop: {self.hg_stop})""".format(self=self)
 
 
 class Phenotypes(db.Model):
@@ -46,7 +49,8 @@ class Phenotypes(db.Model):
     hpo_term_name = db.Column(db.String, index=True, unique=True, nullable=False)
 
     def __repr__(self):
-        return """Phenotypes(id: {self.id}, hpo_id: {self.hpo_id}, hpo_term_name: {self.hpo_term_name})""".format(self=self)
+        return """Phenotypes(id: {self.id}, hpo_id: {self.hpo_id}, 
+        hpo_term_name: {self.hpo_term_name})""".format(self=self)
 
 
 class Omim(db.Model):
@@ -58,7 +62,8 @@ class Omim(db.Model):
     prefix = db.Column(db.String, nullable=True, default=None)
 
     def __repr__(self):
-        return """Omim(id: {self.id}, mim_number: {self.mim_number}, mim_name: {self.mim_name}, prefix: {self.prefix})""".format(self=self)
+        return """Omim(id: {self.id}, mim_number: {self.mim_number}, mim_name: {self.mim_name}, 
+        prefix: {self.prefix})""".format(self=self)
 
 
 class Orpha(db.Model):
@@ -69,7 +74,8 @@ class Orpha(db.Model):
     orpha_name = db.Column(db.String, nullable=False, index=True)
 
     def __repr__(self):
-        return """Orpha(id: {self.id}, orpha_num: {self.orpha_num}, orpha_name: {self.orpha_name})""".format(self=self)
+        return """Orpha(id: {self.id}, orpha_num: {self.orpha_num}, 
+        orpha_name: {self.orpha_name})""".format(self=self)
 
 
 class GeneDiseaseAss(db.Model):
@@ -83,7 +89,9 @@ class GeneDiseaseAss(db.Model):
     score = db.Column(db.Float, nullable=True, default=None)
 
     def __repr__(self):
-        return """GeneDiseaseAss(id: {self.id}, entrez_gene_id: {self.entrez_gene_id}, gene_symbol: {self.gene_symbol}, umls_disease_id: {self.umls_disease_id}, disease_name: {self.disease_name}, score: {self.score})""".format(self=self)
+        return """GeneDiseaseAss(id: {self.id}, entrez_gene_id: {self.entrez_gene_id}, 
+        gene_symbol: {self.gene_symbol}, umls_disease_id: {self.umls_disease_id}, 
+        disease_name: {self.disease_name}, score: {self.score})""".format(self=self)
 
 
 class VarDiseaseAss(db.Model):
@@ -96,7 +104,9 @@ class VarDiseaseAss(db.Model):
     score = db.Column(db.Float, nullable=True, default=None)
 
     def __repr__(self):
-        return """VarDiseaseAss(id: {self.id}, dbsnp_id: {self.dbsnp_id}, umls_disease_id: {self.umls_disease_id}, disease_name: {self.disease_name}, score: {self.score})""".format(self=self)
+        return """VarDiseaseAss(id: {self.id}, dbsnp_id: {self.dbsnp_id}, 
+        umls_disease_id: {self.umls_disease_id}, disease_name: {self.disease_name}, 
+        score: {self.score})""".format(self=self)
 
 
 class DiseaseMappings(db.Model):
@@ -110,7 +120,55 @@ class DiseaseMappings(db.Model):
     alt_disease_name = db.Column(db.String, nullable=False, index=True)
 
     def __repr__(self):
-        return """DiseaseMappings(id: {self.id}, umls_disease_id: {self.umls_disease_id}, disease_name: {self.disease_name}, vocabulary: {self.vocabulary}, disease_id: {self.vocabulary}, alt_disease_name: {self.alt_disease_name})""".format(self=self)
+        return """DiseaseMappings(id: {self.id}, umls_disease_id: {self.umls_disease_id}, 
+        disease_name: {self.disease_name}, vocabulary: {self.vocabulary}, 
+        disease_id: {self.disease_id}, alt_disease_name: {self.alt_disease_name})""".format(self=self)
+
+
+class HpoDisGenePhen(db.Model):
+    __tablename__ = "HpoDisGenePhen"
+
+    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
+    disease_id = db.Column(db.String, nullable=False, index=True)
+    gene_symbol = db.Column(db.String, nullable=False, index=True)
+    gene_id = db.Column(db.String, nullable=False)
+    hpo_id = db.Column(db.String, nullable=False, index=True)
+    hpo_term_name = db.Column(db.String, nullable=False, index=True)
+
+    def __repr__(self):
+        return """HpoDisGenePhen(id: {self.id}, disease_id: {self.disease_id}, 
+        gene_symbol: {self.gene_symbol}, gene_id: {self.gene_id}, hpo_id: {self.hpo_id}, 
+        hpo_term_name: {self.hpo_term_name})""".format(self=self)
+
+
+class HpoGenePhen(db.Model):
+    __tablename__ = "HpoGenePhen"
+
+    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
+    gene_id = db.Column(db.String, nullable=False)
+    gene_symbol = db.Column(db.String, nullable=False, index=True)
+    hpo_term_name = db.Column(db.String, nullable=False, index=True)
+    hpo_id = db.Column(db.String, nullable=False, index=True)
+
+    def __repr__(self):
+        return """HpoGenePhen(id: {self.id}, gene_id: {self.gene_id}, 
+        gene_symbol: {self.gene_symbol}, hpo_term_name: {self.hpo_term_name}, 
+        hpo_id: {self.hpo_id})""".format(self=self)
+
+
+class HpoPhenGene(db.Model):
+    __tablename__ = "HpoPhenGene"
+
+    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
+    hpo_id = db.Column(db.String, nullable=False, index=True)
+    hpo_term_name = db.Column(db.String, nullable=False, index=True)
+    gene_id = db.Column(db.String, nullable=False)
+    gene_symbol = db.Column(db.String, nullable=False, index=True)
+
+    def __repr__(self):
+        return """HpoPhenGene(id: {self.id}, hpo_id: {self.hpo_id}, 
+        hpo_term_name: {self.hpo_term_name}, gene_id: {self.gene_id}, 
+        gene_symbol: {self.gene_symbol})""".format(self=self)
 
 
 
