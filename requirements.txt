@@ -13,3 +13,4 @@ flask-mail
 sqlalchemy-migrate
 requests
 pybiomart
+fuzzywuzzy
