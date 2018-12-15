@@ -176,7 +176,7 @@ def pheno_id_to_term(pheno_id):
             pheno_name = ""
     elif pheno_id.startswith("Orphanet:"):
         orpha_id = pheno_id.strip("Orphanet:")
-        pheno_name = Orpha.query.filter(Orpha.orpha_num == orpha_id).first().orpha_name
+        pheno_name = Orphanet.query.filter(Orphanet.orpha_num == orpha_id).first().orpha_name
     elif pheno_id.startswith("EFO:"):
         efo_id = pheno_id.strip("EFO:")
         base_url = "https://www.ebi.ac.uk/ols/api/ontologies/efo/terms?"
@@ -203,7 +203,7 @@ def disease_id_to_name(disease_id):
                 q = Omim.query.filter(Omim.mim_number == int(disease_id.strip("OMIM:"))).first()
                 return q.mim_name
             elif disease_id.startswith("ORPHA:"):
-                q = Orpha.query.filter(Orpha.orpha_num == int(disease_id.strip("ORPHA:"))).first()
+                q = Orphanet.query.filter(Orphanet.orpha_num == int(disease_id.strip("ORPHA:"))).first()
                 return q.orpha_name
         except AttributeError:
             return ""
@@ -224,7 +224,7 @@ def disease_name_to_id(disease_name):
             return "OMIM:{}".format(q.mim_number)  # TODO: check also mim symbol
         except AttributeError:
             try:
-                q = Orpha.query.filter(Orpha.orpha_name == disease_name).first()
+                q = Orphanet.query.filter(Orphanet.orpha_name == disease_name).first()
                 return "ORPHA:{}".format(q.orpha_num)
             except AttributeError:
                 return ""

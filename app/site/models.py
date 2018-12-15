@@ -74,7 +74,7 @@ class Orphanet(db.Model):
     orpha_name = db.Column(db.String, nullable=False, index=True)
 
     def __repr__(self):
-        return """Orpha(id: {self.id}, orpha_num: {self.orpha_num}, 
+        return """Orphanet(id: {self.id}, orpha_num: {self.orpha_num}, 
         orpha_name: {self.orpha_name})""".format(self=self)
 
 
