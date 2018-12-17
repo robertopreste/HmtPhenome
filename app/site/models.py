@@ -36,7 +36,7 @@ class Mitocarta(db.Model):
     hg_stop = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return """Genes(id: {self.id}, ensembl_id: {self.ensembl_id}, 
+        return """Mitocarta(id: {self.id}, ensembl_id: {self.ensembl_id}, 
         gene_symbol: {self.gene_symbol}, description: {self.description}, hg_chr: {self.hg_chr}, 
         hg_start: {self.hg_start}, hg_stop: {self.hg_stop})""".format(self=self)
 
