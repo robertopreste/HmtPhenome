@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
-from app.site.models import Mitocarta, Phenotypes, Diseases, Omim, Orphanet, GeneDiseaseAss, VarDiseaseAss
+from app.site.models import Mitocarta, Phenotypes, Diseases, Omim, Orphanet, GeneDiseaseAss, VarDiseaseAss, DiseaseMappings
 import pandas as pd
 import numpy as np
 import requests
@@ -990,22 +990,44 @@ def get_genes_from_phenotype(phenotype):
     #     sys.exit()
     res = r.json()
 
-    df = pd.DataFrame(columns=["gene_name", "variation", "phenotypes", "description"])
-    for el in res:
-        if "attributes" in el and "associated_gene" in el["attributes"].keys() and "Variation" in el:
-            row = pd.DataFrame({"gene_name": [el["attributes"]["associated_gene"]],
-                                "variation": [el["Variation"]],
-                                "phenotypes": [el["mapped_to_accession"]],
-                                "description": [el["description"]]})
+    # df = pd.DataFrame(columns=["gene_name", "variation", "phenotypes", "description"])
+    df = pd.DataFrame(columns=["gene_name", "phenotypes", "description"])
+    if len(res) != 0:
+        for el in res:
+            # if "attributes" in el and "associated_gene" in el["attributes"].keys() and "Variation" in el:
+            if "attributes" in el and "associated_gene" in el["attributes"].keys():
+                row = pd.DataFrame({"gene_name": [el["attributes"]["associated_gene"]],
+                                    # "variation": [el["Variation"]],
+                                    "phenotypes": [el["mapped_to_accession"]],
+                                    "description": [el["description"]]})
+            elif "attributes" in el and "Gene" in el:
+                row = pd.DataFrame({"gene_name": [el["Gene"]],
+                                    "phenotypes": [el["mapped_to_accession"]],
+                                    "description": [el["description"]]})
+            else:
+                row = pd.DataFrame({"gene_name": [""],
+                                    "phenotypes": [""],
+                                    "description": [""]})
             df = df.append(row, ignore_index=True)
+    else:
+        dis_maps = DiseaseMappings.query.filter(DiseaseMappings.disease_id == phenotype).first()
+        pheno_umls = dis_maps.umls_disease_id
+        rel_genes = GeneDiseaseAss.query.filter(GeneDiseaseAss.umls_disease_id == pheno_umls).all()
+        for el in rel_genes:
+            row = pd.DataFrame({"gene_name": [el.gene_symbol], "phenotypes": [el.phenotype],
+                                "description": [el.disease_name]})
+            df = df.append(row, ignore_index=True)
+
     df.drop_duplicates(inplace=True)
-    if df.shape[0] == 0:
-        return df
 
     # TODO: find a better way to retrieve the list of Mitocarta genes from the table
-    mito_genes = pd.read_sql("select * from Mitocarta", "sqlite:///database.db")
-    df["gene_name"] = df["gene_name"].str.split("-", expand=True)[1]
-    df = df[df["gene_name"].isin(mito_genes["gene_symbol"])]
+    mito_genes = pd.read_sql("select * from Mitocarta", "sqlite:///hmtphenome.db")
+    try:
+        df["gene_name"] = df["gene_name"].str.split("-", expand=True)[1]
+    except KeyError:
+        pass
+    df = df[df["gene_name"].isin(mito_genes["ensembl_id"])]
+    # TODO: this check needs to be moved after the first part of the previous if, then falling back to the second part
 
     return df
 
