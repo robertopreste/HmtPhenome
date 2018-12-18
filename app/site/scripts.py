@@ -992,31 +992,37 @@ def get_genes_from_phenotype(phenotype):
 
     # df = pd.DataFrame(columns=["gene_name", "variation", "phenotypes", "description"])
     df = pd.DataFrame(columns=["gene_name", "phenotypes", "description"])
-    if len(res) != 0:
-        for el in res:
-            # if "attributes" in el and "associated_gene" in el["attributes"].keys() and "Variation" in el:
-            if "attributes" in el and "associated_gene" in el["attributes"].keys():
-                row = pd.DataFrame({"gene_name": [el["attributes"]["associated_gene"]],
-                                    # "variation": [el["Variation"]],
-                                    "phenotypes": [el["mapped_to_accession"]],
-                                    "description": [el["description"]]})
-            elif "attributes" in el and "Gene" in el:
-                row = pd.DataFrame({"gene_name": [el["Gene"]],
-                                    "phenotypes": [el["mapped_to_accession"]],
-                                    "description": [el["description"]]})
-            else:
-                row = pd.DataFrame({"gene_name": [""],
-                                    "phenotypes": [""],
-                                    "description": [""]})
-            df = df.append(row, ignore_index=True)
-    else:
-        dis_maps = DiseaseMappings.query.filter(DiseaseMappings.disease_id == phenotype).first()
-        pheno_umls = dis_maps.umls_disease_id
-        rel_genes = GeneDiseaseAss.query.filter(GeneDiseaseAss.umls_disease_id == pheno_umls).all()
-        for el in rel_genes:
-            row = pd.DataFrame({"gene_name": [el.gene_symbol], "phenotypes": [el.phenotype],
-                                "description": [el.disease_name]})
-            df = df.append(row, ignore_index=True)
+    # if len(res) != 0:
+    # try:
+    #     for el in res:
+    #         # if "attributes" in el and "associated_gene" in el["attributes"].keys() and "Variation" in el:
+    #         if "attributes" in el and "associated_gene" in el["attributes"].keys():
+    #             gene_name = Mitocarta.query.filter(Mitocarta.ensembl_id == el["attributes"]["associated_gene"]).first()
+    #             if gene_name:
+    #                 row = pd.DataFrame({"gene_name": [gene_name],
+    #                                     # "variation": [el["Variation"]],
+    #                                     "phenotypes": [el["mapped_to_accession"]],
+    #                                     "description": [el["description"]]})
+    #         elif "attributes" in el and "Gene" in el:
+    #             gene_name = Mitocarta.query.filter(Mitocarta.ensembl_id == el["Gene"]).first()
+    #             if gene_name:
+    #                 row = pd.DataFrame({"gene_name": [el["Gene"]],
+    #                                     "phenotypes": [el["mapped_to_accession"]],
+    #                                     "description": [el["description"]]})
+    #         else:
+    #             row = pd.DataFrame({"gene_name": [""],
+    #                                 "phenotypes": [""],
+    #                                 "description": [""]})
+    #         df = df.append(row, ignore_index=True)
+    # except:
+    #     pass
+    dis_maps = DiseaseMappings.query.filter(DiseaseMappings.disease_id == phenotype).first()
+    pheno_umls = dis_maps.umls_disease_id
+    rel_genes = GeneDiseaseAss.query.filter(GeneDiseaseAss.umls_disease_id == pheno_umls).all()
+    for el in rel_genes:
+        row = pd.DataFrame({"gene_name": [el.gene_symbol], "phenotypes": [phenotype],
+                            "description": [el.disease_name]})
+        df = df.append(row, ignore_index=True)
 
     df.drop_duplicates(inplace=True)
 
@@ -1026,8 +1032,7 @@ def get_genes_from_phenotype(phenotype):
         df["gene_name"] = df["gene_name"].str.split("-", expand=True)[1]
     except KeyError:
         pass
-    df = df[df["gene_name"].isin(mito_genes["ensembl_id"])]
-    # TODO: this check needs to be moved after the first part of the previous if, then falling back to the second part
+    df = df[df["gene_name"].isin(mito_genes["gene_symbol"])]
 
     return df
 
@@ -1060,6 +1065,11 @@ def get_vars_from_phenotype(phenotype):
     except KeyError:
         return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
                                      "start_pos", "alt_allele", "phenotype", "phenotype_id"])
+
+    # TEST: new implementation
+    dis_maps = DiseaseMappings.query.filter(DiseaseMappings.disease_id == phenotype).first()
+    pheno_umls = dis_maps.umls_disease_id
+    vars_maps = VarDiseaseAss.query.filter(VarDiseaseAss.umls_disease_id == pheno_umls).all()
 
     return rel_vars
 
