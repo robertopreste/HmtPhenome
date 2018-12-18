@@ -1045,33 +1045,54 @@ def get_vars_from_phenotype(phenotype):
     :return: pd.DataFrame with columns ["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
     "start_pos", "alt_allele", "phenotype", "phenotype_id"]
     """
-    rel_genes = get_genes_from_phenotype(phenotype)
-    if rel_genes.shape[0] == 0:
-        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
-                                     "start_pos", "alt_allele", "phenotype", "phenotype_id"])
-    try:
-        pheno_names = rel_genes["description"].unique().tolist()
-    except KeyError:
-        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
-                                     "start_pos", "alt_allele", "phenotype", "phenotype_id"])
-
-    rel_vars = pd.DataFrame()
-    for el in set(rel_genes["gene_name"]):
-        rel_vars = rel_vars.append(get_vars_from_gene_name(el))
-
-    try:
-        rel_vars = rel_vars[rel_vars["phenotype"].isin(pheno_names)]
-        rel_vars["phenotype_id"] = phenotype
-    except KeyError:
-        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
-                                     "start_pos", "alt_allele", "phenotype", "phenotype_id"])
+    # rel_genes = get_genes_from_phenotype(phenotype)
+    # if rel_genes.shape[0] == 0:
+    #     return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
+    #                                  "start_pos", "alt_allele", "phenotype", "phenotype_id"])
+    # try:
+    #     pheno_names = rel_genes["description"].unique().tolist()
+    # except KeyError:
+    #     return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
+    #                                  "start_pos", "alt_allele", "phenotype", "phenotype_id"])
+    #
+    # rel_vars = pd.DataFrame()
+    # for el in set(rel_genes["gene_name"]):
+    #     rel_vars = rel_vars.append(get_vars_from_gene_name(el))
+    #
+    # try:
+    #     rel_vars = rel_vars[rel_vars["phenotype"].isin(pheno_names)]
+    #     rel_vars["phenotype_id"] = phenotype
+    # except KeyError:
+    #     return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
+    #                                  "start_pos", "alt_allele", "phenotype", "phenotype_id"])
 
     # TEST: new implementation
     dis_maps = DiseaseMappings.query.filter(DiseaseMappings.disease_id == phenotype).first()
     pheno_umls = dis_maps.umls_disease_id
     vars_maps = VarDiseaseAss.query.filter(VarDiseaseAss.umls_disease_id == pheno_umls).all()
 
-    return rel_vars
+    server = Server(host="http://www.ensembl.org")
+    dataset = server.marts["ENSEMBL_MART_SNP"].datasets["hsapiens_snp"]
+
+    res = dataset.query(attributes=["chr_name", "chrom_start", "consequence_allele_string",
+                                    "ensembl_gene_stable_id", "associated_gene", "refsnp_id",
+                                    "phenotype_description"],
+                        filters={"snp_filter": [el.dbsnp_id for el in vars_maps]})
+
+    res.rename({"Chromosome/scaffold name": "chromosome", "Variant name": "dbsnp_id",
+                "Chromosome/scaffold position start (bp)": "start_pos",
+                "Associated gene with phenotype": "gene_name",
+                "Consequence specific allele": "ref/alt allele",
+                "Gene stable ID": "ensembl_gene_id",
+                "Phenotype description": "phenotype"}, axis=1, inplace=True)
+    res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
+    res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
+    res = res[res["alt_allele"] != "HGMD_MUTATION"]
+    res["variant"] = res["ref_allele"] + res["start_pos"].astype(str) + res["alt_allele"]
+    res.drop(["ref/alt allele"], axis=1, inplace=True)
+    # TODO: remove entries with the wrong phenotype
+    # return rel_vars
+    return res
 
 
 def get_diseases_from_phenotype(phenotype):
