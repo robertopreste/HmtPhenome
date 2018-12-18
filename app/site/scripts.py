@@ -1146,6 +1146,38 @@ def get_diseases_from_phenotype(phenotype):
     # return rel_diseases
 
 
+def json_from_phenotype(pheno_input):
+    """
+    Create the final json structure from phenotype data.
+    :param pheno_input: phenotype ID to use for the queries
+    :return:
+    """
+    vars_df = get_vars_from_phenotype(pheno_input)
+    gene_df = get_genes_from_phenotype(pheno_input)
+    disease_df = get_diseases_from_phenotype(pheno_input)
+
+    # Variants
+    vars_df.drop(["start_pos", "ensembl_gene_id", "ref_allele", "alt_allele"], axis=1, inplace=True)
+    vars_df.rename({"phenotype": "phenotype_name"}, axis=1, inplace=True)
+    vars_df["phenotype_id"] = pheno_input
+    vars_json = json.loads(vars_df.to_json(orient="records"))
+    # Genes
+    gene_df.rename({"phenotypes": "phenotype_id", "description": "phenotype_name"},
+                   axis=1, inplace=True)
+    gene_json = json.loads(gene_df.to_json(orient="records"))
+    # Diseases
+    disease_df.rename({"pheno_id": "phenotype_id", "pheno_name": "phenotype_name"},
+                      axis=1, inplace=True)
+    disease_json = json.loads(disease_df.to_json(orient="records"))
+
+    final_json = {}
+    final_json["variants"] = vars_json
+    final_json["genes"] = gene_json
+    final_json["diseases"] = disease_json
+
+    return final_json
+
+
 # TODO: I'm leaving this one as the last step, it needs more work
 def final_from_phenotype(vars_df, disease_df):
     """
