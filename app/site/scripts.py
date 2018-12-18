@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
-from app.site.models import Mitocarta, Phenotypes, Diseases, Omim, Orphanet, GeneDiseaseAss, VarDiseaseAss, DiseaseMappings
+from app.site.models import Mitocarta, Phenotypes, Diseases, Omim, Orphanet, GeneDiseaseAss, VarDiseaseAss, DiseaseMappings, HpoDisGenePhen
 import pandas as pd
 import numpy as np
 import requests
@@ -1103,25 +1103,47 @@ def get_diseases_from_phenotype(phenotype):
     :return: pd.DataFrame with columns ["ensembl_gene_id", "gene_name", "location", "disease",
     "phenotype_ids"]
     """
-    rel_genes = get_genes_from_phenotype(phenotype)
+    # rel_genes = get_genes_from_phenotype(phenotype)
     # try:
     #     pheno_names = rel_genes["description"].unique().tolist()
     # except KeyError:
     #     return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
     #                                  "start_pos", "alt_allele", "phenotype"])
 
-    rel_diseases = pd.DataFrame()
-    for el in set(rel_genes["gene_name"]):
-        rel_diseases = rel_diseases.append(get_diseases_from_gene_name(el))
+    # rel_diseases = pd.DataFrame()
+    # for el in set(rel_genes["gene_name"]):
+    #     rel_diseases = rel_diseases.append(get_diseases_from_gene_name(el))
+    #
+    # try:
+    #     rel_diseases = rel_diseases[rel_diseases["phenotypes"].astype(str).str.contains(phenotype)]
+    #     rel_diseases.rename({"phenotypes": "phenotype_ids"}, axis=1, inplace=True)
+    # except KeyError:
+    #     return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "location", "disease",
+    #                                  "phenotype_ids"])
 
-    try:
-        rel_diseases = rel_diseases[rel_diseases["phenotypes"].astype(str).str.contains(phenotype)]
-        rel_diseases.rename({"phenotypes": "phenotype_ids"}, axis=1, inplace=True)
-    except KeyError:
-        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "location", "disease",
-                                     "phenotype_ids"])
+    # TEST: new implementation
+    hpo_dis = HpoDisGenePhen.query.filter(HpoDisGenePhen.hpo_id == phenotype).all()
+    df = pd.DataFrame(columns=["pheno_id", "pheno_name", "disease_name", "disease_id"])
 
-    return rel_diseases
+    if hpo_dis:
+        for el in hpo_dis:
+            dis_id = el.disease_id.split(":")[1]
+            dis_name = Omim.query.filter(Omim.mim_number == dis_id).first().mim_name
+            row = pd.DataFrame({"pheno_id": [el.hpo_id], "pheno_name": [el.hpo_term_name],
+                                "disease_name": [dis_name], "disease_id": [el.disease_id]})
+            df = df.append(row, ignore_index=True)
+
+    # TODO: convert all disease/phenotype names to the correct synonym as in DiseaseMappings
+    df.drop_duplicates(inplace=True)
+
+    return df
+        # dis_maps = DiseaseMappings.query.filter(DiseaseMappings.disease_id == phenotype).all()
+        # if dis_maps:
+        #     for el in dis_maps:
+        #         row = pd.DataFrame({"pheno_id": [el.disease_id], "pheno_name": [el.disease_name],
+        #                             "disease_name": })
+
+    # return rel_diseases
 
 
 # TODO: I'm leaving this one as the last step, it needs more work
