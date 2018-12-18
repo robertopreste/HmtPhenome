@@ -980,15 +980,15 @@ def get_genes_from_phenotype(phenotype):
     :param phenotype: [str] accession id of the phenotype to search for
     :return: pd.DataFrame with columns ["gene_name", "variation", "phenotypes", "description"]
     """
-    server = "https://rest.ensembl.org"
-    ext = "/phenotype/accession/homo_sapiens/{}?".format(phenotype)
-    r = requests.get(server + ext, headers={"Content-Type": "application/json"})
+    # server = "https://rest.ensembl.org"
+    # ext = "/phenotype/accession/homo_sapiens/{}?".format(phenotype)
+    # r = requests.get(server + ext, headers={"Content-Type": "application/json"})
 
     # if not r.ok:
     #     r.raise_for_status()
     #     print("Wrong request.")
     #     sys.exit()
-    res = r.json()
+    # res = r.json()
 
     # df = pd.DataFrame(columns=["gene_name", "variation", "phenotypes", "description"])
     df = pd.DataFrame(columns=["gene_name", "phenotypes", "description"])
@@ -1024,6 +1024,8 @@ def get_genes_from_phenotype(phenotype):
                             "description": [el.disease_name]})
         df = df.append(row, ignore_index=True)
 
+    pheno_name = DiseaseMappings.query.filter(DiseaseMappings.disease_id == phenotype).first().disease_name
+    df["description"] = pheno_name
     df.drop_duplicates(inplace=True)
 
     # TODO: find a better way to retrieve the list of Mitocarta genes from the table
@@ -1069,6 +1071,7 @@ def get_vars_from_phenotype(phenotype):
     # TEST: new implementation
     dis_maps = DiseaseMappings.query.filter(DiseaseMappings.disease_id == phenotype).first()
     pheno_umls = dis_maps.umls_disease_id
+    pheno_name = dis_maps.disease_name
     vars_maps = VarDiseaseAss.query.filter(VarDiseaseAss.umls_disease_id == pheno_umls).all()
 
     server = Server(host="http://www.ensembl.org")
@@ -1089,7 +1092,10 @@ def get_vars_from_phenotype(phenotype):
     res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
     res = res[res["alt_allele"] != "HGMD_MUTATION"]
     res["variant"] = res["ref_allele"] + res["start_pos"].astype(str) + res["alt_allele"]
+    res["phenotype"] = pheno_name
     res.drop(["ref/alt allele"], axis=1, inplace=True)
+    res["gene_name"] = res["gene_name"].apply(lambda x: x.split("-")[1] if x.startswith("MT-") else x)
+    res.drop_duplicates(inplace=True)
     # TODO: remove entries with the wrong phenotype
     # return rel_vars
     return res
@@ -1123,17 +1129,17 @@ def get_diseases_from_phenotype(phenotype):
 
     # TEST: new implementation
     hpo_dis = HpoDisGenePhen.query.filter(HpoDisGenePhen.hpo_id == phenotype).all()
+    pheno_name = DiseaseMappings.query.filter(DiseaseMappings.disease_id == phenotype).first().disease_name
     df = pd.DataFrame(columns=["pheno_id", "pheno_name", "disease_name", "disease_id"])
 
     if hpo_dis:
         for el in hpo_dis:
             dis_id = el.disease_id.split(":")[1]
             dis_name = Omim.query.filter(Omim.mim_number == dis_id).first().mim_name
-            row = pd.DataFrame({"pheno_id": [el.hpo_id], "pheno_name": [el.hpo_term_name],
+            row = pd.DataFrame({"pheno_id": [el.hpo_id], "pheno_name": [pheno_name],
                                 "disease_name": [dis_name], "disease_id": [el.disease_id]})
             df = df.append(row, ignore_index=True)
 
-    # TODO: convert all disease/phenotype names to the correct synonym as in DiseaseMappings
     df.drop_duplicates(inplace=True)
 
     return df
@@ -1171,11 +1177,90 @@ def json_from_phenotype(pheno_input):
     disease_json = json.loads(disease_df.to_json(orient="records"))
 
     final_json = {}
+    pheno_name = DiseaseMappings.query.filter(DiseaseMappings.disease_id == pheno_input).first().disease_name
+    final_json["phenotype"] = pheno_name
+    # final_json["phenotype"] = pheno_input
     final_json["variants"] = vars_json
     final_json["genes"] = gene_json
     final_json["diseases"] = disease_json
 
     return final_json
+
+
+def network_from_phenotype_json(final_json):
+    """
+    Create the required nodes and edges dictionaries to build the network from phenotype data.
+    :param final_json: output from json_from_phenotype()
+    :return: dictionary with nodes and edges for network construction
+    """
+    phenotype = final_json["phenotype"]
+    var_json = final_json["variants"]
+    gen_json = final_json["genes"]
+    dis_json = final_json["diseases"]
+
+    variants = []
+    variants.extend([el["variant"] for el in var_json])
+    variants = set(variants)
+
+    v_genes = []
+    v_genes.extend([el["gene_name"] for el in var_json])
+    v_genes = set(v_genes)
+
+    genes = []
+    genes.extend([el["gene_name"] for el in gen_json])
+    genes = set(genes)
+
+    diseases = []
+    diseases.extend([el["disease_name"] for el in dis_json])
+    diseases = set(diseases)
+
+    nodes = []
+    edges = []
+    ids = 0
+    id_dict = {}
+
+    ids += 1
+    nodes.append({"id": ids, "label": phenotype, "color": {"background": "#93B5C6",
+                                                           "border": "#7995A3"}})
+    id_dict[phenotype] = ids
+
+    for el in variants:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
+                                                        "border": "#CCAA39"}})
+        id_dict[el] = ids
+    for el in v_genes:
+        ids += 1
+        # if el.startswith("MT-"):
+        #     el = el.split("-")[1]
+        nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
+                                                        "border": "#5F826B"}})
+        id_dict[el] = ids
+    for el in genes:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
+                                                        "border": "#5F826B"}})
+        id_dict[el] = ids
+    for el in diseases:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
+                                                        "border": "#B06A57"}})
+        id_dict[el] = ids
+
+    for el in var_json:
+        # phenotype to variants
+        edges.append({"from": id_dict[el["phenotype_name"]], "to": id_dict[el["variant"]]})
+        # variant to gene
+        edges.append({"from": id_dict[el["variant"]], "to": id_dict[el["gene_name"]]})
+    for el in gen_json:
+        # phenotype to genes
+        edges.append({"from": id_dict[el["phenotype_name"]], "to": id_dict[el["gene_name"]]})
+    for el in dis_json:
+        # phenotype to diseases
+        edges.append({"from": id_dict[el["phenotype_name"]], "to": id_dict[el["disease_name"]]})
+    # TODO: fix gene names to be consistent with each other
+
+    return {"nodes": nodes, "edges": edges}
 
 
 # TODO: I'm leaving this one as the last step, it needs more work
