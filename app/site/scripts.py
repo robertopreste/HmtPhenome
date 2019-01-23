@@ -1303,58 +1303,58 @@ def final_from_phenotype(vars_df, disease_df):
 # FROM DISEASE #
 
 
-def get_genes_from_disease_name(disease_name):
-    """
-    Retrieve genes related to a disease, using Biomart.
-    :param disease_name: [str] name of the query disease
-    :return: pd.DataFrame with columns ["ensembl_gene_id", "gene_name", "gene_descr", "chromosome",
-    "start_pos", "stop_pos", "disease"]
-    """
-    server = Server(host="http://www.ensembl.org")
-    dataset = server.marts["ENSEMBL_MART_ENSEMBL"].datasets["hsapiens_gene_ensembl"]
-    res = dataset.query(attributes=["ensembl_gene_id", "external_gene_name", "description",
-                                    "chromosome_name", "start_position", "end_position",
-                                    "phenotype_description"],
-                        filters={"phenotype_description": disease_name})
+# def get_genes_from_disease_name(disease_name):
+#     """
+#     Retrieve genes related to a disease, using Biomart.
+#     :param disease_name: [str] name of the query disease
+#     :return: pd.DataFrame with columns ["ensembl_gene_id", "gene_name", "gene_descr", "chromosome",
+#     "start_pos", "stop_pos", "disease"]
+#     """
+#     server = Server(host="http://www.ensembl.org")
+#     dataset = server.marts["ENSEMBL_MART_ENSEMBL"].datasets["hsapiens_gene_ensembl"]
+#     res = dataset.query(attributes=["ensembl_gene_id", "external_gene_name", "description",
+#                                     "chromosome_name", "start_position", "end_position",
+#                                     "phenotype_description"],
+#                         filters={"phenotype_description": disease_name})
+#
+#     res.rename({"Gene stable ID": "ensembl_gene_id", "Gene name": "gene_name",
+#                 "Gene description": "gene_descr", "Chromosome/scaffold name": "chromosome",
+#                 "Gene start (bp)": "start_pos", "Gene end (bp)": "stop_pos",
+#                 "Phenotype description": "disease"}, axis=1, inplace=True)
+#     res.drop_duplicates(inplace=True)
+#
+#     return res
 
-    res.rename({"Gene stable ID": "ensembl_gene_id", "Gene name": "gene_name",
-                "Gene description": "gene_descr", "Chromosome/scaffold name": "chromosome",
-                "Gene start (bp)": "start_pos", "Gene end (bp)": "stop_pos",
-                "Phenotype description": "disease"}, axis=1, inplace=True)
-    res.drop_duplicates(inplace=True)
 
-    return res
-
-
-def get_vars_from_disease_name(disease_name):
-    """
-    Retrieve variants related to a specific disease, exploiting the get_genes_from_disease_name()
-    and get_vars_from_gene_name() functions.
-    :param disease_name: [str] name of the query disease
-    :return: pd.DataFrame with columns ["gene", "ensembl_gene_id", "chromosome", "ref_allele",
-    "start_pos", "alt_allele", "disease"]
-    """
-    rel_genes = get_genes_from_disease_name(disease_name)
-    try:
-        gene_ids = rel_genes["ensembl_gene_id"].unique()
-    except KeyError:
-        return pd.DataFrame()
-
-    rel_vars = pd.DataFrame()
-    for el in set(gene_ids):
-        rel_vars = rel_vars.append(get_vars_from_gene_id(el))
-
-    try:
-        rel_vars = rel_vars[rel_vars["ensembl_gene_id"].isin(gene_ids)]
-    except KeyError:
-        return pd.DataFrame(columns=["gene", "ensembl_gene_id", "chromosome", "ref_allele",
-                                     "start_pos", "alt_allele", "disease"])
-
-    # TODO: find a better way to retrieve variants related to a specific disease
-    rel_vars = rel_vars[rel_vars["phenotype"] == disease_name]
-    rel_vars.rename({"phenotype": "disease"}, axis=1, inplace=True)
-
-    return rel_vars
+# def get_vars_from_disease_name(disease_name):
+#     """
+#     Retrieve variants related to a specific disease, exploiting the get_genes_from_disease_name()
+#     and get_vars_from_gene_name() functions.
+#     :param disease_name: [str] name of the query disease
+#     :return: pd.DataFrame with columns ["gene", "ensembl_gene_id", "chromosome", "ref_allele",
+#     "start_pos", "alt_allele", "disease"]
+#     """
+#     rel_genes = get_genes_from_disease_name(disease_name)
+#     try:
+#         gene_ids = rel_genes["ensembl_gene_id"].unique()
+#     except KeyError:
+#         return pd.DataFrame()
+#
+#     rel_vars = pd.DataFrame()
+#     for el in set(gene_ids):
+#         rel_vars = rel_vars.append(get_vars_from_gene_id(el))
+#
+#     try:
+#         rel_vars = rel_vars[rel_vars["ensembl_gene_id"].isin(gene_ids)]
+#     except KeyError:
+#         return pd.DataFrame(columns=["gene", "ensembl_gene_id", "chromosome", "ref_allele",
+#                                      "start_pos", "alt_allele", "disease"])
+#
+#     # TODO: find a better way to retrieve variants related to a specific disease
+#     rel_vars = rel_vars[rel_vars["phenotype"] == disease_name]
+#     rel_vars.rename({"phenotype": "disease"}, axis=1, inplace=True)
+#
+#     return rel_vars
 
 
 def get_umls_from_disease_id(disease_id):
