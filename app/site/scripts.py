@@ -1409,8 +1409,36 @@ def get_vars_from_disease_id(disease_id):
     df.drop_duplicates(inplace=True)
     df.sort_values(by="ass_score", ascending=False, inplace=True)
 
+    server = "https://rest.ensembl.org"
+    ext = "/variation/human/{}"
+    var_details = {"chr": [], "nt_start": [], "ref": [], "alt": []}
+    for el in df.dbsnp_id.values:
+        r = requests.get(server + ext.format(el), headers={"Content-Type": "application/json"})
+        res = r.json()
+        var_details["chr"].append(res["mappings"][0]["seq_region_name"])
+        var_details["nt_start"].append(res["mappings"][0]["start"])
+        var_details["ref"].append(res["mappings"][0]["allele_string"].split("/")[0])
+        var_details["alt"].append(res["mappings"][0]["allele_string"].split("/")[1])
+
+    # TODO: this dictionary will be added to df to get variant details
+
     return df
 
+
+def get_phenos_from_disease_id(disease_id):
+    # dis_umls = get_umls_from_disease_id(disease_id)
+    ass_phenos = HpoDisGenePhen.query.filter(HpoDisGenePhen.disease_id == disease_id).all()
+    df = pd.DataFrame(columns=["disease_id", "hpo_id", "hpo_term_name"])
+
+    if ass_phenos:
+        for el in ass_phenos:
+            row = pd.DataFrame({"disease_id": [disease_id], "hpo_id": [el.hpo_id],
+                                "hpo_term_name": [el.hpo_term_name]})
+            df = df.append(row, ignore_index=True)
+
+    df.drop_duplicates(inplace=True)
+
+    return df
 
 
 
