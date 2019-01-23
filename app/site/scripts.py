@@ -1262,6 +1262,7 @@ def network_from_phenotype_json(final_json):
 
     return {"nodes": nodes, "edges": edges}
 
+# TODO: this is working but not for every entry, it should be checked thoroughly
 
 # TODO: I'm leaving this one as the last step, it needs more work
 def final_from_phenotype(vars_df, disease_df):
@@ -1356,8 +1357,59 @@ def get_vars_from_disease_name(disease_name):
     return rel_vars
 
 
+def get_umls_from_disease_id(disease_id):
+    dis_vocab, dis_num = disease_id.split(":")
+    if dis_vocab in ["DO", "MSH", "NCI", "OMIM", "ORDO", "ICD9CM"]:
+        q = DiseaseMappings.query.filter(DiseaseMappings.vocabulary == dis_vocab,
+                                         DiseaseMappings.disease_id == dis_num).first()
+    elif dis_vocab == "HPO":
+        q = DiseaseMappings.query.filter(DiseaseMappings.disease_id == disease_id).first()
+    elif dis_vocab == "EFO":
+        q = DiseaseMappings.query.filter(DiseaseMappings.disease_id == "EFO_{}".format(dis_num)).first()
+    else:
+        return ""
+
+    if q:
+        disease_umls = q.umls_disease_id
+        return disease_umls
+    return ""
 
 
+def get_genes_from_disease_id(disease_id):
+    dis_umls = get_umls_from_disease_id(disease_id)
+    ass_genes = GeneDiseaseAss.query.filter(GeneDiseaseAss.umls_disease_id == dis_umls).all()
+    df = pd.DataFrame(columns=["disease_id", "disease_umls", "disease_name", "entrez_gene_id",
+                               "gene_symbol", "ass_score"])
+    if ass_genes:
+        for el in ass_genes:
+            row = pd.DataFrame({"disease_id": [disease_id], "disease_umls": [dis_umls],
+                                "disease_name": [el.disease_name],
+                                "entrez_gene_id": [el.entrez_gene_id],
+                                "gene_symbol": [el.gene_symbol], "ass_score": [el.score]})
+            df = df.append(row, ignore_index=True)
+
+    df.drop_duplicates(inplace=True)
+    df.sort_values(by="ass_score", ascending=False, inplace=True)
+
+    return df
+
+
+def get_vars_from_disease_id(disease_id):
+    dis_umls = get_umls_from_disease_id(disease_id)
+    ass_vars = VarDiseaseAss.query.filter(VarDiseaseAss.umls_disease_id == dis_umls).all()
+    df = pd.DataFrame(columns=["disease_id", "disease_umls", "disease_name", "dbsnp_id", "ass_score"])
+
+    if ass_vars:
+        for el in ass_vars:
+            row = pd.DataFrame({"disease_id": [disease_id], "disease_umls": [dis_umls],
+                                "disease_name": [el.disease_name], "dbsnp_id": [el.dbsnp_id],
+                                "ass_score": [el.score]})
+            df = df.append(row, ignore_index=True)
+
+    df.drop_duplicates(inplace=True)
+    df.sort_values(by="ass_score", ascending=False, inplace=True)
+
+    return df
 
 
 
