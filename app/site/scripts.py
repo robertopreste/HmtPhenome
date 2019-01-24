@@ -1369,6 +1369,11 @@ def final_from_phenotype(vars_df, disease_df):
 
 
 def get_umls_from_disease_id(disease_id):
+    """
+    Convert the general disease ID to the standard UMLS ID.
+    :param disease_id: disease ID starting with "DO", "MSH", "NCI", "OMIM", "ORDO" or "ICD9CM"
+    :return: string with the correspondent UMLS ID
+    """
     dis_vocab, dis_num = disease_id.split(":")
     if dis_vocab in ["DO", "MSH", "NCI", "OMIM", "ORDO", "ICD9CM"]:
         q = DiseaseMappings.query.filter(DiseaseMappings.vocabulary == dis_vocab,
@@ -1387,6 +1392,12 @@ def get_umls_from_disease_id(disease_id):
 
 
 def get_genes_from_disease_id(disease_id):
+    """
+    Retrieve genes involved in a specific disease, using the GeneDiseaseAss table from the db.
+    :param disease_id: disease ID to look for
+    :return: pd.DataFrame(columns=["disease_id", "disease_umls", "disease_name", "entrez_gene_id",
+    "gene_symbol", "ass_score"])
+    """
     dis_umls = get_umls_from_disease_id(disease_id)
     ass_genes = GeneDiseaseAss.query.filter(GeneDiseaseAss.umls_disease_id == dis_umls).all()
     df = pd.DataFrame(columns=["disease_id", "disease_umls", "disease_name", "entrez_gene_id",
@@ -1406,9 +1417,17 @@ def get_genes_from_disease_id(disease_id):
 
 
 def get_vars_from_disease_id(disease_id):
+    """
+    Retrieve variants associated to a specific disease, getting their dbSNP ID and then the actual
+    variant string exploiting Ensembl API.
+    :param disease_id: disease ID to look for
+    :return: pd.DataFrame(columns=["disease_id", "disease_umls", "disease_name", "dbsnp_id",
+    "ass_score"])
+    """
     dis_umls = get_umls_from_disease_id(disease_id)
     ass_vars = VarDiseaseAss.query.filter(VarDiseaseAss.umls_disease_id == dis_umls).all()
-    df = pd.DataFrame(columns=["disease_id", "disease_umls", "disease_name", "dbsnp_id", "ass_score"])
+    df = pd.DataFrame(columns=["disease_id", "disease_umls", "disease_name", "dbsnp_id",
+                               "ass_score"])
 
     if ass_vars:
         for el in ass_vars:
@@ -1438,7 +1457,12 @@ def get_vars_from_disease_id(disease_id):
 
 
 def get_phenos_from_disease_id(disease_id):
-    # dis_umls = get_umls_from_disease_id(disease_id)
+    """
+    Retrieve phenotypes associated to a specific disease, using the HpoDisGenePhen table from the
+    db.
+    :param disease_id: disease ID to look for
+    :return: pd.DataFrame(columns=["disease_id", "hpo_id", "hpo_term_name"]
+    """
     ass_phenos = HpoDisGenePhen.query.filter(HpoDisGenePhen.disease_id == disease_id).all()
     df = pd.DataFrame(columns=["disease_id", "hpo_id", "hpo_term_name"])
 
@@ -1453,4 +1477,31 @@ def get_phenos_from_disease_id(disease_id):
     return df
 
 
+def json_from_disease(disease_input):
+    """
+    Create the final json structure from disease data.
+    :param disease_input: disease ID to use for the queries
+    :return:
+    """
+    vars_df = get_vars_from_disease_id(disease_input)
+    gene_df = get_genes_from_disease_id(disease_input)
+    pheno_df = get_phenos_from_disease_id(disease_input)
 
+    # Variants
+    vars_df.drop(["ass_score"], axis=1, inplace=True)  # do not need this one for now
+    vars_json = json.loads(vars_df.to_json(orient="records"))
+    # Genes
+    gene_df.drop(["entrez_gene_id", "ass_score"], axis=1, inplace=True)  # do not need these for now
+    gene_json = json.loads(gene_df.to_json(orient="records"))
+    # Phenotypes
+    pheno_json = json.loads(pheno_df.to_json(orient="records"))
+
+    final_json = {}
+    disease_name = DiseaseMappings.query.filter(DiseaseMappings.umls_disease_id == get_umls_from_disease_id(disease_input)).first().disease_name
+
+    final_json["diseases"] = disease_name
+    final_json["phenotype"] = pheno_json
+    final_json["variants"] = vars_json
+    final_json["genes"] = gene_json
+
+    return final_json
