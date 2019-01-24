@@ -230,6 +230,17 @@ def disease_name_to_id(disease_name):
                 return ""
 
 
+def create_variant_string(chrom, nt_start, ref_all, alt_all):
+    base_str = "chr{}:{}{}"
+    change = "{}>{}".format(ref_all.upper(), alt_all.upper())
+    if alt_all == "-":  # deletion
+        change = "del{}".format(ref_all.upper())
+    elif ref_all == "-":  # insertion
+        change = "ins{}".format(alt_all.upper())
+
+    return base_str.format(chrom, nt_start, change)
+
+
 # FROM VARIANT POSITION #
 
 
@@ -1411,16 +1422,17 @@ def get_vars_from_disease_id(disease_id):
 
     server = "https://rest.ensembl.org"
     ext = "/variation/human/{}"
-    var_details = {"chr": [], "nt_start": [], "ref": [], "alt": []}
+    variants = []
     for el in df.dbsnp_id.values:
         r = requests.get(server + ext.format(el), headers={"Content-Type": "application/json"})
         res = r.json()
-        var_details["chr"].append(res["mappings"][0]["seq_region_name"])
-        var_details["nt_start"].append(res["mappings"][0]["start"])
-        var_details["ref"].append(res["mappings"][0]["allele_string"].split("/")[0])
-        var_details["alt"].append(res["mappings"][0]["allele_string"].split("/")[1])
+        chrom = res["mappings"][0]["seq_region_name"]
+        nt_start = res["mappings"][0]["start"]
+        ref_all = res["mappings"][0]["allele_string"].split("/")[0]
+        alt_all = res["mappings"][0]["allele_string"].split("/")[1]
+        variants.append(create_variant_string(chrom, nt_start, ref_all, alt_all))
 
-    # TODO: this dictionary will be added to df to get variant details
+    df["variant"] = variants
 
     return df
 
