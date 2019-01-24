@@ -1464,12 +1464,13 @@ def get_phenos_from_disease_id(disease_id):
     :return: pd.DataFrame(columns=["disease_id", "hpo_id", "hpo_term_name"]
     """
     ass_phenos = HpoDisGenePhen.query.filter(HpoDisGenePhen.disease_id == disease_id).all()
-    df = pd.DataFrame(columns=["disease_id", "hpo_id", "hpo_term_name"])
+    disease_name = DiseaseMappings.query.filter(DiseaseMappings.umls_disease_id == get_umls_from_disease_id(disease_id)).first().disease_name
+    df = pd.DataFrame(columns=["disease_id", "disease_name", "hpo_id", "hpo_term_name"])
 
     if ass_phenos:
         for el in ass_phenos:
-            row = pd.DataFrame({"disease_id": [disease_id], "hpo_id": [el.hpo_id],
-                                "hpo_term_name": [el.hpo_term_name]})
+            row = pd.DataFrame({"disease_id": [disease_id], "disease_name": [disease_name],
+                                "hpo_id": [el.hpo_id], "hpo_term_name": [el.hpo_term_name]})
             df = df.append(row, ignore_index=True)
 
     df.drop_duplicates(inplace=True)
@@ -1492,8 +1493,10 @@ def json_from_disease(disease_input):
     vars_json = json.loads(vars_df.to_json(orient="records"))
     # Genes
     gene_df.drop(["entrez_gene_id", "ass_score"], axis=1, inplace=True)  # do not need these for now
+    gene_df.rename({"gene_symbol": "gene_name"}, axis=1, inplace=True)
     gene_json = json.loads(gene_df.to_json(orient="records"))
     # Phenotypes
+    pheno_df.rename({"hpo_term_name": "phenotype_name"}, axis=1, inplace=True)
     pheno_json = json.loads(pheno_df.to_json(orient="records"))
 
     final_json = {}
@@ -1505,3 +1508,81 @@ def json_from_disease(disease_input):
     final_json["genes"] = gene_json
 
     return final_json
+
+
+def network_from_disease_json(final_json):
+    """
+    Create the required nodes and edges dictionaries to build the network from disease data.
+    :param final_json: output from json_from_disease()
+    :return: dictionary with nodes and edges for network construction
+    """
+    phen_json = final_json["phenotype"]
+    var_json = final_json["variants"]
+    gen_json = final_json["genes"]
+    disease = final_json["diseases"]
+
+    variants = []
+    variants.extend([el["variant"] for el in var_json])
+    variants = set(variants)
+
+    # v_genes = []
+    # v_genes.extend([el["gene_name"] for el in var_json])
+    # v_genes = set(v_genes)
+
+    genes = []
+    genes.extend([el["gene_name"] for el in gen_json])
+    genes = set(genes)
+
+    # diseases = []
+    # diseases.extend([el["disease_name"] for el in dis_json])
+    # diseases = set(diseases)
+    phenos = []
+    phenos.extend([el["phenotype_name"] for el in phen_json])
+    phenos = set(phenos)
+
+    nodes = []
+    edges = []
+    ids = 0
+    id_dict = {}
+
+    ids += 1
+    nodes.append({"id": ids, "label": disease, "color": {"background": "#D7816A",
+                                                         "border": "#B06A57"}})
+    id_dict[disease] = ids
+
+    for el in variants:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
+                                                        "border": "#CCAA39"}})
+        id_dict[el] = ids
+    # for el in v_genes:
+    #     ids += 1
+    #     # if el.startswith("MT-"):
+    #     #     el = el.split("-")[1]
+    #     nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
+    #                                                     "border": "#5F826B"}})
+    #     id_dict[el] = ids
+    for el in genes:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
+                                                        "border": "#5F826B"}})
+        id_dict[el] = ids
+    for el in phenos:
+        ids += 1
+        nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
+                                                        "border": "#7995A3"}})
+        id_dict[el] = ids
+
+    for el in var_json:
+        # disease to variants
+        edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[el["variant"]]})
+        # TODO: variant to gene
+        # edges.append({"from": id_dict[el["variant"]], "to": id_dict[el["gene_name"]]})
+    for el in gen_json:
+        # disease to genes
+        edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[el["gene_name"]]})
+    for el in phen_json:
+        # disease to phenotypes
+        edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[el["phenotype_name"]]})
+
+    return {"nodes": nodes, "edges": edges}
