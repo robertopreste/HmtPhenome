@@ -7,7 +7,7 @@ import pprint
 from quart import Blueprint, render_template, request, redirect, url_for, jsonify
 from app.static import dbdata
 from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, QueryDiseasesForm
-from app.site.scripts import get_gene_from_variant, get_pheno_from_variant, get_diseases_from_variant, get_vars_from_gene_name, get_diseases_from_gene_name, get_genes_from_phenotype, get_vars_from_phenotype, get_diseases_from_phenotype, disease_id_to_name, final_from_variant, final_from_gene_name, network_from_variant, network_from_gene_name, network_from_gene, json_from_variant, network_from_variant_json, json_from_gene, network_from_gene_json, json_from_phenotype, network_from_phenotype_json
+from app.site.scripts import get_gene_from_variant, get_pheno_from_variant, get_diseases_from_variant, get_vars_from_gene_name, get_diseases_from_gene_name, get_genes_from_phenotype, get_vars_from_phenotype, get_diseases_from_phenotype, disease_id_to_name, final_from_variant, final_from_gene_name, network_from_variant, network_from_gene_name, network_from_gene, json_from_variant, network_from_variant_json, json_from_gene, network_from_gene_json, json_from_phenotype, network_from_phenotype_json, json_from_disease, network_from_disease_json
 # from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g, jsonify, send_file
 # from werkzeug.urls import url_parse
 
@@ -99,10 +99,8 @@ async def results():
         networks = network_from_phenotype_json(json_data)
 
     elif disease_submit == "True":
-        disease_input_name = disease_id_to_name(disease_input)
-        genes_df = get_genes_from_disease_name(disease_input_name)
-        vars_df = get_vars_from_disease_name(disease_input_name)  # TODO: restrict results to selected disease
-        # phenos_df = # TODO
+        json_data = json_from_disease(disease_input)
+        networks = network_from_disease_json(json_data)
 
     return await render_template("results.html",
                                  title="Results", # final_df=final_df,
