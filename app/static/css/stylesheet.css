@@ -44,6 +44,14 @@ body {
     padding-top: 70px;
 }
 
+a {
+    color: var(--light_brown);
+}
+
+a:hover {
+    color: var(--english_red);
+}
+
 ::-webkit-scrollbar {
     display: none;
 }
@@ -99,4 +107,11 @@ body {
     /* fixed height */
     /*height: 40px;*/
     background-color: var(--yellow_crayola);
+}
+
+.contacts {
+    border: 2px solid var(--warning_orange);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    width: 80px;
 }

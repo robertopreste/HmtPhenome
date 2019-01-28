@@ -33,7 +33,7 @@ async def index():
 @www.route("/about", methods=["GET"])
 async def about():
     return await render_template("about.html",
-                                 title="About")
+                                 title="About HmtPhenome")
 
 
 @www.route("/contacts", methods=["GET"])
