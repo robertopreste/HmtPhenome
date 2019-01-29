@@ -7,20 +7,20 @@ import pytest
 from app.site.scripts import json_from_gene, get_vars_from_gene_name, get_diseases_from_gene_name
 
 
-def test_get_vars_from_gene_name_atp8():
-    corr = pd.DataFrame({"ensembl_gene_id": ["ENSG00000228253", "ENSG00000228253",
-                                             "ENSG00000228253", "ENSG00000228253"],
-                         "gene_name": ["ATP8", "ATP8", "ATP8", "ATP8"],
-                         "chromosome": ["MT", "MT", "MT", "MT"],
-                         "ref_allele": ["C", "G", "T", "T"],
-                         "start_pos": [8393, 8529, 8528, 8418],
-                         "alt_allele": ["T", "A", "C", "C"],
-                         "variant": ["C8393T", "G8529A", "T8528C", "T8418C"],
-                         "dbsnp_id": ["rs121434446", "rs267606881", "rs387906422", "rs1057516062"],
-                         "phenotype": ["Brain pseudoatrophy reversible valproate-induced susceptibility to",
-                                       "Cardiomyopathy apical hypertrophic and neuropathy",
-                                       "Cardiomyopathy infantile hypertrophic", "Optic neuropathy"]})
-    assert_frame_equal(get_vars_from_gene_name("ATP8").reset_index(drop=True),
+def test_get_vars_from_gene_name_tg():
+    corr = pd.DataFrame({"ensembl_gene_id": ["ENSG00000210164", "ENSG00000210164",
+                                             "ENSG00000210164"],
+                         "gene_name": ["TG", "TG", "TG"],
+                         "chromosome": ["MT", "MT", "MT"],
+                         "ref_allele": ["A", "T", "T"],
+                         "start_pos": [10044, 9997, 10010],
+                         "alt_allele": ["G", "C", "C"],
+                         "variant": ["A10044G", "T9997C", "T10010C"],
+                         "dbsnp_id": ["rs41362547", "rs121434475", "rs121434476"],
+                         "phenotype": ["SUDDEN DEATH",
+                                       "Primary familial hypertrophic cardiomyopathy",
+                                       "Exercise intolerance"]})
+    assert_frame_equal(get_vars_from_gene_name("TG").reset_index(drop=True),
                        corr.reset_index(drop=True))
 
 
