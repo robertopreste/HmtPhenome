@@ -4,7 +4,7 @@
 # import requests
 # import json
 import pprint
-from quart import Blueprint, render_template, request, redirect, url_for, jsonify
+from quart import Blueprint, render_template, request, redirect, url_for, jsonify, flash
 from app.static import dbdata
 from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, QueryDiseasesForm
 from app.site.scripts import json_from_variant, network_from_variant_json, json_from_gene, network_from_gene_json, json_from_phenotype, network_from_phenotype_json, json_from_disease, network_from_disease_json
@@ -89,6 +89,9 @@ async def results():
 
         json_data = json_from_variant(variant_chr, variant_start, variant_end)
         networks = network_from_variant_json(json_data)
+        if len(json_data["variants"]) == 0:
+            json_data = "{}"
+            await flash("No results found!")
 
     elif gene_submit == "True":
         json_data = json_from_gene(gene_input)

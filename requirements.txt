@@ -14,4 +14,5 @@ sqlalchemy-migrate
 requests
 pybiomart
 fuzzywuzzy
+python-Levenshtein
 pytest
