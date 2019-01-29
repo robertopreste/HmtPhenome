@@ -283,7 +283,7 @@ def get_gene_from_variant(chrom, var_start, var_end=None):
     return res
 
 
-def get_pheno_from_variant(chrom, var_start, var_end=None):
+def get_phenos_from_variant(chrom, var_start, var_end=None):
     """
     Retrieve phenotypes associated with a specific variant, using Biomart.
     :param chrom: [str] chromosome name (chr + 1:22, X, Y, M)
@@ -344,7 +344,10 @@ def get_diseases_from_variant(chrom, var_start, var_end=None):
     else:
         var_end = str(var_end)
 
-    gene_name = get_gene_from_variant(chrom, var_start, var_end)["gene_name"][0]
+    try:
+        gene_name = get_gene_from_variant(chrom, var_start, var_end)["gene_name"][0]
+    except (IndexError, KeyError) as e:
+        gene_name = ""
     diseases = get_diseases_from_gene_name(gene_name, True)
 
     try:
@@ -371,7 +374,7 @@ def json_from_variant(variant_chr, variant_start, variant_end=None):
     :return: json("variants": [variants list])
     """
     disease_df = get_diseases_from_variant(variant_chr, variant_start, variant_end)
-    pheno_df = get_pheno_from_variant(variant_chr, variant_start, variant_end)
+    pheno_df = get_phenos_from_variant(variant_chr, variant_start, variant_end)
 
     df = (disease_df.set_index("disease")
           .join(pheno_df.set_index("phenotype"))
