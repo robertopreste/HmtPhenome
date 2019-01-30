@@ -16,3 +16,4 @@ pybiomart
 fuzzywuzzy
 python-Levenshtein
 pytest
+wget
