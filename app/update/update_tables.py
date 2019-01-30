@@ -199,7 +199,7 @@ def create_diseases(hpo_file, omim_file, orpha_file, out_file):
             continue
         diseases = diseases.append(pd.DataFrame({"disease_id": [el], "disease_name": [disease_name]}))
     print("Saving Diseases table to {}...".format(out_file))
-    diseases.to_csv("data/tables/{}".format(out_file))
+    diseases.to_csv("data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
 
 
@@ -209,7 +209,7 @@ def create_phenotypes(hpo_file, out_file):
     phenos = hpo[["hpo_id", "hpo_term_name"]]
     phenos.drop_duplicates(inplace=True)
     print("Saving Phenotypes table to {}...".format(out_file))
-    phenos.to_csv("data/tables/{}".format(out_file))
+    phenos.to_csv("data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
 
 
