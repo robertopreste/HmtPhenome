@@ -251,6 +251,22 @@ def create_variant_string(chrom, nt_start, ref_all, alt_all):
     return base_str.format(chrom, nt_start, change)
 
 
+def ensembl_gene_id_to_entrez(ens_gene_id):
+    """
+    Convert an Ensembl gene ID to its related Entrez gene ID, using Biomart.
+    :param ens_gene_id: [str] query Ensembl gene ID
+    :return: [str] resulting Entrez gene ID
+    """
+    server = Server(host="http://www.ensembl.org")
+    dataset = server.marts["ENSEMBL_MART_ENSEMBL"].datasets["hsapiens_gene_ensembl"]
+    res = dataset.query(attributes=["ensembl_gene_id", "external_gene_name", "entrezgene"],
+                        filters={"link_ensembl_gene_id": ens_gene_id})
+    res.rename({"Gene stable ID": "ensembl_gene_id", "Gene name": "gene_name",
+                "NCBI gene ID": "entrez_gene_id"}, axis=1, inplace=True)
+
+    return res
+
+
 # FROM VARIANT POSITION #
 
 
@@ -602,21 +618,30 @@ def get_diseases_from_gene_name(gene_name, with_vars=False):
     return df
 
 
-def get_diseases_from_gene_id(ens_gene_id, with_vars=False):
+def get_diseases_from_gene_id(ens_gene_id):
     """
     Retrieve diseases associated with a specific Ensembl gene id, using Ensembl.
     :param ens_gene_id: [str] query Ensembl gene id
-    :param with_vars: [bool] True to also retrieve phenotypes associated to variants of the gene
-    :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "location", "disease",
-    "phenotypes"])
+    :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "disease_id", "disease_name",
+    "ass_score"])
     """
     try:
         gene_name = Mitocarta.query.filter(Mitocarta.ensembl_id == ens_gene_id).first().gene_symbol
     except AttributeError:  # gene not in Mitocarta
-        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "location", "disease",
-                                     "phenotypes"])
+        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "disease_id", "disease_name",
+                                     "ass_score"])
 
-    df = get_diseases_from_gene_name(gene_name, with_vars)
+    entrez_gene_id = ensembl_gene_id_to_entrez(ens_gene_id)["entrez_gene_id"]
+    diseases = GeneDiseaseAss.query.filter(GeneDiseaseAss.entrez_gene_id == entrez_gene_id).all()
+    df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "disease_id", "disease_name",
+                               "ass_score"])
+    for el in diseases:
+        row = pd.DataFrame({"ensembl_gene_id": [ens_gene_id], "gene_name": [gene_name],
+                            "disease_id": [el["umls_disease_id"]],
+                            "disease_name": [el["disease_name"]], "ass_score": [el["score"]]})
+        df = df.append(row, ignore_index=True)
+    df.drop_duplicates(inplace=True)
+    df.sort_values(by="ass_score", ascending=False, inplace=True)
 
     return df
 
