@@ -1,10 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
+import argparse
 import os
 import pandas as pd
 import wget
 import xml.etree.cElementTree as et
+
+
+parser = argparse.ArgumentParser(description="""Update the data used by HmtPhenome by downloading 
+the new data from the web and creating the related database tables.""")
+parser.add_argument("-download", action="store_true", dest="only_download",
+                    help="""Only download the new data from the various web resources. Default: False.""")
+parser.add_argument("-tables", action="store_true", dest="only_tables",
+                    help="""Only create the new tables from already downloaded data available in 
+                    data/raw/. Default: False.""")
+args = parser.parse_args()
 
 
 def get_node_val(node):
@@ -25,7 +36,7 @@ def download_source(url, out):
     """
     print("Downloading file from {} and saving it to {}...".format(url, out))
     wget.download(url, "data/raw/{}".format(out))
-    print("Complete.")
+    print("\nComplete.\n")
 
 
 def process_mitocarta(in_file, out_file):
@@ -71,9 +82,9 @@ def process_mitocarta(in_file, out_file):
                                 "hg_stop": [row[5]]})
         mitocarta = mitocarta.append(new_row, ignore_index=True)
 
-    print("Saving processed Mitocarta data...")
+    print("Saving processed Mitocarta data to {}...".format(out_file))
     mitocarta.to_csv("data/tables/{}".format(out_file), index=False)
-    print("Complete.")
+    print("Complete.\n")
 
 
 def process_hpo_disgenphen(in_file, out_file):
@@ -81,27 +92,27 @@ def process_hpo_disgenphen(in_file, out_file):
     hpo = pd.read_csv("data/raw/{}".format(in_file), sep="\t", skiprows=1,
                       names=["disease_id", "gene_symbol", "entrez_gene_id", "hpo_id",
                              "hpo_term_name"])
-    print("Saving processed HPO disease_gene_pheno data...")
+    print("Saving processed HPO disease_gene_pheno data to {}...".format(out_file))
     hpo.to_csv("data/tables/{}".format(out_file), index=False)
-    print("Complete.")
+    print("Complete.\n")
 
 
 def process_hpo_genphen(in_file, out_file):
     print("Processing HPO gene_pheno data...")
     hpo = pd.read_csv("data/raw/{}".format(in_file), sep="\t", skiprows=1,
                       names=["entrez_gene_id", "gene_symbol", "hpo_term_name", "hpo_id"])
-    print("Saving processed HPO gene_pheno data...")
+    print("Saving processed HPO gene_pheno data to {}...".format(out_file))
     hpo.to_csv("data/tables/{}".format(out_file), index=False)
-    print("Complete.")
+    print("Complete.\n")
 
 
 def process_hpo_phengen(in_file, out_file):
     print("Processing HPO pheno_gene data...")
     hpo = pd.read_csv("data/raw/{}".format(in_file), sep="\t", skiprows=1,
                       names=["hpo_id", "hpo_term_name", "entrez_gene_id", "gene_symbol"])
-    print("Saving processed HPO pheno_gene data...")
+    print("Saving processed HPO pheno_gene data to {}...".format(out_file))
     hpo.to_csv("data/tables/{}".format(out_file), index=False)
-    print("Complete.")
+    print("Complete.\n")
 
 
 def process_omim(in_file, out_file):
@@ -109,9 +120,9 @@ def process_omim(in_file, out_file):
     omim = pd.read_csv("data/raw/{}".format(in_file), sep="\t", skiprows=3, comment="#",
                        names=["prefix", "mim_number", "mim_name", "alter_title", "includ_title"])
     omim = omim[["mim_number", "mim_name", "prefix"]]
-    print("Saving processed OMIM data...")
+    print("Saving processed OMIM data to {}...".format(out_file))
     omim.to_csv("data/tables/{}".format(out_file), index=False)
-    print("Complete.")
+    print("Complete.\n")
 
 
 def process_orphanet(in_file, out_file):
@@ -125,9 +136,9 @@ def process_orphanet(in_file, out_file):
             orpha = orpha.append(pd.DataFrame({"orpha_name": [get_node_val(dis_name)],
                                                "orpha_num": [get_node_val(orpha_num)]}),
                                  ignore_index=True)
-    print("Saving processed Orphanet data...")
+    print("Saving processed Orphanet data to {}...".format(out_file))
     orpha.to_csv("data/tables/{}".format(out_file), index=False)
-    print("Complete.")
+    print("Complete.\n")
 
 
 def process_disgenet_gene(in_file, out_file, mitocarta_file):
@@ -138,9 +149,9 @@ def process_disgenet_gene(in_file, out_file, mitocarta_file):
     disge = disge[["entrez_gene_id", "gene_symbol", "umls_disease_id", "disease_name", "score"]]
     mitocarta = pd.read_csv("data/tables/{}".format(mitocarta_file))
     disge = disge[disge.gene_symbol.isin(mitocarta.gene_symbol)]
-    print("Saving processed Disgenet gene_disease data...")
+    print("Saving processed Disgenet gene_disease data to {}...".format(out_file))
     disge.to_csv("data/tables/{}".format(out_file), index=False)
-    print("Complete.")
+    print("Complete.\n")
 
 
 def process_disgenet_vars(in_file, out_file):
@@ -149,9 +160,9 @@ def process_disgenet_vars(in_file, out_file):
                         names=["dbsnp_id", "umls_disease_id", "disease_name", "score", "nofpmids",
                                "source"])
     disge = disge[["dbsnp_id", "umls_disease_id", "disease_name", "score"]]
-    print("Saving processed Disgenet vars_disease data...")
+    print("Saving processed Disgenet vars_disease data to {}...".format(out_file))
     disge.to_csv("data/tables/{}".format(out_file), index=False)
-    print("Complete.")
+    print("Complete.\n")
 
 
 def process_disgenet_maps(in_file, out_file):
@@ -159,9 +170,9 @@ def process_disgenet_maps(in_file, out_file):
     disge = pd.read_csv("data/raw/{}".format(in_file), sep="\t",
                         names=["umls_disease_id", "disease_name", "vocabulary", "disease_id",
                                "alt_disease_name"])
-    print("Saving processed Disgenet disease_mappings data...")
+    print("Saving processed Disgenet disease_mappings data to {}...".format(out_file))
     disge.to_csv("data/tables/{}".format(out_file), index=False)
-    print("Complete.")
+    print("Complete.\n")
 
 
 def create_diseases(hpo_file, omim_file, orpha_file, out_file):
@@ -175,15 +186,21 @@ def create_diseases(hpo_file, omim_file, orpha_file, out_file):
     for el in dis_ids:
         resource, resource_id = el.split(":")
         if resource == "OMIM":
-            disease_name = omim[omim.mim_number == int(resource_id)]["mim_name"].values[0]
+            try:
+                disease_name = omim[omim.mim_number == int(resource_id)]["mim_name"].values[0]
+            except IndexError:
+                continue
         elif resource == "ORPHA":
-            disease_name = orpha[orpha.orpha_num == int(resource_id)]["orpha_name"].values[0]
+            try:
+                disease_name = orpha[orpha.orpha_num == int(resource_id)]["orpha_name"].values[0]
+            except IndexError:
+                continue
         else:
             continue
         diseases = diseases.append(pd.DataFrame({"disease_id": [el], "disease_name": [disease_name]}))
-    print("Saving Diseases table...")
+    print("Saving Diseases table to {}...".format(out_file))
     diseases.to_csv("data/tables/{}".format(out_file))
-    print("Complete.")
+    print("Complete.\n")
 
 
 def create_phenotypes(hpo_file, out_file):
@@ -191,9 +208,35 @@ def create_phenotypes(hpo_file, out_file):
     hpo = pd.read_csv("data/tables/{}".format(hpo_file))
     phenos = hpo[["hpo_id", "hpo_term_name"]]
     phenos.drop_duplicates(inplace=True)
-    print("Saving Phenotypes table...")
+    print("Saving Phenotypes table to {}...".format(out_file))
     phenos.to_csv("data/tables/{}".format(out_file))
-    print("Complete.")
+    print("Complete.\n")
+
+
+def perform_download_data(sources):
+    if not os.path.isdir(os.path.join(os.getcwd(), "data/raw/")):
+        os.makedirs(os.path.join(os.getcwd(), "data/raw/"))
+    if not os.path.isdir(os.path.join(os.getcwd(), "data/tables/")):
+        os.makedirs(os.path.join(os.getcwd(), "data/tables/"))
+
+    for el in sources:
+        if el != "omim":  # TODO: temporary fix
+            download_source(sources[el][0], sources[el][1])
+
+
+def perform_create_tables(sources):
+    process_mitocarta(sources["mitocarta"][1], sources["mitocarta"][2])
+    process_hpo_disgenphen(sources["hpo_1"][1], sources["hpo_1"][2])
+    process_hpo_genphen(sources["hpo_2"][1], sources["hpo_2"][2])
+    process_hpo_phengen(sources["hpo_3"][1], sources["hpo_3"][2])
+    # process_omim(sources["omim"][1], sources["omim"][2])  # TODO: temporary fix
+    process_orphanet(sources["orpha"][1], sources["orpha"][2])
+    process_disgenet_gene(sources["disge_gene"][1], sources["disge_gene"][2],
+                          sources["mitocarta"][2])
+    process_disgenet_vars(sources["disge_vars"][1], sources["disge_vars"][2])
+    process_disgenet_maps(sources["disge_maps"][1], sources["disge_maps"][2])
+    create_diseases(sources["hpo_1"][2], sources["omim"][2], sources["orpha"][2], "Diseases.csv")
+    create_phenotypes(sources["hpo_1"][2], "Phenotypes.csv")
 
 
 if __name__ == '__main__':
@@ -215,35 +258,23 @@ if __name__ == '__main__':
                "orpha": ("http://www.orphadata.org/data/xml/en_product1.xml",
                          "orphanet_data.xml",
                          "Orphanet.csv"),
-               "disge_gene": ("http://www.disgenet.org/ds/DisGeNET/results/all_gene_disease_associations.tsv.gz",
+               "disge_gene": ("http://www.disgenet.org/static/disgenet_ap1/files/downloads/all_gene_disease_associations.tsv.gz",
                               "disgenet_all_gene_disease.tsv.gz",
                               "GeneDiseaseAss.csv"),
-               "disge_vars": ("http://www.disgenet.org/ds/DisGeNET/results/all_variant_disease_associations.tsv.gz",
+               "disge_vars": ("http://www.disgenet.org/static/disgenet_ap1/files/downloads/all_variant_disease_associations.tsv.gz",
                               "disgenet_all_vars_disease.tsv.gz",
                               "VarDiseaseAss.csv"),
-               "disge_maps": ("http://www.disgenet.org/ds/DisGeNET/results/disease_mappings.tsv.gz",
+               "disge_maps": ("http://www.disgenet.org/static/disgenet_ap1/files/downloads/disease_mappings.tsv.gz",
                               "disgenet_mappings.tsv.gz",
                               "DiseaseMappings.csv")}
 
-    if not os.path.isdir(os.path.join(os.getcwd(), "data/raw/")):
-        os.makedirs(os.path.join(os.getcwd(), "data/raw/"))
-    if not os.path.isdir(os.path.join(os.getcwd(), "data/tables/")):
-        os.makedirs(os.path.join(os.getcwd(), "data/tables/"))
-
-    for el in sources:
-        download_source(sources[el][0], sources[el][1])
-
-    process_mitocarta(sources["mitocarta"][1], sources["mitocarta"][2])
-    process_hpo_disgenphen(sources["hpo_1"][1], sources["hpo_1"][2])
-    process_hpo_genphen(sources["hpo_2"][1], sources["hpo_2"][2])
-    process_hpo_phengen(sources["hpo_3"][1], sources["hpo_3"][2])
-    process_omim(sources["omim"][1], sources["omim"][2])
-    process_orphanet(sources["orpha"][1], sources["orpha"][2])
-    process_disgenet_gene(sources["disge_gene"][1], sources["disge_gene"][2], sources["mitocarta"])
-    process_disgenet_vars(sources["disge_vars"][1], sources["disge_vars"][2])
-    process_disgenet_maps(sources["disge_maps"][1], sources["disge_maps"][2])
-    create_diseases(sources["hpo_1"][2], sources["omim"][2], sources["orpha"][2], "Diseases.csv")
-    create_phenotypes(sources["hpo_1"][2], "Phenotypes.csv")
+    if args.only_download:
+        perform_download_data(sources)
+    elif args.only_tables:
+        perform_create_tables(sources)
+    else:
+        perform_download_data(sources)
+        perform_create_tables(sources)
 
 
 

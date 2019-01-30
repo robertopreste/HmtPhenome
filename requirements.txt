@@ -17,3 +17,4 @@ fuzzywuzzy
 python-Levenshtein
 pytest
 wget
+xlrd>=0.9.0
