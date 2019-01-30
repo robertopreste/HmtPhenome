@@ -131,7 +131,7 @@ class HpoDisGenePhen(db.Model):
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
     disease_id = db.Column(db.String, nullable=False, index=True)
     gene_symbol = db.Column(db.String, nullable=False, index=True)
-    gene_id = db.Column(db.String, nullable=False)
+    entrez_gene_id = db.Column(db.String, nullable=False)
     hpo_id = db.Column(db.String, nullable=False, index=True)
     hpo_term_name = db.Column(db.String, nullable=False, index=True)
 
@@ -145,7 +145,7 @@ class HpoGenePhen(db.Model):
     __tablename__ = "HpoGenePhen"
 
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
-    gene_id = db.Column(db.String, nullable=False)
+    entrez_gene_id = db.Column(db.String, nullable=False)
     gene_symbol = db.Column(db.String, nullable=False, index=True)
     hpo_term_name = db.Column(db.String, nullable=False, index=True)
     hpo_id = db.Column(db.String, nullable=False, index=True)
@@ -162,7 +162,7 @@ class HpoPhenGene(db.Model):
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
     hpo_id = db.Column(db.String, nullable=False, index=True)
     hpo_term_name = db.Column(db.String, nullable=False, index=True)
-    gene_id = db.Column(db.String, nullable=False)
+    entrez_gene_id = db.Column(db.String, nullable=False)
     gene_symbol = db.Column(db.String, nullable=False, index=True)
 
     def __repr__(self):
