@@ -17,7 +17,7 @@ class Diseases(db.Model):
 
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
     disease_id = db.Column(db.String, index=True, unique=True, nullable=False)
-    disease_name = db.Column(db.String, index=True, unique=True, nullable=False)
+    disease_name = db.Column(db.String, index=True, nullable=False)
 
     def __repr__(self):
         return """Diseases(id: {self.id}, disease_id: {self.disease_id}, 
