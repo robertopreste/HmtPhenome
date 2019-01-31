@@ -278,23 +278,17 @@ def get_gene_from_variant(chrom, var_start, var_end=None):
     :param var_end: [str, int] variant ending position
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name"])
     """
-    chrom = chrom.lstrip("chr").upper()
-    if chrom == "M":
-        chrom = "MT"
-    var_start = str(var_start)
+    if chrom == "MT":
+        chrom = "M"
+    if not chrom.startswith("chr"):
+        chrom = "chr{}".format(chrom)
     if var_end is None:
         var_end = var_start
-    else:
-        var_end = str(var_end)
 
-    server = Server(host="http://www.ensembl.org")
-    dataset = server.marts["ENSEMBL_MART_ENSEMBL"].datasets["hsapiens_gene_ensembl"]
-
-    res = dataset.query(attributes=["ensembl_gene_id", "external_gene_name"],
-                        filters={"chromosome_name": chrom, "start": var_start, "end": var_end})
-
-    res.rename({"Gene stable ID": "ensembl_gene_id", "Gene name": "gene_name"},
-               axis=1, inplace=True)
+    q = Mitocarta.query.filter(Mitocarta.hg_chr == chrom,
+                               Mitocarta.hg_start <= var_start,
+                               Mitocarta.hg_stop >= var_end).first()
+    res = pd.DataFrame({"ensembl_gene_id": [q.ensembl_id], "gene_name": [q.gene_symbol]})
 
     return res
 
@@ -335,7 +329,8 @@ def get_phenos_from_variant(chrom, var_start, var_end=None):
         res = res[["chromosome", "ref_allele", "start_pos", "alt_allele", "phenotype"]]
         res.drop_duplicates(subset="phenotype", inplace=True)
     else:
-        res = pd.DataFrame(columns=["chromosome", "ref_allele", "start_pos", "alt_allele", "phenotype"])
+        res = pd.DataFrame(columns=["chromosome", "ref_allele", "start_pos", "alt_allele",
+                                    "phenotype"])
     res["phenotype_id"] = res["phenotype"].apply(pheno_name_to_id)
 
     return res
