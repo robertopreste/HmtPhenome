@@ -6,6 +6,7 @@ import click
 import datetime
 import imp
 import os
+import pandas as pd
 from quart import Quart
 # from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -97,6 +98,19 @@ def migrate_db():
     click.echo("New migration saved as {}".format(migration))
     click.echo("Current database version: {}".format(v))
 
+
+@app.cli.command()
+def update_db():
+    click.echo("Updating database...")
+    sources = ("Mitocarta", "HpoDisGenePhen", "HpoGenePhen", "HpoPhenGene", "Omim", "Orphanet",
+               "GeneDiseaseAss", "VarDiseaseAss", "DiseaseMappings", "Phenotypes", "Diseases")
+    for el in sources:
+        click.echo("Updating {} table...".format(el))
+        df = pd.read_csv("app/update/data/tables/{}.csv".format(el))
+        df.reset_index(drop=True, inplace=True)
+        df.to_sql(name=el, con=db.engine, index=False, if_exists="append")
+        click.echo("Complete.")
+    click.echo("Database correctly updated. Please migrate it before use.")
 
 
 

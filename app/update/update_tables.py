@@ -6,7 +6,6 @@ import os
 import pandas as pd
 import wget
 import xml.etree.cElementTree as et
-from app import db
 
 
 parser = argparse.ArgumentParser(description="""Update the data used by HmtPhenome by downloading 
@@ -16,8 +15,6 @@ parser.add_argument("-download", action="store_true", dest="only_download",
 parser.add_argument("-tables", action="store_true", dest="only_tables",
                     help="""Only create the new tables from already downloaded data available in 
                     data/raw/. Default: False.""")
-parser.add_argument("-upload", action="store_true", dest="only_upload",
-                    help="""Only upload newly created tables on the database. Default: False.""")
 args = parser.parse_args()
 
 
@@ -174,9 +171,10 @@ def process_orphanet(in_file, out_file):
         for el in node:
             dis_name = el.find("Name")
             orpha_num = el.find("OrphaNumber")
-            orpha = orpha.append(pd.DataFrame({"orpha_name": [get_node_val(dis_name)],
-                                               "orpha_num": [get_node_val(orpha_num)]}),
-                                 ignore_index=True)
+            if get_node_val(dis_name) is not None and get_node_val(orpha_num) is not None:
+                orpha = orpha.append(pd.DataFrame({"orpha_name": [get_node_val(dis_name)],
+                                                   "orpha_num": [get_node_val(orpha_num)]}),
+                                     ignore_index=True)
     print("Saving processed Orphanet data to {}...".format(out_file))
     orpha.to_csv("data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
@@ -192,7 +190,7 @@ def process_disgenet_gene(in_file, out_file, mitocarta_file):
     :return:
     """
     print("Processing Disgenet gene_disease data...")
-    disge = pd.read_csv("data/raw/{}".format(in_file), sep="\t", encoding="latin1",
+    disge = pd.read_csv("data/raw/{}".format(in_file), sep="\t", encoding="latin1", skiprows=1,
                         names=["entrez_gene_id", "gene_symbol", "umls_disease_id", "disease_name",
                                "score", "nofpmids", "nofsnps", "source"])
     disge = disge[["entrez_gene_id", "gene_symbol", "umls_disease_id", "disease_name", "score"]]
@@ -212,7 +210,7 @@ def process_disgenet_vars(in_file, out_file):
     :return:
     """
     print("Processing Disgenet vars_disease data...")
-    disge = pd.read_csv("data/raw/{}".format(in_file), sep="\t", encoding="latin1",
+    disge = pd.read_csv("data/raw/{}".format(in_file), sep="\t", encoding="latin1", skiprows=1,
                         names=["dbsnp_id", "umls_disease_id", "disease_name", "score", "nofpmids",
                                "source"])
     disge = disge[["dbsnp_id", "umls_disease_id", "disease_name", "score"]]
@@ -230,7 +228,7 @@ def process_disgenet_maps(in_file, out_file):
     :return:
     """
     print("Processing Disgenet disease_mappings data...")
-    disge = pd.read_csv("data/raw/{}".format(in_file), sep="\t",
+    disge = pd.read_csv("data/raw/{}".format(in_file), sep="|", skiprows=1,
                         names=["umls_disease_id", "disease_name", "vocabulary", "disease_id",
                                "alt_disease_name"])
     print("Saving processed Disgenet disease_mappings data to {}...".format(out_file))
@@ -290,19 +288,6 @@ def create_phenotypes(hpo_file, out_file):
     print("Complete.\n")
 
 
-def upload_table(in_file, table):
-    """
-    Upload a csv file to the related table in the database.
-    :param in_file: csv file to upload
-    :param table: destination table in the database
-    :return:
-    """
-    print("Updating table {} from data {}...".format(table, in_file))
-    df = pd.read_csv("data/tables/{}".format(in_file))
-    df.to_sql(name=table, con=db.engine, index=False, if_exists="replace")
-    print("Complete.\n")
-
-
 def perform_download_data(sources):
     """
     Download the needed data from the web and save them to data/raw/.
@@ -341,56 +326,42 @@ def perform_create_tables(sources):
     create_phenotypes(sources["hpo_1"][2], "Phenotypes.csv")
 
 
-def perform_upload_tables(sources):
-    """
-    Upload all the needed data to the respective table in the database.
-    :param sources: dictionary with elements to process
-    :return:
-    """
-    for el in sources:
-        if el != "omim":  # TODO: temporary fix
-            upload_table(sources[el][2], sources[el][3])
-
-
 if __name__ == '__main__':
     sources = {"mitocarta": ("http://www.broadinstitute.org/ftp/distribution/metabolic/papers/Pagliarini/MitoCarta2.0/Human.MitoCarta2.0.xls",
                              "mitocarta.xls",
-                             "Mitocarta.csv", "Mitocarta"),
+                             "Mitocarta.csv"),
                "hpo_1": ("http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/lastStableBuild/artifact/annotation/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt",
                          "hpo_disease_gene_phenotype.txt",
-                         "HpoDisGenePhen.csv", "HpoDisGenePhen"),
+                         "HpoDisGenePhen.csv"),
                "hpo_2": ("http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/lastStableBuild/artifact/annotation/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt",
                          "hpo_gene_phenotype.txt",
-                         "HpoGenePhen.csv", "HpoGenePhen"),
+                         "HpoGenePhen.csv"),
                "hpo_3": ("http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/lastStableBuild/artifact/annotation/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt",
                          "hpo_phenotype_gene.txt",
-                         "HpoPhenGene.csv", "HpoPhenGene"),
+                         "HpoPhenGene.csv"),
                "omim": ("https://data.omim.org/downloads/IrNkLfaiTB6CrGnAGCXDzw/mimTitles.txt",
                         "omim_data.txt",  # TODO: change this OMIM API key because it won't work
-                        "Omim.csv", "Omim"),
+                        "Omim.csv"),
                "orpha": ("http://www.orphadata.org/data/xml/en_product1.xml",
                          "orphanet_data.xml",
-                         "Orphanet.csv", "Orphanet"),
+                         "Orphanet.csv"),
                "disge_gene": ("http://www.disgenet.org/static/disgenet_ap1/files/downloads/all_gene_disease_associations.tsv.gz",
                               "disgenet_all_gene_disease.tsv.gz",
-                              "GeneDiseaseAss.csv", "GeneDiseaseAss"),
+                              "GeneDiseaseAss.csv"),
                "disge_vars": ("http://www.disgenet.org/static/disgenet_ap1/files/downloads/all_variant_disease_associations.tsv.gz",
                               "disgenet_all_vars_disease.tsv.gz",
-                              "VarDiseaseAss.csv", "VarDiseaseAss"),
+                              "VarDiseaseAss.csv"),
                "disge_maps": ("http://www.disgenet.org/static/disgenet_ap1/files/downloads/disease_mappings.tsv.gz",
                               "disgenet_mappings.tsv.gz",
-                              "DiseaseMappings.csv", "DiseaseMappings")}
+                              "DiseaseMappings.csv")}
 
     if args.only_download:
         perform_download_data(sources)
     elif args.only_tables:
         perform_create_tables(sources)
-    elif args.only_upload:
-        perform_upload_tables(sources)
     else:
         perform_download_data(sources)
         perform_create_tables(sources)
-        perform_upload_tables(sources)
 
 
 
