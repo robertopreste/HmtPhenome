@@ -288,7 +288,10 @@ def get_gene_from_variant(chrom, var_start, var_end=None):
     q = Mitocarta.query.filter(Mitocarta.hg_chr == chrom,
                                Mitocarta.hg_start <= var_start,
                                Mitocarta.hg_stop >= var_end).first()
-    res = pd.DataFrame({"ensembl_gene_id": [q.ensembl_id], "gene_name": [q.gene_symbol]})
+    try:
+        res = pd.DataFrame({"ensembl_gene_id": [q.ensembl_id], "gene_name": [q.gene_symbol]})
+    except AttributeError:
+        res = pd.DataFrame(columns=["ensembl_gene_id", "gene_name"])
 
     return res
 
@@ -404,11 +407,22 @@ def json_from_variant(variant_chr, variant_start, variant_end=None):
     df.rename({"disease": "disease_name", "variation": "dbsnp_id", "phenotypes": "phenotype_ids"},
               axis=1, inplace=True)
 
+    new_phenos = []
+    for el in df.phenotype_ids:
+        ph_list = []
+        for pheno in el:
+            # phenotype name is the same as disease -> remove phenotype
+            pheno_term = pheno_id_to_term(pheno)
+            if not pheno_term.lower() in df.disease_name.str.lower().unique():
+                ph_list.append(pheno)
+        new_phenos.append(ph_list)
+    df["phenotype_ids"] = new_phenos
+
     df_json = json.loads(df.to_json(orient="records"))
     for el in df_json:
         el["phenotype_names"] = []
         for pheno in el["phenotype_ids"]:
-            el["phenotype_names"].append(pheno_id_to_term(pheno))
+            el["phenotype_names"].append(pheno_id_to_term(pheno).capitalize())
         el["disease_id"] = disease_name_to_id(el["disease_name"])  # TODO: correct this to grep disease id from the db table
 
     final_json = {}
