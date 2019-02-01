@@ -2,7 +2,6 @@
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
 from app.site.models import Mitocarta, Phenotypes, Diseases, Omim, Orphanet, GeneDiseaseAss, VarDiseaseAss, DiseaseMappings, HpoDisGenePhen
-from quart import escape
 import pandas as pd
 import numpy as np
 import requests
@@ -26,7 +25,7 @@ def get_genes():
         lista = set()
         q = Mitocarta.query.filter(Mitocarta.hg_chr == chrom).all()
         for el in q:
-            lista.add(el.gene_symbol)
+            lista.add((el.gene_symbol, el.ensembl_id))
         chr_dict[chrom] = sorted(list(lista))
 
     return chr_dict
@@ -114,7 +113,7 @@ function populateGenes(s1, s2) {
         optionArray = ["A|--All Genes--", """ % chrom
             for el in chr_dict[chrom]:
                 base_string += """
-        "%s|%s", """ % (el, el)
+        "%s|%s", """ % (el[0], el[1])
         else:
             base_string += """]; 
     } else if (s1.value == "%s") {
@@ -122,7 +121,7 @@ function populateGenes(s1, s2) {
 
             for el in chr_dict[chrom]:
                 base_string += """
-        "%s|%s", """ % (el, el)
+        "%s|%s", """ % (el[0], el[1])
 
     base_string += """]; 
     }
@@ -296,17 +295,18 @@ def get_dbsnp_from_variant(chrom, var_start, var_end=None):
                 "Chromosome/scaffold position start (bp)": "start_pos",
                 "Consequence specific allele": "ref/alt allele",
                 "Variant name": "dbsnp_id"}, axis=1, inplace=True)
-    res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
-    res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
-    res = res[res["alt_allele"] != "HGMD_MUTATION"]
-    variants = []
-    for el in res.itertuples():
-        variants.append(create_variant_string(el.chromosome, el.start_pos,
-                                              el.ref_allele, el.alt_allele))
-    res["variant"] = variants
-    res.drop_duplicates(subset="variant", inplace=True)
-    res.drop(["chromosome", "start_pos", "ref_allele", "alt_allele", "ref/alt allele"],
-             axis=1, inplace=True)
+    if res.shape[0] != 0:
+        res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
+        res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
+        res = res[res["alt_allele"] != "HGMD_MUTATION"]
+        variants = []
+        for el in res.itertuples():
+            variants.append(create_variant_string(el.chromosome, el.start_pos,
+                                                  el.ref_allele, el.alt_allele))
+        res["variant"] = variants
+        res.drop_duplicates(subset="variant", inplace=True)
+        res.drop(["chromosome", "start_pos", "ref_allele", "alt_allele", "ref/alt allele"],
+                 axis=1, inplace=True)
 
     return res
 
@@ -646,7 +646,7 @@ def get_vars_from_gene_name(gene_name):
     Retrieve all variants associated with a specific gene, using Biomart.
     :param gene_name: [str] name of the query gene
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
-    "start_pos", "alt_allele", "variant", "phenotype"])
+    "start_pos", "alt_allele", "variant", "dbsnp_id", "phenotype"])
     """
     # gene_name = gene_name.upper().lstrip("MT-")
     if gene_name.startswith("MT-"):
@@ -655,7 +655,8 @@ def get_vars_from_gene_name(gene_name):
     try:
         ens_gene_id = Mitocarta.query.filter(Mitocarta.gene_symbol == gene_name).first().ensembl_id
     except AttributeError:  # gene not in Mitocarta
-        return pd.DataFrame()
+        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
+                                     "start_pos", "alt_allele", "variant", "dbsnp_id", "phenotype"])
 
     server = Server(host="http://www.ensembl.org")
     dataset = server.marts["ENSEMBL_MART_SNP"].datasets["hsapiens_snp"]
@@ -674,9 +675,6 @@ def get_vars_from_gene_name(gene_name):
     res["gene_name"] = gene_name
     res["ensembl_gene_id"] = ens_gene_id
     res["variant"] = res["ref_allele"] + res["start_pos"].astype(str) + res["alt_allele"]
-
-    # TODO: add also variants found through the VarDiseaseAss table (then retrieve variant from dbsnp id)
-
     res = res[["ensembl_gene_id", "gene_name", "chromosome", "ref_allele", "start_pos", "alt_allele",
                "variant", "dbsnp_id", "phenotype"]]
     res = res[res["phenotype"].notnull()]
@@ -689,33 +687,35 @@ def get_vars_from_gene_id(ens_gene_id):
     Retrieve all variants associated with a specific Ensembl gene ID, using Biomart.
     :param ens_gene_id: [str] query Ensembl gene ID
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
-    "start_pos", "alt_allele", "phenotype"])
+    "start_pos", "alt_allele", "variant", "dbsnp_id", "phenotype"])
     """
     try:
         gene_name = Mitocarta.query.filter(Mitocarta.ensembl_id == ens_gene_id).first().gene_symbol
     except AttributeError:  # gene not in Mitocarta
-        return pd.DataFrame()
+        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
+                                     "start_pos", "alt_allele", "variant", "dbsnp_id", "phenotype"])
 
     server = Server(host="http://www.ensembl.org")
     dataset = server.marts["ENSEMBL_MART_SNP"].datasets["hsapiens_snp"]
 
     res = dataset.query(attributes=["chr_name", "chrom_start", "consequence_allele_string",
-                                    "phenotype_description"],
+                                    "phenotype_description", "refsnp_id"],
                         filters={"ensembl_gene": ens_gene_id})
 
-    res.rename({"Chromosome/scaffold name": "chromosome",
+    res.rename({"Chromosome/scaffold name": "chromosome", "Variant name": "dbsnp_id",
                 "Chromosome/scaffold position start (bp)": "start_pos",
                 "Consequence specific allele": "ref/alt allele",
                 "Phenotype description": "phenotype"}, axis=1, inplace=True)
-    res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
-    res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
-    res = res[res["alt_allele"] != "HGMD_MUTATION"]
-    res["gene_name"] = gene_name
-    res["ensembl_gene_id"] = ens_gene_id
-
-    res = res[["ensembl_gene_id", "gene_name", "chromosome", "ref_allele", "start_pos", "alt_allele",
-               "phenotype"]]
-    res = res[res["phenotype"].notnull()]
+    if res.shape[0] != 0:
+        res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
+        res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
+        res = res[res["alt_allele"] != "HGMD_MUTATION"]
+        res["gene_name"] = gene_name
+        res["ensembl_gene_id"] = ens_gene_id
+        res["variant"] = res["ref_allele"] + res["start_pos"].astype(str) + res["alt_allele"]
+        res = res[["ensembl_gene_id", "gene_name", "chromosome", "ref_allele", "start_pos",
+                   "alt_allele", "variant", "dbsnp_id", "phenotype"]]
+        res = res[res["phenotype"].notnull()]
 
     return res
 
@@ -797,6 +797,11 @@ def get_diseases_from_gene_id(ens_gene_id):
     df.sort_values(by="ass_score", ascending=False, inplace=True)
 
     return df
+
+
+def json_from_gene_id(ens_gene_id):
+    pass
+    # TODO use get_variants_from_gene_id and get_diseases_from_gene_id
 
 
 def json_from_gene(gene_input):
