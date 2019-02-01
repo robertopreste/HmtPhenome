@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
 from app.site.models import Mitocarta, Phenotypes, Diseases, Omim, Orphanet, GeneDiseaseAss, VarDiseaseAss, DiseaseMappings, HpoDisGenePhen
+from quart import escape
 import pandas as pd
 import numpy as np
 import requests
@@ -242,7 +243,7 @@ def create_variant_string(chrom, nt_start, ref_all, alt_all):
     # if math.isnan(chrom) or math.isnan(nt_start) or math.isnan(ref_all) or math.isnan(alt_all):
     #     return "chr_:_>_"
     base_str = "chr{}:{}{}"
-    change = "{}>{}".format(ref_all.upper(), alt_all.upper())
+    change = "{}_{}".format(ref_all.upper(), alt_all.upper())
     if alt_all == "-":  # deletion
         change = "del{}".format(ref_all.upper())
     elif ref_all == "-":  # insertion
@@ -617,7 +618,7 @@ def network_from_variant_json(final_json):
         if el != "":
             ids += 1
             nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
-                                                        "border": "#7995A3"}})
+                                                            "border": "#7995A3"}})
             id_dict[el] = ids
 
     # TODO: remove duplicated entries from the edges list

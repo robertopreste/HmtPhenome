@@ -4,7 +4,7 @@
 # import requests
 # import json
 import pprint
-from quart import Blueprint, render_template, request, redirect, url_for, jsonify, flash
+from quart import Blueprint, render_template, request, redirect, url_for, jsonify, flash, escape
 from app.static import dbdata
 from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, QueryDiseasesForm
 from app.site.scripts import json_from_variant, network_from_variant_json, json_from_gene, network_from_gene_json, json_from_phenotype, network_from_phenotype_json, json_from_disease, network_from_disease_json
@@ -106,7 +106,7 @@ async def results():
         networks = network_from_disease_json(json_data)
 
     return await render_template("results.html",
-                                 title="Results", # final_df=final_df,
+                                 title="Results",  # final_df=final_df,
                                  json_data=pprint.pformat(json_data),
                                  nodes=networks["nodes"], edges=networks["edges"])
 
