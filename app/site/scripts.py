@@ -720,6 +720,53 @@ def get_vars_from_gene_id(ens_gene_id):
     return res
 
 
+def get_vars_from_gene_id_alt(ens_gene_id):
+    """
+    Retrieve all variants associated with a specific Ensembl gene ID, using Ensembl REST.
+    :param ens_gene_id: [str] query Ensembl gene ID
+    :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
+    "start_pos", "alt_allele", "variant", "dbsnp_id"])
+    """
+    try:
+        gene_name = Mitocarta.query.filter(Mitocarta.ensembl_id == ens_gene_id).first().gene_symbol
+    except AttributeError:
+        return pd.DataFrame()
+
+    server = "https://rest.ensembl.org"
+    ext = "/overlap/id/{}?feature=variation".format(ens_gene_id)
+    r = requests.get(server + ext, headers={"Content-Type": "application/json"})
+    res = r.json()
+
+    df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
+                               "start_pos", "alt_allele", "variant", "dbsnp_id"])
+    for el in res:
+        if "-" in el["alleles"]:
+            continue
+        if len(el["alleles"]) > 2:
+            ref_allele = el["alleles"][0]
+            alt_alleles = el["alleles"][1:]
+            for allele in alt_alleles:
+                new_row = pd.DataFrame({"ensembl_gene_id": [ens_gene_id], "gene_name": [gene_name],
+                                        "chromosome": [el["seq_region_name"]],
+                                        "ref_allele": [ref_allele], "start_pos": [el["start"]],
+                                        "alt_allele": [allele],
+                                        "variant": [ref_allele + str(el["start"]) + allele],
+                                        "dbsnp_id": [el["id"]]})
+                df = df.append(new_row, ignore_index=True)
+        else:
+            new_row = pd.DataFrame({"ensembl_gene_id": [ens_gene_id], "gene_name": [gene_name],
+                                    "chromosome": [el["seq_region_name"]],
+                                    "ref_allele": [el["alleles"][0]], "start_pos": [el["start"]],
+                                    "alt_allele": [el["alleles"][1]],
+                                    "variant": [el["alleles"][0] + str(el["start"]) + el["alleles"][1]],
+                                    "dbsnp_id": [el["id"]]})
+            df = df.append(new_row, ignore_index=True)
+
+    df.drop_duplicates(inplace=True)
+
+    return df
+
+
 def get_diseases_from_gene_name(gene_name, with_vars=False):
     """Retrieve diseases associated to a specific gene, using Ensembl.
     :param gene_name: [str] name of the query gene
@@ -784,10 +831,14 @@ def get_diseases_from_gene_id(ens_gene_id):
         return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "disease_id", "disease_name",
                                      "ass_score"])
 
-    entrez_gene_id = ensembl_gene_id_to_entrez(ens_gene_id)["entrez_gene_id"]
-    diseases = GeneDiseaseAss.query.filter(GeneDiseaseAss.entrez_gene_id == entrez_gene_id).all()
     df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "disease_id", "disease_name",
                                "ass_score"])
+    # TODO: Entrez gene IDs for human mt-tRNAs won't be found somehow
+    entrez_gene_id = ensembl_gene_id_to_entrez(ens_gene_id)["entrez_gene_id"].values[0]
+    if math.isnan(entrez_gene_id):
+        return df
+    diseases = GeneDiseaseAss.query.filter(GeneDiseaseAss.entrez_gene_id == entrez_gene_id).all()
+
     for el in diseases:
         row = pd.DataFrame({"ensembl_gene_id": [ens_gene_id], "gene_name": [gene_name],
                             "disease_id": [el["umls_disease_id"]],
@@ -799,9 +850,24 @@ def get_diseases_from_gene_id(ens_gene_id):
     return df
 
 
-def json_from_gene_id(ens_gene_id):
-    pass
-    # TODO use get_variants_from_gene_id and get_diseases_from_gene_id
+def json_from_gene_id(gene_input):
+    """
+    Create the final json structure from gene data.
+    :param gene_input: [str] Ensemble gene ID to use for the queries
+    :return: json("variants": [variants list], "diseases": [diseases list])
+    """
+    vars_df = get_vars_from_gene_id(gene_input)
+    disease_df = get_diseases_from_gene_id(gene_input)
+
+    var_to_disease = VarDiseaseAss.query.filter(VarDiseaseAss.dbsnp_id.in_(vars_df.dbsnp_id)).all()
+    for idx in vars_df.index:
+        for item in var_to_disease:
+            if fuzz.token_sort_ratio(vars_df.at[idx, "phenotype"].capitalize(),
+                                     item.disease_name.capitalize()) >= 90:
+                vars_df.at[idx, "phenotype"] = item.disease_name
+                vars_df.at[idx, "umls_disease_id"] = item.umls_disease_id
+                break
+
 
 
 def json_from_gene(gene_input):
@@ -821,6 +887,7 @@ def json_from_gene(gene_input):
             if fuzz.token_sort_ratio(vars_df.at[idx, "phenotype"].capitalize(),
                                      item.disease_name.capitalize()) >= 90:
                 vars_df.at[idx, "phenotype"] = item.disease_name
+                break
 
     vars_df.drop(["ensembl_gene_id", "chromosome", "ref_allele", "start_pos",
                   "alt_allele"], axis=1, inplace=True)
