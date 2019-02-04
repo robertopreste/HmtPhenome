@@ -739,6 +739,9 @@ def get_vars_from_gene_id_alt(ens_gene_id):
 
     df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
                                "start_pos", "alt_allele", "variant", "dbsnp_id"])
+    if len(res) == 0:
+        return df
+
     for el in res:
         if "-" in el["alleles"]:
             continue
@@ -767,30 +770,49 @@ def get_vars_from_gene_id_alt(ens_gene_id):
     return df
 
 
-def get_diseases_from_gene_name(gene_name, with_vars=False):
+def get_diseases_from_gene(gene, with_vars=False):
     """Retrieve diseases associated to a specific gene, using Ensembl.
-    :param gene_name: [str] name of the query gene
+    :param gene: [str] query gene Ensembl ID or common name
     :param with_vars: [bool] True to also retrieve phenotypes associated to variants of the gene
-    :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "location", "disease",
-    "phenotypes"]) or pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "location", "variation",
-    "diseases", "phenotypes"]) if with_vars=True
+    :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "disease_name", "phenotype_ids"])
+    or pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "variation", "disease_name",
+    "phenotype_ids"]) if with_vars=True
     """
-    if gene_name.startswith("MT-"):
-        gene_name = gene_name.upper().split("-")[1]
+    if gene.startswith("MT-"):
+        gene = gene.upper().split("-")[1]
 
     server = "https://rest.ensembl.org"
-    ext = "/phenotype/gene/homo_sapiens/{}?include_associated={}".format(gene_name, int(with_vars))
+    ext = "/phenotype/gene/homo_sapiens/{}?include_associated={}".format(gene, int(with_vars))
     r = requests.get(server + ext, headers={"Content-Type": "application/json"})
     res = r.json()
 
     if with_vars:
-        df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "location", "variation", "disease", "phenotypes"])
+        df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "variation", "disease_name",
+                                   "phenotype_ids"])
+    else:
+        df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "disease_name", "phenotype_ids"])
+
+    if gene.startswith("ENSG"):  # input gene is actually an Ensembl ID
         try:
+            ensembl_gene_id = gene
+            gene_name = Mitocarta.query.filter(Mitocarta.ensembl_id == ensembl_gene_id).first().gene_symbol
+        except AttributeError:  # gene not in Mitocarta
+            return df
+    else:  # input gene is actually a gene name
+        try:
+            gene_name = gene
             ensembl_gene_id = Mitocarta.query.filter(Mitocarta.gene_symbol == gene_name).first().ensembl_id
         except AttributeError:  # gene not in Mitocarta
-            return pd.DataFrame()
-    else:
-        df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "location", "disease", "phenotypes"])
+            return df
+
+    # if with_vars:
+    #     df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "variation", "disease", "phenotypes"])
+    #     try:
+    #         ensembl_gene_id = Mitocarta.query.filter(Mitocarta.gene_symbol == gene_name).first().ensembl_id
+    #     except AttributeError:  # gene not in Mitocarta
+    #         return pd.DataFrame()
+    # else:
+    #     df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "disease", "phenotypes"])
 
     for el in res:
         if el == "error":
@@ -799,21 +821,20 @@ def get_diseases_from_gene_name(gene_name, with_vars=False):
         if with_vars:
             if "attributes" in el and "associated_gene" in el["attributes"].keys() and "Variation" in el and "ontology_accessions" in el:
                 row = pd.DataFrame({"ensembl_gene_id": ensembl_gene_id,
-                                    "gene_name": [el["attributes"]["associated_gene"]],
-                                    "location": el["location"],
+                                    "gene_name": [gene_name],
                                     "variation": [el["Variation"]],
-                                    "disease": [el["description"]],
-                                    "phenotypes": [el["ontology_accessions"]]})
+                                    "disease_name": [el["description"]],
+                                    "phenotype_ids": [el["ontology_accessions"]]})
         else:
             if "ontology_accessions" in el:
-                row = pd.DataFrame({"ensembl_gene_id": [el["Gene"]], "gene_name": gene_name,
-                                    "location": el["location"], "disease": [el["description"]],
-                                    "phenotypes": [el["ontology_accessions"]]})
+                row = pd.DataFrame({"ensembl_gene_id": [ensembl_gene_id], "gene_name": gene_name,
+                                    "disease_name": [el["description"]],
+                                    "phenotype_ids": [el["ontology_accessions"]]})
         try:
             df = df.append(row, ignore_index=True)
         except UnboundLocalError:
             return df
-    df.drop_duplicates(subset="disease", inplace=True)
+    df.drop_duplicates(subset="disease_name", inplace=True)
 
     return df
 
@@ -837,6 +858,7 @@ def get_diseases_from_gene_id(ens_gene_id):
     entrez_gene_id = ensembl_gene_id_to_entrez(ens_gene_id)["entrez_gene_id"].values[0]
     if math.isnan(entrez_gene_id):
         return df
+    # TODO use get_disease_from_gene_name() - can be used with Ensembl gene ID as well
     diseases = GeneDiseaseAss.query.filter(GeneDiseaseAss.entrez_gene_id == entrez_gene_id).all()
 
     for el in diseases:
@@ -856,17 +878,60 @@ def json_from_gene_id(gene_input):
     :param gene_input: [str] Ensemble gene ID to use for the queries
     :return: json("variants": [variants list], "diseases": [diseases list])
     """
-    vars_df = get_vars_from_gene_id(gene_input)
-    disease_df = get_diseases_from_gene_id(gene_input)
+    # vars_df = get_vars_from_gene_id(gene_input)
+    vars_df = get_vars_from_gene_id_alt(gene_input)  # we might want to add phenotypes --> get_diseases_from_dbsnp()
+    vars_df["disease_name"] = ""
+    vars_df["umls_disease_id"] = ""
+    # disease_df = get_diseases_from_gene_id(gene_input)  # get_disease_from_gene_name to grep diseases and phenos
 
+    # add disease name and UMLS ID to variants where available
     var_to_disease = VarDiseaseAss.query.filter(VarDiseaseAss.dbsnp_id.in_(vars_df.dbsnp_id)).all()
     for idx in vars_df.index:
         for item in var_to_disease:
-            if fuzz.token_sort_ratio(vars_df.at[idx, "phenotype"].capitalize(),
-                                     item.disease_name.capitalize()) >= 90:
-                vars_df.at[idx, "phenotype"] = item.disease_name
+            if vars_df.at[idx, "dbsnp_id"] == item.dbsnp_id:
+                vars_df.at[idx, "disease_name"] = item.disease_name
                 vars_df.at[idx, "umls_disease_id"] = item.umls_disease_id
-                break
+
+    vars_df.drop(["ref_allele", "start_pos", "alt_allele"], axis=1, inplace=True)
+    vars_json = json.loads(vars_df.to_json(orient="records"))
+
+    disease_df = get_diseases_from_gene(gene_input)
+    entrez_gene_id = ensembl_gene_id_to_entrez(gene_input).entrez_gene_id.values[0]
+    gene_to_disease = GeneDiseaseAss.query.filter(GeneDiseaseAss.gene_symbol == entrez_gene_id).all()
+
+    if disease_df.shape[0] == 0 and len(gene_to_disease) > 0:
+        disease_df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "disease_name",
+                                           "umls_disease_id"])
+        for el in gene_to_disease:
+            disease_df = disease_df.append(pd.DataFrame({"ensembl_gene_id": [gene_input],
+                                                         "gene_name": [el.gene_symbol],
+                                                         "disease_name": [el.disease_name],
+                                                         "umls_disease_id": [el.umls_disease_id]}),
+                                           ignore_index=True)
+        disease_df["phenotype_ids"] = ""
+        disease_df.drop_duplicates(subset="disease_name", inplace=True)
+    else:
+        disease_df["umls_disease_id"] = ""
+        for idx in disease_df.index:
+            for item in gene_to_disease:
+                if fuzz.token_sort_ratio(disease_df.at[idx, "disease_name"].capitalize(),
+                                         item.disease_name.capitalize()) >= 90:
+                    disease_df.at[idx, "disease_name"] = item.disease_name
+                    disease_df.at[idx, "umls_disease_id"] = item.umls_disease_id
+                    break
+
+    disease_json = json.loads(disease_df.to_json(orient="records"))
+    for el in disease_json:
+        el["phenotype_names"] = []
+        for pheno in el["phenotype_ids"]:
+            el["phenotype_names"].append(pheno_id_to_term(pheno))
+        el["disease_id"] = disease_name_to_id(el["disease_name"])
+
+    final_json = {}
+    final_json["variants"] = vars_json
+    final_json["diseases"] = disease_json
+
+    return final_json
 
 
 
@@ -898,6 +963,7 @@ def json_from_gene(gene_input):
     disease_df.rename({"disease": "disease_name", "phenotypes": "phenotype_ids"},
                       axis=1, inplace=True)
 
+    # TODO: use Entrez gene ID for this one
     gene_to_disease = GeneDiseaseAss.query.filter(GeneDiseaseAss.gene_symbol == gene_input).all()
     # TODO: it is possible to add more gene-related diseases from this table (but need to find phenotypes)
     for idx in disease_df.index:
@@ -905,6 +971,7 @@ def json_from_gene(gene_input):
             if fuzz.token_sort_ratio(disease_df.at[idx, "disease_name"].capitalize(),
                                      item.disease_name.capitalize()) >= 90:
                 disease_df.at[idx, "disease_name"] = item.disease_name
+                break
 
     disease_json = json.loads(disease_df.to_json(orient="records"))
     for el in disease_json:
