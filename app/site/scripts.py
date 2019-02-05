@@ -1092,6 +1092,7 @@ def get_genes_from_phenotype(phenotype):
     :param phenotype: [str] accession id of the phenotype to search for
     :return: pd.DataFrame(columns=["gene_name", "phenotypes", "description"])
     """
+    # TODO: work from here
     df = pd.DataFrame(columns=["gene_name", "phenotypes", "description"])
 
     dis_maps = DiseaseMappings.query.filter(DiseaseMappings.disease_id == phenotype).first()
@@ -1129,6 +1130,10 @@ def get_vars_from_phenotype(phenotype):
     pheno_umls = dis_maps.umls_disease_id
     pheno_name = dis_maps.disease_name
     vars_maps = VarDiseaseAss.query.filter(VarDiseaseAss.umls_disease_id == pheno_umls).all()
+
+    if len(vars_maps) == 0:
+        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
+                                     "start_pos", "alt_allele", "phenotype", "phenotype_id"])
 
     server = Server(host="http://www.ensembl.org")
     dataset = server.marts["ENSEMBL_MART_SNP"].datasets["hsapiens_snp"]
@@ -1172,10 +1177,12 @@ def get_diseases_from_phenotype(phenotype):
     if hpo_dis:
         for el in hpo_dis:
             dis_id = el.disease_id.split(":")[1]
-            dis_name = Omim.query.filter(Omim.mim_number == dis_id).first().mim_name
-            row = pd.DataFrame({"pheno_id": [el.hpo_id], "pheno_name": [pheno_name],
-                                "disease_name": [dis_name], "disease_id": [el.disease_id]})
-            df = df.append(row, ignore_index=True)
+            dis_name = Omim.query.filter(Omim.mim_number == dis_id).first()
+            if dis_name is not None:
+                dis_mim_name = dis_name.mim_name
+                row = pd.DataFrame({"pheno_id": [el.hpo_id], "pheno_name": [pheno_name],
+                                    "disease_name": [dis_mim_name], "disease_id": [el.disease_id]})
+                df = df.append(row, ignore_index=True)
 
     df.drop_duplicates(inplace=True)
 
