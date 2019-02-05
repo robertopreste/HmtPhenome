@@ -137,8 +137,8 @@ class HpoDisGenePhen(db.Model):
 
     def __repr__(self):
         return """HpoDisGenePhen(id: {self.id}, disease_id: {self.disease_id}, 
-        gene_symbol: {self.gene_symbol}, gene_id: {self.gene_id}, hpo_id: {self.hpo_id}, 
-        hpo_term_name: {self.hpo_term_name})""".format(self=self)
+        gene_symbol: {self.gene_symbol}, entrez_gene_id: {self.entrez_gene_id}, 
+        hpo_id: {self.hpo_id}, hpo_term_name: {self.hpo_term_name})""".format(self=self)
 
 
 class HpoGenePhen(db.Model):
