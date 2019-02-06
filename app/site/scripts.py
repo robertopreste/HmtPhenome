@@ -239,8 +239,9 @@ def create_variant_string(chrom, nt_start, ref_all, alt_all):
     :param alt_all: [str] alternate allele
     :return: [str] with variant formatted according to current standards
     """
+    if math.isnan(nt_start) or type(ref_all) == float or type(alt_all) == float:
     # if math.isnan(chrom) or math.isnan(nt_start) or math.isnan(ref_all) or math.isnan(alt_all):
-    #     return "chr_:_>_"
+        return "chr_:_>_"
     base_str = "chr{}:{}{}"
     change = "{}_{}".format(ref_all.upper(), alt_all.upper())
     if alt_all == "-":  # deletion
@@ -450,7 +451,7 @@ def get_diseases_from_variant(chrom, var_start, var_end=None):
         gene_name = get_gene_from_variant(chrom, var_start, var_end)["gene_name"][0]
     except (IndexError, KeyError) as e:
         gene_name = ""
-    diseases = get_diseases_from_gene_name(gene_name, True)
+    diseases = get_diseases_from_gene(gene_name, True)
 
     try:
         if var_end is not None:
@@ -1090,30 +1091,35 @@ def get_genes_from_phenotype(phenotype):
     """
     Retrieve genes related to a phenotype, using Ensembl.
     :param phenotype: [str] accession id of the phenotype to search for
-    :return: pd.DataFrame(columns=["gene_name", "phenotypes", "description"])
+    :return: pd.DataFrame(columns=["gene_name", "ensembl_gene_id", "phenotype_id", "phenotype_name"])
     """
-    # TODO: work from here
-    df = pd.DataFrame(columns=["gene_name", "phenotypes", "description"])
+    df = pd.DataFrame(columns=["gene_name", "ensembl_gene_id", "phenotype_id", "phenotype_name"])
 
     dis_maps = DiseaseMappings.query.filter(DiseaseMappings.disease_id == phenotype).first()
-    pheno_umls = dis_maps.umls_disease_id
+    try:
+        pheno_umls = dis_maps.umls_disease_id
+        pheno_name = dis_maps.disease_name
+    except AttributeError:
+        return df
     rel_genes = GeneDiseaseAss.query.filter(GeneDiseaseAss.umls_disease_id == pheno_umls).all()
-    for el in rel_genes:
-        row = pd.DataFrame({"gene_name": [el.gene_symbol], "phenotypes": [phenotype],
-                            "description": [el.disease_name]})
-        df = df.append(row, ignore_index=True)
+    if len(rel_genes) > 0:
+        for el in rel_genes:
+            ensembl_id = Mitocarta.query.filter(Mitocarta.gene_symbol == el.gene_symbol).first().ensembl_id
+            row = pd.DataFrame({"gene_name": [el.gene_symbol], "ensembl_gene_id": [ensembl_id],
+                                "phenotype_id": [phenotype], "phenotype_name": [pheno_name]})
+            df = df.append(row, ignore_index=True)
+    else:
+        return df
 
-    pheno_name = DiseaseMappings.query.filter(DiseaseMappings.disease_id == phenotype).first().disease_name
-    df["description"] = pheno_name
     df.drop_duplicates(inplace=True)
 
-    # TODO: find a better way to retrieve the list of Mitocarta genes from the table
-    mito_genes = pd.read_sql("select * from Mitocarta", "sqlite:///hmtphenome.db")
-    try:
-        df["gene_name"] = df["gene_name"].str.split("-", expand=True)[1]
-    except KeyError:
-        pass
-    df = df[df["gene_name"].isin(mito_genes["gene_symbol"])]
+    # do not need this because genes in GeneDiseaseAss are already filtered based on Mitocarta genes
+    # mito_genes = pd.read_sql("select * from Mitocarta", "sqlite:///hmtphenome.db")
+    # try:
+    #     df["gene_name"] = df["gene_name"].str.split("-", expand=True)[1]
+    # except KeyError:
+    #     pass
+    # df = df[df["gene_name"].isin(mito_genes["gene_symbol"])]
 
     return df
 
@@ -1124,16 +1130,19 @@ def get_vars_from_phenotype(phenotype):
     get_vars_from_gene_name() functions.
     :param phenotype: [str] accession id of the phenotype to search for
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
-    "start_pos", "alt_allele", "phenotype", "phenotype_id"])
+    "start_pos", "alt_allele", "phenotype_name", "phenotype_id"])
     """
     dis_maps = DiseaseMappings.query.filter(DiseaseMappings.disease_id == phenotype).first()
+    if dis_maps is None:
+        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
+                                     "start_pos", "alt_allele", "phenotype_name", "phenotype_id"])
     pheno_umls = dis_maps.umls_disease_id
     pheno_name = dis_maps.disease_name
     vars_maps = VarDiseaseAss.query.filter(VarDiseaseAss.umls_disease_id == pheno_umls).all()
 
     if len(vars_maps) == 0:
         return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
-                                     "start_pos", "alt_allele", "phenotype", "phenotype_id"])
+                                     "start_pos", "alt_allele", "phenotype_name", "phenotype_id"])
 
     server = Server(host="http://www.ensembl.org")
     dataset = server.marts["ENSEMBL_MART_SNP"].datasets["hsapiens_snp"]
@@ -1148,18 +1157,29 @@ def get_vars_from_phenotype(phenotype):
                 "Associated gene with phenotype": "gene_name",
                 "Consequence specific allele": "ref/alt allele",
                 "Gene stable ID": "ensembl_gene_id",
-                "Phenotype description": "phenotype"}, axis=1, inplace=True)
+                "Phenotype description": "phenotype_name"}, axis=1, inplace=True)
     res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
     res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
     res = res[res["alt_allele"] != "HGMD_MUTATION"]
-    res["variant"] = res["ref_allele"] + res["start_pos"].astype(str) + res["alt_allele"]
-    res["phenotype"] = pheno_name
+    res = res[res["chromosome"].isin(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12",
+                                      "13", "14", "15", "16", "17", "18", "19", "20", "21", "22",
+                                      "X", "Y", "M", "MT"])]  # removing weird non-standard chroms
+    variants = []
+    for el in res.itertuples():
+        variants.append(create_variant_string(el.chromosome, el.start_pos, el.ref_allele,
+                                              el.alt_allele))
+    res["variant"] = variants
+    res["phenotype_name"] = pheno_name
+    res["phenotype_id"] = phenotype
     res.drop(["ref/alt allele"], axis=1, inplace=True)
     res["gene_name"] = res["gene_name"].apply(
         lambda x: x.split("-")[1] if type(x) == str and x.startswith("MT-") else x)
     res.drop_duplicates(inplace=True)
-    # TODO: remove entries with the wrong phenotype
-    # return rel_vars
+    res = res[res["variant"] != "chr_:_>_"]
+    res = res[(res["gene_name"] != "intergenic") &
+              (res["gene_name"].notnull()) &
+              (~res["gene_name"].str.contains(",", na=False))]
+
     return res
 
 
@@ -1180,7 +1200,7 @@ def get_diseases_from_phenotype(phenotype):
             dis_name = Omim.query.filter(Omim.mim_number == dis_id).first()
             if dis_name is not None:
                 dis_mim_name = dis_name.mim_name
-                row = pd.DataFrame({"pheno_id": [el.hpo_id], "pheno_name": [pheno_name],
+                row = pd.DataFrame({"phenotype_id": [el.hpo_id], "phenotype_name": [pheno_name],
                                     "disease_name": [dis_mim_name], "disease_id": [el.disease_id]})
                 df = df.append(row, ignore_index=True)
 
@@ -1201,17 +1221,11 @@ def json_from_phenotype(pheno_input):
     disease_df = get_diseases_from_phenotype(pheno_input)
 
     # Variants
-    vars_df.drop(["start_pos", "ensembl_gene_id", "ref_allele", "alt_allele"], axis=1, inplace=True)
-    vars_df.rename({"phenotype": "phenotype_name"}, axis=1, inplace=True)
-    vars_df["phenotype_id"] = pheno_input
+    vars_df.drop(["start_pos", "ref_allele", "alt_allele"], axis=1, inplace=True)
     vars_json = json.loads(vars_df.to_json(orient="records"))
     # Genes
-    gene_df.rename({"phenotypes": "phenotype_id", "description": "phenotype_name"},
-                   axis=1, inplace=True)
     gene_json = json.loads(gene_df.to_json(orient="records"))
     # Diseases
-    disease_df.rename({"pheno_id": "phenotype_id", "pheno_name": "phenotype_name"},
-                      axis=1, inplace=True)
     disease_json = json.loads(disease_df.to_json(orient="records"))
 
     final_json = {}
@@ -1284,22 +1298,36 @@ def network_from_phenotype_json(final_json):
                                                         "border": "#B06A57"}})
         id_dict[el] = ids
 
+    connected_nodes = set()
+
     for el in var_json:
         # phenotype to variants
         edges.append({"from": id_dict[el["phenotype_name"]], "to": id_dict[el["variant"]]})
+        connected_nodes.add(id_dict[el["phenotype_name"]])
+        connected_nodes.add(id_dict[el["variant"]])
         # variant to gene
         edges.append({"from": id_dict[el["variant"]], "to": id_dict[el["gene_name"]]})
+        connected_nodes.add(id_dict[el["variant"]])
+        connected_nodes.add(id_dict[el["gene_name"]])
     for el in gen_json:
         # phenotype to genes
         edges.append({"from": id_dict[el["phenotype_name"]], "to": id_dict[el["gene_name"]]})
+        connected_nodes.add(id_dict[el["phenotype_name"]])
+        connected_nodes.add(id_dict[el["gene_name"]])
     for el in dis_json:
         # phenotype to diseases
         edges.append({"from": id_dict[el["phenotype_name"]], "to": id_dict[el["disease_name"]]})
-    # TODO: fix gene names to be consistent with each other
+        connected_nodes.add(id_dict[el["phenotype_name"]])
+        connected_nodes.add(id_dict[el["disease_name"]])
+
+    # TODO: this orphan nodes deletion does not work every time?!
+    # delete orphan nodes
+    candidates = [n for n, el in enumerate(nodes, start=1)]
+    for n in candidates:
+        if n not in connected_nodes and n in nodes:
+            del nodes[n]
 
     return {"nodes": nodes, "edges": edges}
-
-# TODO: this is working but not for every entry, it should be checked thoroughly
 
 
 # FROM DISEASE #
