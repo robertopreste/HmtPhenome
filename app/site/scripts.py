@@ -1359,20 +1359,22 @@ def get_genes_from_disease_id(disease_id):
     """
     Retrieve genes involved in a specific disease, using the GeneDiseaseAss table from the db.
     :param disease_id: [str] disease ID to look for
-    :return: pd.DataFrame(columns=["disease_id", "disease_umls", "disease_name", "entrez_gene_id",
-    "gene_symbol", "ass_score"])
+    :return: pd.DataFrame(columns=["umls_disease_id", "disease_name", "disease_id",
+    "entrez_gene_id", "gene_name", "ass_score"])
     """
     dis_umls = get_umls_from_disease_id(disease_id)
     ass_genes = GeneDiseaseAss.query.filter(GeneDiseaseAss.umls_disease_id == dis_umls).all()
-    df = pd.DataFrame(columns=["disease_id", "disease_umls", "disease_name", "entrez_gene_id",
-                               "gene_symbol", "ass_score"])
-    if ass_genes:
+    df = pd.DataFrame(columns=["umls_disease_id", "disease_name", "disease_id", "entrez_gene_id",
+                               "gene_name", "ass_score"])
+    if len(ass_genes) > 0:
         for el in ass_genes:
-            row = pd.DataFrame({"disease_id": [disease_id], "disease_umls": [dis_umls],
+            row = pd.DataFrame({"disease_id": [disease_id], "umls_disease_id": [dis_umls],
                                 "disease_name": [el.disease_name],
                                 "entrez_gene_id": [el.entrez_gene_id],
-                                "gene_symbol": [el.gene_symbol], "ass_score": [el.score]})
+                                "gene_name": [el.gene_symbol], "ass_score": [el.score]})
             df = df.append(row, ignore_index=True)
+    else:
+        return df
 
     df.drop_duplicates(inplace=True)
     df.sort_values(by="ass_score", ascending=False, inplace=True)
@@ -1385,14 +1387,20 @@ def get_vars_from_disease_id(disease_id):
     Retrieve variants associated to a specific disease, getting their dbSNP ID and then the actual
     variant string exploiting Ensembl API.
     :param disease_id: [str] disease ID to look for
-    :return: pd.DataFrame(columns=["disease_id", "disease_umls", "disease_name", "dbsnp_id",
-    "ass_score"])
+    :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "dbsnp_id", "variant",
+    "umls_disease_id", "disease_name", "disease_id"])
     """
     dis_umls = get_umls_from_disease_id(disease_id)
     ass_vars = VarDiseaseAss.query.filter(VarDiseaseAss.umls_disease_id == dis_umls).all()
     # df = pd.DataFrame(columns=["disease_id", "disease_umls", "disease_name", "dbsnp_id",
     #                            "ass_score"])
-    dis_name = DiseaseMappings.query.filter(DiseaseMappings.umls_disease_id == dis_umls).first().disease_name
+    dis_maps = DiseaseMappings.query.filter(DiseaseMappings.umls_disease_id == dis_umls).first()
+    dis_name = ""
+    if dis_maps is not None:
+        dis_name = dis_maps.disease_name
+    if len(ass_vars) == 0:
+        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "dbsnp_id", "variant",
+                                     "umls_disease_id", "disease_name", "disease_id"])
 
     server = Server(host="http://www.ensembl.org")
     dataset = server.marts["ENSEMBL_MART_SNP"].datasets["hsapiens_snp"]
@@ -1407,22 +1415,34 @@ def get_vars_from_disease_id(disease_id):
                 "Consequence specific allele": "ref/alt allele",
                 "Gene stable ID": "ensembl_gene_id"}, axis=1, inplace=True)
     if res.shape[0] == 0:
-        return pd.DataFrame(columns=["disease_id", "disease_umls", "disease_name", "dbsnp_id",
-                                     "ass_score"])
+        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "dbsnp_id", "variant",
+                                     "umls_disease_id", "disease_name", "disease_id"])
     res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
     res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
     res = res[res["alt_allele"] != "HGMD_MUTATION"]
     variants = []
+    # genes = []
     for el in res.itertuples():
         variants.append(create_variant_string(el.chromosome, el.start_pos, el.ref_allele,
                                               el.alt_allele))
+        # try:
+        #     genes.append(get_gene_from_variant(el.chromosome, el.start_pos).gene_name.values[0])
+        # except IndexError:
+        #     genes.append("")
     res["variant"] = variants
-    res["disease_id"] = dis_umls
+    # res["gene_name"] = genes
+    res["umls_disease_id"] = dis_umls
     res["disease_name"] = dis_name
     res.drop(["ref/alt allele", "ref_allele", "alt_allele", "chromosome", "start_pos"],
              axis=1, inplace=True)
     res["gene_name"] = res["gene_name"].apply(
         lambda x: x.split("-")[1] if type(x) == str and x.startswith("MT-") else x)
+    gene_dict = dict(zip(res["ensembl_gene_id"], res["gene_name"]))
+    res["gene_name"] = res.apply(
+        lambda row: gene_dict[row["ensembl_gene_id"]] if type(row["gene_name"]) != str else row["gene_name"],
+        axis=1
+    )
+    res["disease_id"] = disease_id
     res.drop_duplicates(subset="variant", inplace=True)
 
     return res
@@ -1433,16 +1453,25 @@ def get_phenos_from_disease_id(disease_id):
     Retrieve phenotypes associated to a specific disease, using the HpoDisGenePhen table from the
     db.
     :param disease_id: [str] disease ID to look for
-    :return: pd.DataFrame(columns=["disease_id", "hpo_id", "hpo_term_name"]
+    :return: pd.DataFrame(columns=["umls_disease_id", "disease_name", "disease_id", "hpo_id",
+    "hpo_term_name"]
     """
     ass_phenos = HpoDisGenePhen.query.filter(HpoDisGenePhen.disease_id == disease_id).all()
-    disease_name = DiseaseMappings.query.filter(DiseaseMappings.umls_disease_id == get_umls_from_disease_id(disease_id)).first().disease_name
-    df = pd.DataFrame(columns=["disease_id", "disease_name", "hpo_id", "hpo_term_name"])
+    # dis_maps = DiseaseMappings.query.filter(DiseaseMappings.umls_disease_id == get_umls_from_disease_id(disease_id)).first()
+    disease_name = Diseases.query.filter(Diseases.disease_id == disease_id).first().disease_name
+    dis_maps = DiseaseMappings.query.filter(DiseaseMappings.umls_disease_id == get_umls_from_disease_id(disease_id)).first()
+    disease_umls = ""
+    if dis_maps is not None:
+        disease_name = dis_maps.disease_name
+        disease_umls = dis_maps.umls_disease_id
+    df = pd.DataFrame(columns=["umls_disease_id", "disease_name", "disease_id", "hpo_id",
+                               "hpo_term_name"])
 
     if ass_phenos:
         for el in ass_phenos:
-            row = pd.DataFrame({"disease_id": [disease_id], "disease_name": [disease_name],
-                                "hpo_id": [el.hpo_id], "hpo_term_name": [el.hpo_term_name]})
+            row = pd.DataFrame({"umls_disease_id": disease_umls, "disease_name": [disease_name],
+                                "disease_id": [disease_id], "hpo_id": [el.hpo_id],
+                                "hpo_term_name": [el.hpo_term_name]})
             df = df.append(row, ignore_index=True)
 
     df.drop_duplicates(inplace=True)
@@ -1466,14 +1495,16 @@ def json_from_disease(disease_input):
     vars_json = json.loads(vars_df.to_json(orient="records"))
     # Genes
     gene_df.drop(["entrez_gene_id", "ass_score"], axis=1, inplace=True)  # do not need these for now
-    gene_df.rename({"gene_symbol": "gene_name"}, axis=1, inplace=True)
     gene_json = json.loads(gene_df.to_json(orient="records"))
     # Phenotypes
     pheno_df.rename({"hpo_term_name": "phenotype_name"}, axis=1, inplace=True)
     pheno_json = json.loads(pheno_df.to_json(orient="records"))
 
     final_json = {}
-    disease_name = DiseaseMappings.query.filter(DiseaseMappings.umls_disease_id == get_umls_from_disease_id(disease_input)).first().disease_name
+    disease_name = Diseases.query.filter(Diseases.disease_id == disease_input).first().disease_name
+    dis_maps = DiseaseMappings.query.filter(DiseaseMappings.umls_disease_id == get_umls_from_disease_id(disease_input)).first()
+    if dis_maps is not None:
+        disease_name = dis_maps.disease_name
 
     final_json["diseases"] = disease_name
     final_json["phenotype"] = pheno_json
@@ -1536,22 +1567,41 @@ def network_from_disease_json(final_json):
                                                         "border": "#5F826B"}})
         id_dict[el] = ids
     for el in phenos:
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
-                                                        "border": "#7995A3"}})
-        id_dict[el] = ids
+        if el != disease:
+            ids += 1
+            nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
+                                                            "border": "#7995A3"}})
+            id_dict[el] = ids
+
+    connected_nodes = set()
 
     for el in var_json:
         # disease to variants
         edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[el["variant"]]})
+        connected_nodes.add(id_dict[el["disease_name"]])
+        connected_nodes.add(id_dict[el["variant"]])
         # variants to genes
         edges.append({"from": id_dict[el["variant"]], "to": id_dict[el["gene_name"]]})
+        connected_nodes.add(id_dict[el["variant"]])
+        connected_nodes.add(id_dict[el["gene_name"]])
     for el in gen_json:
         # disease to genes
         edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[el["gene_name"]]})
+        connected_nodes.add(id_dict[el["disease_name"]])
+        connected_nodes.add(id_dict[el["gene_name"]])
     for el in phen_json:
         # disease to phenotypes
-        edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[el["phenotype_name"]]})
+        if id_dict[el["phenotype_name"]] != "" and id_dict[el["disease_name"]] != "":
+            if id_dict[el["phenotype_name"]] != id_dict[el["disease_name"]]:
+                edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[el["phenotype_name"]]})
+                connected_nodes.add(id_dict[el["disease_name"]])
+                connected_nodes.add(id_dict[el["phenotype_name"]])
+
+    # delete orphan nodes
+    candidates = [n for n, el in enumerate(nodes, start=1)]
+    for n in candidates:
+        if n not in connected_nodes and n in nodes:
+            del nodes[n]
 
     return {"nodes": nodes, "edges": edges}
 
