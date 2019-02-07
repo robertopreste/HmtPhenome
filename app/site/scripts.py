@@ -594,21 +594,31 @@ def network_from_variant_json(final_json):
             id_dict[el] = ids
 
     connected_nodes = set()
+    vars_set = set()  # (variant, dbsnp_id, gene_name)
+    gene_set = set()  # (gene_name, ensembl_gene_id)
+    dise_set = set()  # (disease_name, umls_disease_id)
+    phen_set = set()  # (phenotype_name, phenotype_id)
 
     for el in var_json:
         # variant to gene
         edges.append({"from": id_dict[el["variant"]], "to": id_dict[el["gene_name"]]})
         connected_nodes.add(id_dict[el["variant"]])
+        vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
         connected_nodes.add(id_dict[el["gene_name"]])
+        gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
         # variant to diseases
         edges.append({"from": id_dict[el["variant"]], "to": id_dict[el["disease_name"]]})
         connected_nodes.add(id_dict[el["variant"]])
+        vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
         connected_nodes.add(id_dict[el["disease_name"]])
+        dise_set.add((el["disease_name"], el["umls_disease_id"]))
         # disease to phenotypes
         if el["phenotype_name"] != "" and id_dict[el["disease_name"]] != id_dict[el["phenotype_name"]]:
             edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[el["phenotype_name"]]})
             connected_nodes.add(id_dict[el["disease_name"]])
+            dise_set.add((el["disease_name"], el["umls_disease_id"]))
             connected_nodes.add(id_dict[el["phenotype_name"]])
+            phen_set.add((el["phenotype_name"], el["phenotype_id"]))
         # for pheno in el["phenotype_names"]:
         #     # disease to phenotypes
         #     edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[pheno]})
@@ -619,7 +629,8 @@ def network_from_variant_json(final_json):
         if n not in connected_nodes:
             del nodes[n]
 
-    return {"nodes": nodes, "edges": edges}
+    return {"nodes": nodes, "edges": edges, "variants": vars_set, "genes": gene_set,
+            "diseases": dise_set, "phenotypes": phen_set}
 
 
 # FROM GENE #
@@ -872,6 +883,9 @@ def json_from_gene(gene_input):
     :param gene_input: [str] Ensemble gene ID to use for the queries
     :return: json("variants": [variants list], "diseases": [diseases list])
     """
+    gene_name = Mitocarta.query.filter(Mitocarta.ensembl_id == gene_input).first().gene_symbol
+    gene_df = pd.DataFrame({"ensembl_gene_id": [gene_input], "gene_name": [gene_name]})
+    gene_json = json.loads(gene_df.to_json(orient="records"))
     # vars_df = get_vars_from_gene_id(gene_input)
     vars_df = get_vars_from_gene_id_alt(gene_input)  # we might want to add phenotypes --> get_diseases_from_dbsnp()
     vars_df["disease_name"] = ""
@@ -915,15 +929,24 @@ def json_from_gene(gene_input):
                     break
 
     disease_json = json.loads(disease_df.to_json(orient="records"))
+    phenos_df = pd.DataFrame(columns=["phenotype_id", "phenotype_name"])
     for el in disease_json:
         el["phenotype_names"] = []
         for pheno in el["phenotype_ids"]:
-            el["phenotype_names"].append(pheno_id_to_term(pheno))
+            pheno_name = pheno_id_to_term(pheno)
+            el["phenotype_names"].append(pheno_name)
+            phenos_df = phenos_df.append(pd.DataFrame({"phenotype_id": [pheno],
+                                                       "phenotype_name": [pheno_name]}),
+                                         ignore_index=True)
         el["disease_id"] = disease_name_to_id(el["disease_name"])
+
+    phenos_json = json.loads(phenos_df.to_json(orient="records"))
 
     final_json = {}
     final_json["variants"] = vars_json
+    final_json["genes"] = gene_json
     final_json["diseases"] = disease_json
+    final_json["phenotypes"] = phenos_json
 
     return final_json
 
@@ -991,28 +1014,40 @@ def network_from_gene_json(final_json):
         id_dict[el] = ids
 
     connected_nodes = set()
+    vars_set = set()  # (variant, dbsnp_id, gene_name)
+    gene_set = set()  # (gene_name, ensembl_gene_id)
+    dise_set = set()  # (disease_name, umls_disease_id)
+    phen_set = set()  # (phenotype_name, phenotype_id)
 
     for el in var_json:
         # gene to variants
         edges.append({"from": id_dict[el["gene_name"]], "to": id_dict[el["variant"]]})
         connected_nodes.add(id_dict[el["gene_name"]])
+        gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
         connected_nodes.add(id_dict[el["variant"]])
+        vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
         # variant to diseases
         if el["disease_name"] != "":
             edges.append({"from": id_dict[el["variant"]], "to": id_dict[el["disease_name"]]})
             connected_nodes.add(id_dict[el["variant"]])
+            vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
             connected_nodes.add(id_dict[el["disease_name"]])
+            dise_set.add((el["disease_name"], el["umls_disease_id"]))
     for el in dis_json:
         # gene to diseases
         edges.append({"from": id_dict[el["gene_name"]], "to": id_dict[el["disease_name"]]})
         connected_nodes.add(id_dict[el["gene_name"]])
+        gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
         connected_nodes.add(id_dict[el["disease_name"]])
+        dise_set.add((el["disease_name"], el["umls_disease_id"]))
         # disease to phenotypes
-        for pheno in el["phenotype_names"]:
+        for n, pheno in enumerate(el["phenotype_names"]):
             if id_dict[el["disease_name"]] != id_dict[pheno]:
                 edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[pheno]})
                 connected_nodes.add(id_dict[el["disease_name"]])
+                dise_set.add((el["disease_name"], el["umls_disease_id"]))
                 connected_nodes.add(id_dict[pheno])
+                phen_set.add((pheno, el["phenotype_ids"][n]))
 
     # delete orphan nodes
     candidates = [n for n, el in enumerate(nodes, start=1)]
@@ -1020,7 +1055,8 @@ def network_from_gene_json(final_json):
         if n not in connected_nodes:
             del nodes[n]
 
-    return {"nodes": nodes, "edges": edges}
+    return {"nodes": nodes, "edges": edges, "variants": vars_set, "genes": gene_set,
+            "diseases": dise_set, "phenotypes": phen_set}
 
 
 # FROM PHENOTYPE #
@@ -1119,11 +1155,13 @@ def get_diseases_from_phenotype(phenotype):
     Retrieve diseases related to a phenotype, exploiting the get_genes_from_phenotype() and
     get_diseases_from_gene_name() functions.
     :param phenotype: [str] accession id of the phenotype to search for
-    :return: pd.DataFrame(columns=["pheno_id", "pheno_name", "disease_name", "disease_id"])
+    :return: pd.DataFrame(columns=["pheno_id", "pheno_name", "disease_name", "disease_id",
+    "umls_disease_id"])
     """
     hpo_dis = HpoDisGenePhen.query.filter(HpoDisGenePhen.hpo_id == phenotype).all()
     pheno_name = DiseaseMappings.query.filter(DiseaseMappings.disease_id == phenotype).first().disease_name
-    df = pd.DataFrame(columns=["pheno_id", "pheno_name", "disease_name", "disease_id"])
+    df = pd.DataFrame(columns=["pheno_id", "pheno_name", "disease_name", "disease_id",
+                               "umls_disease_id"])
 
     if hpo_dis:
         for el in hpo_dis:
@@ -1132,7 +1170,8 @@ def get_diseases_from_phenotype(phenotype):
             if dis_name is not None:
                 dis_mim_name = dis_name.mim_name
                 row = pd.DataFrame({"phenotype_id": [el.hpo_id], "phenotype_name": [pheno_name],
-                                    "disease_name": [dis_mim_name], "disease_id": [el.disease_id]})
+                                    "disease_name": [dis_mim_name], "disease_id": [el.disease_id],
+                                    "umls_disease_id": [get_umls_from_disease_id(el.disease_id)]})
                 df = df.append(row, ignore_index=True)
 
     df.drop_duplicates(inplace=True)
@@ -1230,26 +1269,38 @@ def network_from_phenotype_json(final_json):
         id_dict[el] = ids
 
     connected_nodes = set()
+    vars_set = set()  # (variant, dbsnp_id, gene_name)
+    gene_set = set()  # (gene_name, ensembl_gene_id)
+    dise_set = set()  # (disease_name, umls_disease_id)
+    phen_set = set()  # (phenotype_name, phenotype_id)
 
     for el in var_json:
         # phenotype to variants
         edges.append({"from": id_dict[el["phenotype_name"]], "to": id_dict[el["variant"]]})
         connected_nodes.add(id_dict[el["phenotype_name"]])
+        phen_set.add((el["phenotype_name"], el["phenotype_id"]))
         connected_nodes.add(id_dict[el["variant"]])
+        vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
         # variant to gene
         edges.append({"from": id_dict[el["variant"]], "to": id_dict[el["gene_name"]]})
         connected_nodes.add(id_dict[el["variant"]])
+        vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
         connected_nodes.add(id_dict[el["gene_name"]])
+        gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
     for el in gen_json:
         # phenotype to genes
         edges.append({"from": id_dict[el["phenotype_name"]], "to": id_dict[el["gene_name"]]})
         connected_nodes.add(id_dict[el["phenotype_name"]])
+        phen_set.add((el["phenotype_name"], el["phenotype_id"]))
         connected_nodes.add(id_dict[el["gene_name"]])
+        gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
     for el in dis_json:
         # phenotype to diseases
         edges.append({"from": id_dict[el["phenotype_name"]], "to": id_dict[el["disease_name"]]})
         connected_nodes.add(id_dict[el["phenotype_name"]])
+        phen_set.add((el["phenotype_name"], el["phenotype_id"]))
         connected_nodes.add(id_dict[el["disease_name"]])
+        dise_set.add((el["disease_name"], el["umls_disease_id"]))
 
     # TODO: this orphan nodes deletion does not work every time?!
     # delete orphan nodes
@@ -1258,7 +1309,8 @@ def network_from_phenotype_json(final_json):
         if n not in connected_nodes and n in nodes:
             del nodes[n]
 
-    return {"nodes": nodes, "edges": edges}
+    return {"nodes": nodes, "edges": edges, "variants": vars_set, "genes": gene_set,
+            "diseases": dise_set, "phenotypes": phen_set}
 
 
 # FROM DISEASE #
@@ -1292,18 +1344,23 @@ def get_genes_from_disease_id(disease_id):
     Retrieve genes involved in a specific disease, using the GeneDiseaseAss table from the db.
     :param disease_id: [str] disease ID to look for
     :return: pd.DataFrame(columns=["umls_disease_id", "disease_name", "disease_id",
-    "entrez_gene_id", "gene_name", "ass_score"])
+    "entrez_gene_id", "gene_name", "ensembl_gene_id", "ass_score"])
     """
     dis_umls = get_umls_from_disease_id(disease_id)
     ass_genes = GeneDiseaseAss.query.filter(GeneDiseaseAss.umls_disease_id == dis_umls).all()
     df = pd.DataFrame(columns=["umls_disease_id", "disease_name", "disease_id", "entrez_gene_id",
-                               "gene_name", "ass_score"])
+                               "gene_name", "ensembl_gene_id", "ass_score"])
     if len(ass_genes) > 0:
         for el in ass_genes:
+            ens_gene_id = ""
+            mitoq = Mitocarta.query.filter(Mitocarta.gene_symbol == el.gene_symbol).first()
+            if mitoq is not None:
+                ens_gene_id = mitoq.ensembl_id
             row = pd.DataFrame({"disease_id": [disease_id], "umls_disease_id": [dis_umls],
                                 "disease_name": [el.disease_name],
                                 "entrez_gene_id": [el.entrez_gene_id],
-                                "gene_name": [el.gene_symbol], "ass_score": [el.score]})
+                                "gene_name": [el.gene_symbol], "ensembl_gene_id": [ens_gene_id],
+                                "ass_score": [el.score]})
             df = df.append(row, ignore_index=True)
     else:
         return df
@@ -1371,6 +1428,9 @@ def get_vars_from_disease_id(disease_id):
         lambda row: gene_dict[row["ensembl_gene_id"]] if type(row["gene_name"]) != str else row["gene_name"],
         axis=1
     )
+    res = res[(res["gene_name"] != "intergenic") & (res["gene_name"] != "Intergenic") &
+              (res["gene_name"].notnull()) &
+              (~res["gene_name"].str.contains(",", na=False))]
     res["disease_id"] = disease_id
     res.drop_duplicates(subset="variant", inplace=True)
 
@@ -1382,8 +1442,8 @@ def get_phenos_from_disease_id(disease_id):
     Retrieve phenotypes associated to a specific disease, using the HpoDisGenePhen table from the
     db.
     :param disease_id: [str] disease ID to look for
-    :return: pd.DataFrame(columns=["umls_disease_id", "disease_name", "disease_id", "hpo_id",
-    "hpo_term_name"]
+    :return: pd.DataFrame(columns=["umls_disease_id", "disease_name", "disease_id", "phenotype_id",
+    "phenotype_name"]
     """
     ass_phenos = HpoDisGenePhen.query.filter(HpoDisGenePhen.disease_id == disease_id).all()
     disease_name = Diseases.query.filter(Diseases.disease_id == disease_id).first().disease_name
@@ -1392,14 +1452,14 @@ def get_phenos_from_disease_id(disease_id):
     if dis_maps is not None:
         disease_name = dis_maps.disease_name
         disease_umls = dis_maps.umls_disease_id
-    df = pd.DataFrame(columns=["umls_disease_id", "disease_name", "disease_id", "hpo_id",
-                               "hpo_term_name"])
+    df = pd.DataFrame(columns=["umls_disease_id", "disease_name", "disease_id", "phenotype_id",
+                               "phenotype_name"])
 
     if ass_phenos:
         for el in ass_phenos:
             row = pd.DataFrame({"umls_disease_id": disease_umls, "disease_name": [disease_name],
-                                "disease_id": [disease_id], "hpo_id": [el.hpo_id],
-                                "hpo_term_name": [el.hpo_term_name]})
+                                "disease_id": [disease_id], "phenotype_id": [el.hpo_id],
+                                "phenotype_name": [el.hpo_term_name]})
             df = df.append(row, ignore_index=True)
 
     df.drop_duplicates(inplace=True)
@@ -1425,7 +1485,6 @@ def json_from_disease(disease_input):
     gene_df.drop(["entrez_gene_id", "ass_score"], axis=1, inplace=True)  # do not need these for now
     gene_json = json.loads(gene_df.to_json(orient="records"))
     # Phenotypes
-    pheno_df.rename({"hpo_term_name": "phenotype_name"}, axis=1, inplace=True)
     pheno_json = json.loads(pheno_df.to_json(orient="records"))
 
     final_json = {}
@@ -1502,28 +1561,40 @@ def network_from_disease_json(final_json):
             id_dict[el] = ids
 
     connected_nodes = set()
+    vars_set = set()  # (variant, dbsnp_id, gene_name)
+    gene_set = set()  # (gene_name, ensembl_gene_id)
+    dise_set = set()  # (disease_name, umls_disease_id)
+    phen_set = set()  # (phenotype_name, phenotype_id)
 
     for el in var_json:
         # disease to variants
         edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[el["variant"]]})
         connected_nodes.add(id_dict[el["disease_name"]])
+        dise_set.add((el["disease_name"], el["umls_disease_id"]))
         connected_nodes.add(id_dict[el["variant"]])
+        vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
         # variants to genes
         edges.append({"from": id_dict[el["variant"]], "to": id_dict[el["gene_name"]]})
         connected_nodes.add(id_dict[el["variant"]])
+        vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
         connected_nodes.add(id_dict[el["gene_name"]])
+        gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
     for el in gen_json:
         # disease to genes
         edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[el["gene_name"]]})
         connected_nodes.add(id_dict[el["disease_name"]])
+        dise_set.add((el["disease_name"], el["umls_disease_id"]))
         connected_nodes.add(id_dict[el["gene_name"]])
+        gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
     for el in phen_json:
         # disease to phenotypes
         if id_dict[el["phenotype_name"]] != "" and id_dict[el["disease_name"]] != "":
             if id_dict[el["phenotype_name"]] != id_dict[el["disease_name"]]:
                 edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[el["phenotype_name"]]})
                 connected_nodes.add(id_dict[el["disease_name"]])
+                dise_set.add((el["disease_name"], el["umls_disease_id"]))
                 connected_nodes.add(id_dict[el["phenotype_name"]])
+                phen_set.add((el["phenotype_name"], el["phenotype_id"]))
 
     # delete orphan nodes
     candidates = [n for n, el in enumerate(nodes, start=1)]
@@ -1531,5 +1602,6 @@ def network_from_disease_json(final_json):
         if n not in connected_nodes and n in nodes:
             del nodes[n]
 
-    return {"nodes": nodes, "edges": edges}
+    return {"nodes": nodes, "edges": edges, "variants": vars_set, "genes": gene_set,
+            "diseases": dise_set, "phenotypes": phen_set}
 

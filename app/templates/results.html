@@ -83,47 +83,83 @@
             <div class="col-sm-12">
 
                 <ul class="nav nav-tabs">
-                    <li><a data-toggle="tab" href="#variants">Variants</a></li>
+                    <li class="active"><a data-toggle="tab" href="#variants">Variants</a></li>
                     <li><a data-toggle="tab" href="#genes">Genes</a></li>
-                    <li><a data-toggle="tab" href="#phenotypes">Phenotypes</a></li>
                     <li><a data-toggle="tab" href="#diseases">Diseases</a></li>
+                    <li><a data-toggle="tab" href="#phenotypes">Phenotypes</a></li>
                 </ul>
+
+                <br>
 
                 <div class="tab-content">
                     <!-- Variants -->
-                    <div id="variants" class="tab-pane fade in">
-                        <table class="table table-hover res_table">
+                    <div id="variants" class="tab-pane fade in active">
+                        <table class="table table-hover res_table" style="background-color: #F9CF45;">
                             <thead>
                                 <tr>
                                     <th scope="col">Variant</th>
                                     <th scope="col">dbSNP ID</th>
-                                    <th scope="col">Chromosome</th>
                                     <th scope="col">Gene</th>
                                 </tr>
                             </thead>
                             <tbody>
-
+                            {% if variants|length > 0 %}
+                                {% for el in variants %}
+                                    <tr>
+                                        <td>{{ el[0] }}</td>
+                                        <td>{{ el[1] }}</td>
+                                        <td>{{ el[2] }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
                             </tbody>
                         </table>
                     </div>
                     <!-- Genes -->
                     <div id="genes" class="tab-pane fade in">
-                        <table class="table table-hover res_table">
+                        <table class="table table-hover res_table" style="background-color: #739E82;">
                             <thead>
                                 <tr>
                                     <th scope="col">Gene</th>
                                     <th scope="col">Ensembl ID</th>
-                                    <th scope="col">Chromosome</th>
                                 </tr>
                             </thead>
                             <tbody>
-
+                            {% if genes|length > 0 %}
+                                {% for el in genes %}
+                                    <tr>
+                                        <td>{{ el[0] }}</td>
+                                        <td>{{ el[1] }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Diseases -->
+                    <div id="diseases" class="tab-pane fade in">
+                        <table class="table table-hover res_table" style="background-color: #D7816A;">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Disease Name</th>
+                                    <th scope="col">UMLS Disease ID</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% if diseases|length > 0 %}
+                                {% for el in diseases %}
+                                    <tr>
+                                        <td>{{ el[0] }}</td>
+                                        <td>{{ el[1] }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
                             </tbody>
                         </table>
                     </div>
                     <!-- Phenotypes -->
                     <div id="phenotypes" class="tab-pane fade in">
-                        <table class="table table-hover res_table">
+                        <table class="table table-hover res_table" style="background-color: #93B5C6;">
                             <thead>
                                 <tr>
                                     <th scope="col">Phenotype Name</th>
@@ -131,21 +167,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Diseases -->
-                    <div id="diseases" class="tab-pane fade in">
-                        <table class="table table-hover res_table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Disease Name</th>
-                                    <th scope="col">Disease ID</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
+                            {% if phenotypes|length > 0 %}
+                                {% for el in phenotypes %}
+                                    <tr>
+                                        <td>{{ el[0] }}</td>
+                                        <td>{{ el[1] }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
                             </tbody>
                         </table>
                     </div>
