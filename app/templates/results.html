@@ -78,6 +78,85 @@
 
         <div class="container-fluid">
         <div class="row">
+            <h2>Table view</h2>
+
+            <div class="col-sm-12">
+
+                <ul class="nav nav-tabs">
+                    <li><a data-toggle="tab" href="#variants">Variants</a></li>
+                    <li><a data-toggle="tab" href="#genes">Genes</a></li>
+                    <li><a data-toggle="tab" href="#phenotypes">Phenotypes</a></li>
+                    <li><a data-toggle="tab" href="#diseases">Diseases</a></li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- Variants -->
+                    <div id="variants" class="tab-pane fade in">
+                        <table class="table table-hover res_table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Variant</th>
+                                    <th scope="col">dbSNP ID</th>
+                                    <th scope="col">Chromosome</th>
+                                    <th scope="col">Gene</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Genes -->
+                    <div id="genes" class="tab-pane fade in">
+                        <table class="table table-hover res_table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Gene</th>
+                                    <th scope="col">Ensembl ID</th>
+                                    <th scope="col">Chromosome</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Phenotypes -->
+                    <div id="phenotypes" class="tab-pane fade in">
+                        <table class="table table-hover res_table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Phenotype Name</th>
+                                    <th scope="col">Phenotype ID</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Diseases -->
+                    <div id="diseases" class="tab-pane fade in">
+                        <table class="table table-hover res_table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Disease Name</th>
+                                    <th scope="col">Disease ID</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        </div>
+
+        <div class="container-fluid">
+        <div class="row">
 
             <h2>Data view</h2>
 
@@ -196,7 +275,7 @@
 
         <script type="text/javascript">
             $(document).ready( function () {
-                $('#res_table').DataTable();
+                $('.res_table').DataTable();
             } );
         </script>
 
