@@ -483,12 +483,20 @@ def json_from_variant(variant_chr, variant_start, variant_end=None):
     disease_df = pd.DataFrame(columns=["dbsnp_id", "umls_disease_id", "disease_name", "ass_score"])
     phenos_df = pd.DataFrame(columns=["umls_disease_id", "disease_name", "disease_id",
                                       "phenotype_id", "phenotype_name"])
+
+    gene_json = json.loads(gene.to_json(orient="records"))
+
     if dbsnps.shape[0] != 0:
         for el in dbsnps.dbsnp_id.unique():
             disease_df = disease_df.append(get_diseases_from_dbsnp(el), ignore_index=True)
+
+    disease_json = json.loads(disease_df.to_json(orient="records"))
+
     if disease_df.shape[0] != 0:
         for el in disease_df.umls_disease_id.unique():
             phenos_df = phenos_df.append(get_phenos_from_umls(el), ignore_index=True)
+
+    phenos_json = json.loads(phenos_df.to_json(orient="records"))
 
     df = pd.DataFrame(columns=["variant", "dbsnp_id", "gene_name", "ensembl_gene_id",
                                "umls_disease_id", "disease_name", "phenotype_id", "phenotype_name"])
@@ -525,10 +533,13 @@ def json_from_variant(variant_chr, variant_start, variant_end=None):
                  "phenotype_name": [""]})
             df = df.append(new_row, ignore_index=True)
 
-    df_json = json.loads(df.to_json(orient="records"))
+    vars_json = json.loads(df.to_json(orient="records"))
 
     final_json = {}
-    final_json["variants"] = df_json
+    final_json["variants"] = vars_json
+    final_json["genes"] = gene_json
+    final_json["diseases"] = disease_json
+    final_json["phenotypes"] = phenos_json
 
     return final_json
 
