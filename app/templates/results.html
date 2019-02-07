@@ -164,6 +164,7 @@
 
         {{ super() }}
 
+        {% autoescape false %}
         <script type="text/javascript">
             var nodes = new vis.DataSet([
                 {% for node in nodes %}
@@ -191,6 +192,7 @@
             // initialize your network!
             var network = new vis.Network(container, data, options);
         </script>
+        {% endautoescape %}
 
         <script type="text/javascript">
             $(document).ready( function () {
