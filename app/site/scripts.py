@@ -1151,11 +1151,13 @@ def get_vars_from_phenotype(phenotype):
     else:  # gene_name is not found, so it is a float64 NaN
         genes = []
         for el in res["ensembl_gene_id"]:
+            gene_name = ""
             if type(el) == str:
                 try:
                     gene_name = ensembl_gene_id_to_entrez(el).gene_name.values[0]
                 except IndexError:
-                    gene_name = ""
+                    if el.startswith("LRG"):
+                        gene_name = el
                 genes.append(gene_name)
         res["gene_name"] = genes
 
