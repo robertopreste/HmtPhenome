@@ -1128,9 +1128,10 @@ def get_vars_from_phenotype(phenotype):
     res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
     res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
     res = res[res["alt_allele"] != "HGMD_MUTATION"]
-    res = res[res["chromosome"].isin(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12",
-                                      "13", "14", "15", "16", "17", "18", "19", "20", "21", "22",
-                                      "X", "Y", "M", "MT"])]  # removing weird non-standard chroms
+    # removing weird non-standard chroms
+    res = res[res["chromosome"].astype(str).isin(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+                                                  "11", "12", "13", "14", "15", "16", "17", "18",
+                                                  "19", "20", "21", "22", "X", "Y", "M", "MT"])]
     variants = []
     for el in res.itertuples():
         variants.append(create_variant_string(el.chromosome, el.start_pos, el.ref_allele,
@@ -1143,9 +1144,20 @@ def get_vars_from_phenotype(phenotype):
         lambda x: x.split("-")[1] if type(x) == str and x.startswith("MT-") else x)
     res.drop_duplicates(inplace=True)
     res = res[res["variant"] != "chr_:_>_"]
-    res = res[(res["gene_name"] != "intergenic") &
-              (res["gene_name"].notnull()) &
-              (~res["gene_name"].str.contains(",", na=False))]
+    if res["gene_name"].dtype == str:
+        res = res[(res["gene_name"] != "intergenic") & (res["gene_name"] != "Intergenic") &
+                  (res["gene_name"].notnull()) &
+                  (~res["gene_name"].str.contains(",", na=False))]
+    else:  # gene_name is not found, so it is a float64 NaN
+        genes = []
+        for el in res["ensembl_gene_id"]:
+            if type(el) == str:
+                try:
+                    gene_name = ensembl_gene_id_to_entrez(el).gene_name.values[0]
+                except IndexError:
+                    gene_name = ""
+                genes.append(gene_name)
+        res["gene_name"] = genes
 
     return res
 
@@ -1428,9 +1440,10 @@ def get_vars_from_disease_id(disease_id):
         lambda row: gene_dict[row["ensembl_gene_id"]] if type(row["gene_name"]) != str else row["gene_name"],
         axis=1
     )
-    res = res[(res["gene_name"] != "intergenic") & (res["gene_name"] != "Intergenic") &
-              (res["gene_name"].notnull()) &
-              (~res["gene_name"].str.contains(",", na=False))]
+    if res["gene_name"].dtype == str:
+        res = res[(res["gene_name"] != "intergenic") & (res["gene_name"] != "Intergenic") &
+                  (res["gene_name"].notnull()) &
+                  (~res["gene_name"].str.contains(",", na=False))]
     res["disease_id"] = disease_id
     res.drop_duplicates(subset="variant", inplace=True)
 
