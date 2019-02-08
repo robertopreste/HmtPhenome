@@ -144,29 +144,6 @@
         <div class="container-fluid">
         <div class="row">
 
-        {# Phenotype #}
-        <form action="/query" method="post" name="query_phenos" enctype="multipart/form-data">
-        <div class="col-sm-6">
-        <div class="row">
-            <div class="panel panel-warning">
-                <div class="panel-heading">
-                    <h4>Phenotypes</h4>
-                </div>
-                <div class="panel-body">
-                    <p>Select a phenotype: </p>
-                    <div class="form-group">
-                        <input type="text" name="pheno_input" id="pheno_input" placeholder="Phenotype" class="awesomplete form-control" data-multiple>
-                        {# populated by Awesomplete #}
-                    </div>
-                </div>
-                <div class="panel-footer panel-warning">
-                    <button type="submit" class="btn btn-warning btn-lg center-block" name="pheno_submit" value="submit">Submit</button>
-                </div>
-            </div>
-        </div>
-        </div>
-        </form>
-
         {# Diseases #}
         <form action="/query" method="post" name="query_diseases" enctype="multipart/form-data">
         <div class="col-sm-6">
@@ -184,6 +161,29 @@
                 </div>
                 <div class="panel-footer panel-warning">
                     <button type="submit" class="btn btn-warning btn-lg center-block" name="disease_submit" value="submit">Submit</button>
+                </div>
+            </div>
+        </div>
+        </div>
+        </form>
+
+        {# Phenotype #}
+        <form action="/query" method="post" name="query_phenos" enctype="multipart/form-data">
+        <div class="col-sm-6">
+        <div class="row">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h4>Phenotypes</h4>
+                </div>
+                <div class="panel-body">
+                    <p>Select a phenotype: </p>
+                    <div class="form-group">
+                        <input type="text" name="pheno_input" id="pheno_input" placeholder="Phenotype" class="awesomplete form-control" data-multiple>
+                        {# populated by Awesomplete #}
+                    </div>
+                </div>
+                <div class="panel-footer panel-warning">
+                    <button type="submit" class="btn btn-warning btn-lg center-block" name="pheno_submit" value="submit">Submit</button>
                 </div>
             </div>
         </div>

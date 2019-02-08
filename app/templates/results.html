@@ -98,7 +98,6 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Variant</th>
-                                    <th scope="col">dbSNP ID</th>
                                     <th scope="col">Gene</th>
                                 </tr>
                             </thead>
@@ -106,8 +105,7 @@
                             {% if variants|length > 0 %}
                                 {% for el in variants %}
                                     <tr>
-                                        <td>{{ el[0] }}</td>
-                                        <td>{{ el[1] }}</td>
+                                        <td><a href="https://www.ncbi.nlm.nih.gov/snp/{{ el[1] }}" title="dbSNP" target="_blank">{{ el[0] }}</a></td>
                                         <td>{{ el[2] }}</td>
                                     </tr>
                                 {% endfor %}
@@ -121,15 +119,13 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Gene</th>
-                                    <th scope="col">Ensembl ID</th>
                                 </tr>
                             </thead>
                             <tbody>
                             {% if genes|length > 0 %}
                                 {% for el in genes %}
                                     <tr>
-                                        <td>{{ el[0] }}</td>
-                                        <td>{{ el[1] }}</td>
+                                        <td><a href="https://www.ensembl.org/id/{{ el[1] }}" title="Gene" target="_blank">{{ el[0] }}</a></td>
                                     </tr>
                                 {% endfor %}
                             {% endif %}
@@ -142,15 +138,13 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Disease Name</th>
-                                    <th scope="col">UMLS Disease ID</th>
                                 </tr>
                             </thead>
                             <tbody>
                             {% if diseases|length > 0 %}
                                 {% for el in diseases %}
                                     <tr>
-                                        <td>{{ el[0] }}</td>
-                                        <td>{{ el[1] }}</td>
+                                        <td><a href="http://linkedlifedata.com/resource/umls/id/{{ el[1] }}" title="UMLS" target="_blank">{{ el[0] }}</a></td>
                                     </tr>
                                 {% endfor %}
                             {% endif %}
@@ -163,15 +157,15 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Phenotype Name</th>
-                                    <th scope="col">Phenotype ID</th>
                                 </tr>
                             </thead>
                             <tbody>
                             {% if phenotypes|length > 0 %}
                                 {% for el in phenotypes %}
                                     <tr>
-                                        <td>{{ el[0] }}</td>
-                                        <td>{{ el[1] }}</td>
+                                    {% if el[1].startswith("HP:") %}
+                                        <td><a href="https://hpo.jax.org/app/browse/term/{{ el[1] }}" title="HPO" target="_blank">{{ el[0] }}</a></td>
+                                    {% endif %}
                                     </tr>
                                 {% endfor %}
                             {% endif %}
