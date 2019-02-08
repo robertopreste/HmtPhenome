@@ -89,25 +89,38 @@ async def results():
 
         json_data = json_from_variant(variant_chr, variant_start, variant_end)
         networks = network_from_variant_json(json_data)
-        if len(json_data["variants"]) == 0:
+        if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
+                and len(json_data["diseases"]) == 0 and len(json_data["phenotypes"]) == 0:
             json_data = "{}"
             await flash("No results found!")
 
     elif gene_submit == "True":
         json_data = json_from_gene(gene_input)
         networks = network_from_gene_json(json_data)
+        if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
+                and len(json_data["diseases"]) == 0 and len(json_data["phenotypes"]) == 0:
+            json_data = "{}"
+            await flash("No results found!")
 
     elif pheno_submit == "True":
         json_data = json_from_phenotype(pheno_input)
         networks = network_from_phenotype_json(json_data)
+        if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
+                and len(json_data["diseases"]) == 0 and len(json_data["phenotype"]) == 0:
+            json_data = "{}"
+            await flash("No results found!")
 
     elif disease_submit == "True":
         json_data = json_from_disease(disease_input)
         networks = network_from_disease_json(json_data)
+        if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
+                and len(json_data["diseases"]) == 0 and len(json_data["phenotype"]) == 0:
+            json_data = "{}"
+            await flash("No results found!")
 
     return await render_template("results.html",
-                                 title="Results",  # final_df=final_df,
-                                 json_data=pprint.pformat(json_data),  # table_data=json_data,
+                                 title="Results",
+                                 json_data=pprint.pformat(json_data),
                                  nodes=networks["nodes"], edges=networks["edges"],
                                  variants=networks["variants"], genes=networks["genes"],
                                  diseases=networks["diseases"], phenotypes=networks["phenotypes"])
