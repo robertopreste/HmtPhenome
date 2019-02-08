@@ -76,111 +76,219 @@
         </div>
         </div>
 
+        <hr>
+
         <div class="container-fluid">
         <div class="row">
+
             <h2>Table view</h2>
 
-            <div class="col-sm-12">
+            <br>
 
-                <ul class="nav nav-tabs">
-                    <li class="active"><a data-toggle="tab" href="#variants">Variants</a></li>
-                    <li><a data-toggle="tab" href="#genes">Genes</a></li>
-                    <li><a data-toggle="tab" href="#diseases">Diseases</a></li>
-                    <li><a data-toggle="tab" href="#phenotypes">Phenotypes</a></li>
-                </ul>
-
-                <br>
-
-                <div class="tab-content">
-                    <!-- Variants -->
-                    <div id="variants" class="tab-pane fade in active">
-                        <table class="table table-hover res_table" style="background-color: #F9CF45;">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Variant</th>
-                                    <th scope="col">Gene</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% if variants|length > 0 %}
-                                {% for el in variants %}
-                                    <tr>
-                                        <td><a href="https://www.ncbi.nlm.nih.gov/snp/{{ el[1] }}" title="dbSNP" target="_blank">{{ el[0] }}</a></td>
-                                        <td>{{ el[2] }}</td>
-                                    </tr>
-                                {% endfor %}
+            <div class="row">
+            <!-- Variants -->
+            <div class="col-sm-6">
+                <table class="table table-hover" id="var_table" style="background-color: #F9CF45; border: 2px solid #CCAA39;">
+                    <thead>
+                        <tr>
+                            <th scope="col">Variants</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if variants|length > 0 %}
+                        {% for el in variants %}
+                            <tr>
+                                <td><a href="https://www.ncbi.nlm.nih.gov/snp/{{ el[1] }}" title="dbSNP" target="_blank">{{ el[0] }}</a></td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- Genes -->
+            <div class="col-sm-6">
+                <table class="table table-hover" id="gen_table" style="background-color: #739E82; border: 2px solid #5F826B;">
+                    <thead>
+                        <tr>
+                            <th scope="col">Genes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if genes|length > 0 %}
+                        {% for el in genes %}
+                            <tr>
+                            {% if el[1].startswith("LRG") %}
+                                <td><a href="http://ftp.ebi.ac.uk/pub/databases/lrgex/{{ el[1] }}.xml" title="Gene" target="_blank">{{ el[0] }}</a></td>
+                            {% else %}
+                                <td><a href="https://www.ensembl.org/id/{{ el[1] }}" title="Gene" target="_blank">{{ el[0] }}</a></td>
                             {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Genes -->
-                    <div id="genes" class="tab-pane fade in">
-                        <table class="table table-hover res_table" style="background-color: #739E82;">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Gene</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% if genes|length > 0 %}
-                                {% for el in genes %}
-                                    <tr>
-                                    {% if el[1].startswith("LRG") %}
-                                        <td><a href="http://ftp.ebi.ac.uk/pub/databases/lrgex/{{ el[1] }}.xml" title="Gene" target="_blank">{{ el[0] }}</a></td>
-                                    {% else %}
-                                        <td><a href="https://www.ensembl.org/id/{{ el[1] }}" title="Gene" target="_blank">{{ el[0] }}</a></td>
-                                    {% endif %}
-                                    </tr>
-                                {% endfor %}
-                            {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Diseases -->
-                    <div id="diseases" class="tab-pane fade in">
-                        <table class="table table-hover res_table" style="background-color: #D7816A;">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Disease Name</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% if diseases|length > 0 %}
-                                {% for el in diseases %}
-                                    <tr>
-                                        <td><a href="http://linkedlifedata.com/resource/umls/id/{{ el[1] }}" title="UMLS" target="_blank">{{ el[0] }}</a></td>
-                                    </tr>
-                                {% endfor %}
-                            {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Phenotypes -->
-                    <div id="phenotypes" class="tab-pane fade in">
-                        <table class="table table-hover res_table" style="background-color: #93B5C6;">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Phenotype Name</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% if phenotypes|length > 0 %}
-                                {% for el in phenotypes %}
-                                    <tr>
-                                    {% if el[1].startswith("HP:") %}
-                                        <td><a href="https://hpo.jax.org/app/browse/term/{{ el[1] }}" title="HPO" target="_blank">{{ el[0] }}</a></td>
-                                    {% endif %}
-                                    </tr>
-                                {% endfor %}
-                            {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
 
             </div>
+
+            <br><br>
+
+            <div class="row">
+            <!-- Diseases -->
+            <div class="col-sm-6">
+                <table class="table table-hover" id="dis_table" style="background-color: #D7816A; border: 2px solid #B06A57;">
+                    <thead>
+                        <tr>
+                            <th scope="col">Diseases</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if diseases|length > 0 %}
+                        {% for el in diseases %}
+                            <tr>
+                                <td><a href="http://linkedlifedata.com/resource/umls/id/{{ el[1] }}" title="UMLS" target="_blank">{{ el[0] }}</a></td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- Phenotypes -->
+            <div class="col-sm-6">
+                <table class="table table-hover" id="phe_table" style="background-color: #93B5C6; border: 2px solid #7995A3;">
+                    <thead>
+                        <tr>
+                            <th scope="col">Phenotypes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if phenotypes|length > 0 %}
+                        {% for el in phenotypes %}
+                            <tr>
+                            {% if el[1].startswith("HP:") %}
+                                <td><a href="https://hpo.jax.org/app/browse/term/{{ el[1] }}" title="HPO" target="_blank">{{ el[0] }}</a></td>
+                            {% else %}
+                                <td>{{ el[0] }}</td>
+                            {% endif %}
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            </div>
+
         </div>
         </div>
+
+{#        <div class="container-fluid">#}
+{#        <div class="row">#}
+{#            <h2>Table view</h2>#}
+{##}
+{#            <div class="col-sm-12">#}
+{##}
+{#                <ul class="nav nav-tabs">#}
+{#                    <li class="active"><a data-toggle="tab" href="#variants">Variants</a></li>#}
+{#                    <li><a data-toggle="tab" href="#genes">Genes</a></li>#}
+{#                    <li><a data-toggle="tab" href="#diseases">Diseases</a></li>#}
+{#                    <li><a data-toggle="tab" href="#phenotypes">Phenotypes</a></li>#}
+{#                </ul>#}
+{##}
+{#                <br>#}
+{##}
+{#                <div class="tab-content">#}
+{#                    <!-- Variants -->#}
+{#                    <div id="variants" class="tab-pane fade in active">#}
+{#                        <table class="table table-hover res_table" style="background-color: #F9CF45;">#}
+{#                            <thead>#}
+{#                                <tr>#}
+{#                                    <th scope="col">Variant</th>#}
+{#                                    <th scope="col">Gene</th>#}
+{#                                </tr>#}
+{#                            </thead>#}
+{#                            <tbody>#}
+{#                            {% if variants|length > 0 %}#}
+{#                                {% for el in variants %}#}
+{#                                    <tr>#}
+{#                                        <td><a href="https://www.ncbi.nlm.nih.gov/snp/{{ el[1] }}" title="dbSNP" target="_blank">{{ el[0] }}</a></td>#}
+{#                                        <td>{{ el[2] }}</td>#}
+{#                                    </tr>#}
+{#                                {% endfor %}#}
+{#                            {% endif %}#}
+{#                            </tbody>#}
+{#                        </table>#}
+{#                    </div>#}
+{#                    <!-- Genes -->#}
+{#                    <div id="genes" class="tab-pane fade in">#}
+{#                        <table class="table table-hover res_table" style="background-color: #739E82;">#}
+{#                            <thead>#}
+{#                                <tr>#}
+{#                                    <th scope="col">Gene</th>#}
+{#                                </tr>#}
+{#                            </thead>#}
+{#                            <tbody>#}
+{#                            {% if genes|length > 0 %}#}
+{#                                {% for el in genes %}#}
+{#                                    <tr>#}
+{#                                    {% if el[1].startswith("LRG") %}#}
+{#                                        <td><a href="http://ftp.ebi.ac.uk/pub/databases/lrgex/{{ el[1] }}.xml" title="Gene" target="_blank">{{ el[0] }}</a></td>#}
+{#                                    {% else %}#}
+{#                                        <td><a href="https://www.ensembl.org/id/{{ el[1] }}" title="Gene" target="_blank">{{ el[0] }}</a></td>#}
+{#                                    {% endif %}#}
+{#                                    </tr>#}
+{#                                {% endfor %}#}
+{#                            {% endif %}#}
+{#                            </tbody>#}
+{#                        </table>#}
+{#                    </div>#}
+{#                    <!-- Diseases -->#}
+{#                    <div id="diseases" class="tab-pane fade in">#}
+{#                        <table class="table table-hover res_table" style="background-color: #D7816A;">#}
+{#                            <thead>#}
+{#                                <tr>#}
+{#                                    <th scope="col">Disease Name</th>#}
+{#                                </tr>#}
+{#                            </thead>#}
+{#                            <tbody>#}
+{#                            {% if diseases|length > 0 %}#}
+{#                                {% for el in diseases %}#}
+{#                                    <tr>#}
+{#                                        <td><a href="http://linkedlifedata.com/resource/umls/id/{{ el[1] }}" title="UMLS" target="_blank">{{ el[0] }}</a></td>#}
+{#                                    </tr>#}
+{#                                {% endfor %}#}
+{#                            {% endif %}#}
+{#                            </tbody>#}
+{#                        </table>#}
+{#                    </div>#}
+{#                    <!-- Phenotypes -->#}
+{#                    <div id="phenotypes" class="tab-pane fade in">#}
+{#                        <table class="table table-hover res_table" style="background-color: #93B5C6;">#}
+{#                            <thead>#}
+{#                                <tr>#}
+{#                                    <th scope="col">Phenotype Name</th>#}
+{#                                </tr>#}
+{#                            </thead>#}
+{#                            <tbody>#}
+{#                            {% if phenotypes|length > 0 %}#}
+{#                                {% for el in phenotypes %}#}
+{#                                    <tr>#}
+{#                                    {% if el[1].startswith("HP:") %}#}
+{#                                        <td><a href="https://hpo.jax.org/app/browse/term/{{ el[1] }}" title="HPO" target="_blank">{{ el[0] }}</a></td>#}
+{#                                    {% endif %}#}
+{#                                    </tr>#}
+{#                                {% endfor %}#}
+{#                            {% endif %}#}
+{#                            </tbody>#}
+{#                        </table>#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#            </div>#}
+{#        </div>#}
+{#        </div>#}
+
+        <hr>
 
         <div class="container-fluid">
         <div class="row">
@@ -293,7 +401,7 @@
                 nodes: nodes,
                 edges: edges
             };
-            var options = {height: '800px', borderWidth: 3};
+            var options = {height: '800px', nodes: {borderWidth: 2}};
 
             // initialize your network!
             var network = new vis.Network(container, data, options);
@@ -302,7 +410,11 @@
 
         <script type="text/javascript">
             $(document).ready( function () {
-                $('.res_table').DataTable();
+                {#$('.res_table').DataTable();#}
+                $('#var_table').DataTable();
+                $('#gen_table').DataTable();
+                $('#dis_table').DataTable();
+                $('#phe_table').DataTable();
             } );
         </script>
 

@@ -52,6 +52,10 @@ a:hover {
     color: var(--english_red);
 }
 
+hr {
+    border-color: var(--warning_orange);
+}
+
 ::-webkit-scrollbar {
     display: none;
 }
