@@ -9,6 +9,7 @@ from pybiomart import Server
 from fuzzywuzzy import fuzz
 import json
 import math
+from typing import List, Union, Optional
 
 
 def get_genes():
@@ -140,11 +141,11 @@ function populateGenes(s1, s2) {
     return base_string
 
 
-def pheno_name_to_id(pheno_name):
+def pheno_name_to_id(pheno_name: str) -> List[str]:
     """
     Retrieve the related HP id from a given phenotype name.
-    :param pheno_name: [str] phenotype name
-    :return: [list] with the related id(s)
+    :param str pheno_name: phenotype name
+    :return: List[str] with the related id(s)
     """
     r = requests.get("https://hpo.jax.org/api/hpo/search?q={}".format(pheno_name),
                      headers={"Content-Type": "application/json"})
@@ -162,12 +163,12 @@ def pheno_name_to_id(pheno_name):
     return ids
 
 
-def pheno_id_to_term(pheno_id):
+def pheno_id_to_term(pheno_id: str) -> str:
     """
     Retrieve the common phenotype name from a given ID. It can retrieve the data either from the
     local database (for HP IDs) or from the web (for EFO IDs).
-    :param pheno_id: [str] HP or EFO ID
-    :return: [str] with the related common name
+    :param str pheno_id: HP or EFO ID
+    :return: str with the related common name
     """
     pheno_name = ""
     if pheno_id.startswith("HP:"):
@@ -189,11 +190,11 @@ def pheno_id_to_term(pheno_id):
     return pheno_name
 
 
-def disease_id_to_name(disease_id):
+def disease_id_to_name(disease_id: str) -> str:
     """
     Convert a given disease ID into its common name.
-    :param disease_id: [str] query disease ID
-    :return: [str] related disease name
+    :param str disease_id: query disease ID
+    :return: str related disease name
     """
     try:
         q = Diseases.query.filter(Diseases.disease_id == disease_id).first()
@@ -210,11 +211,11 @@ def disease_id_to_name(disease_id):
             return ""
 
 
-def disease_name_to_id(disease_name):
+def disease_name_to_id(disease_name: str) -> str:
     """
     Convert a given disease name into the related Omim or Orphanet ID.
-    :param disease_name: [str] query disease name
-    :return: [str] related disease ID from OMIM or ORPHANET
+    :param str disease_name: query disease name
+    :return: str related disease ID from OMIM or ORPHANET
     """
     try:
         q = Diseases.query.filter(Diseases.disease_name == disease_name).first()
@@ -231,33 +232,38 @@ def disease_name_to_id(disease_name):
                 return ""
 
 
-def create_variant_string(chrom, nt_start, ref_all, alt_all):
+def create_variant_string(chrom: Union[int, str], nt_start: Union[int, str],
+                          ref_all: str, alt_all: str) -> str:
     """
     Create a string with the standard variant format: chrX:start_positionREF_ALL>ALT_ALL.
-    :param chrom: [str, int] chromosome name (1:22, X, Y, M)
-    :param nt_start: [int] start position of the variant
-    :param ref_all: [str] reference allele
-    :param alt_all: [str] alternate allele
-    :return: [str] with variant formatted according to current standards
+    :param Union[int, str] chrom: chromosome name (1:22, X, Y, M)
+    :param Union[int, str] nt_start: start position of the variant
+    :param str ref_all: reference allele
+    :param str alt_all: alternate allele
+    :return: str with variant formatted according to current standards
     """
-    if math.isnan(nt_start) or type(ref_all) == float or type(alt_all) == float:
+    # if math.isnan(nt_start) or type(ref_all) == float or type(alt_all) == float:
     # if math.isnan(chrom) or math.isnan(nt_start) or math.isnan(ref_all) or math.isnan(alt_all):
-        return "chr_:_>_"
+    #     return "chr_:_>_"
     base_str = "chr{}:{}{}"
-    change = "{}>{}".format(ref_all.upper(), alt_all.upper())
-    if alt_all == "-":  # deletion
-        change = "del{}".format(ref_all.upper())
-    elif ref_all == "-":  # insertion
-        change = "ins{}".format(alt_all.upper())
+    try:
+        change = "{}>{}".format(ref_all.upper(), alt_all.upper())
+        if alt_all == "-":  # deletion
+            change = "del{}".format(ref_all.upper())
+        elif ref_all == "-":  # insertion
+            change = "ins{}".format(alt_all.upper())
+    except TypeError:
+        chrom = nt_start = "_"
+        change = "_>_"
 
     return base_str.format(chrom, nt_start, change)
 
 
-def ensembl_gene_id_to_entrez(ens_gene_id):
+def ensembl_gene_id_to_entrez(ens_gene_id: str) -> pd.DataFrame:
     """
     Convert an Ensembl gene ID to its related Entrez gene ID, using Biomart.
-    :param ens_gene_id: [str] query Ensembl gene ID
-    :return: [str] resulting Entrez gene ID
+    :param str ens_gene_id: query Ensembl gene ID
+    :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "entrez_gene_id"])
     """
     server = Server(host="http://www.ensembl.org")
     dataset = server.marts["ENSEMBL_MART_ENSEMBL"].datasets["hsapiens_gene_ensembl"]
@@ -272,26 +278,29 @@ def ensembl_gene_id_to_entrez(ens_gene_id):
 # FROM VARIANT POSITION #
 
 
-def get_dbsnp_from_variant(chrom, var_start, var_end=None):
+def get_dbsnp_from_variant(chrom: Union[int, str], var_start: Union[int, str],
+                           var_end: Optional[Union[int, str]] = None) -> pd.DataFrame:
     """
     Find the dbSNP ID related to a given variant.
-    :param chrom: [str] chromosome name (1:22, X, Y, MT)
-    :param var_start: [str, int] variant starting position
-    :param var_end: [str, int] variant ending position
+    :param Union[int, str] chrom: chromosome name (1:22, X, Y, MT)
+    :param Union[int, str] var_start: variant starting position
+    :param Optional[Union[int, str]] var_end: variant ending position
     :return: pd.DataFrame(columns=["dbsnp_id", "variant"])
     """
-    if chrom.startswith("chr"):
-        chrom = chrom.lstrip("chr")
+    chrom = str(chrom).lstrip("chr").upper()
+    var_start = str(var_start)
     if chrom == "M":
         chrom = "MT"
     if var_end is None:
         var_end = var_start
+    else:
+        var_end = str(var_end)
 
     server = Server(host="http://www.ensembl.org")
     dataset = server.marts["ENSEMBL_MART_SNP"].datasets["hsapiens_snp"]
     res = dataset.query(attributes=["chr_name", "chrom_start", "consequence_allele_string",
                                     "refsnp_id"],
-                        filters={"chr_name": chrom, "start": str(var_start), "end": str(var_end)})
+                        filters={"chr_name": chrom, "start": var_start, "end": var_end})
     res.rename({"Chromosome/scaffold name": "chromosome",
                 "Chromosome/scaffold position start (bp)": "start_pos",
                 "Consequence specific allele": "ref/alt allele",
@@ -314,12 +323,13 @@ def get_dbsnp_from_variant(chrom, var_start, var_end=None):
     return res
 
 
-def get_gene_from_variant(chrom, var_start, var_end=None):
+def get_gene_from_variant(chrom: Union[int, str], var_start: Union[int, str],
+                          var_end: Optional[Union[int, str]] = None) -> pd.DataFrame:
     """
     Retrieve the gene to which the provided variant belongs, using Biomart.
-    :param chrom: [str] chromosome name (chr + 1:22, X, Y, M)
-    :param var_start: [str, int] variant starting position
-    :param var_end: [str, int] variant ending position
+    :param Union[int, str] chrom: chromosome name (chr + 1:22, X, Y, M)
+    :param Union[int, str] var_start: variant starting position
+    :param Optional[Union[int, str]] var_end: variant ending position
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name"])
     """
     if chrom == "MT":
@@ -340,19 +350,20 @@ def get_gene_from_variant(chrom, var_start, var_end=None):
     return res
 
 
-def get_phenos_from_variant(chrom, var_start, var_end=None):
+def get_phenos_from_variant(chrom: Union[int, str], var_start: Union[int, str],
+                            var_end: Optional[Union[int, str]] = None) -> pd.DataFrame:
     """
     Retrieve phenotypes associated with a specific variant, using Biomart.
-    :param chrom: [str] chromosome name (chr + 1:22, X, Y, M)
-    :param var_start: [str, int] variant starting position
-    :param var_end: [str, int] variant ending position
+    :param Union[int, str] chrom: chromosome name (chr + 1:22, X, Y, M)
+    :param Union[int, str] var_start: variant starting position
+    :param Optional[Union[int, str]] var_end: variant ending position
     :return: pd.DataFrame(columns=["chromosome", "ref_allele", "start_pos", "alt_allele",
     "phenotype"])
     """
-    chrom = chrom.lstrip("chr").upper()
+    chrom = str(chrom).lstrip("chr").upper()
+    var_start = str(var_start)
     if chrom == "M":
         chrom = "MT"
-    var_start = str(var_start)
     if var_end is None:
         var_end = var_start
     else:
@@ -383,10 +394,10 @@ def get_phenos_from_variant(chrom, var_start, var_end=None):
     return res
 
 
-def get_diseases_from_dbsnp(dbsnp_id):
+def get_diseases_from_dbsnp(dbsnp_id: str) -> pd.DataFrame:
     """
     Retrieve diseases associated with the given dbSNP ID.
-    :param dbsnp_id: [str] query dbSNP ID
+    :param str dbsnp_id: query dbSNP ID
     :return: pd.DataFrame(columns=["dbsnp_id", "umls_disease_id", "disease_name", "ass_score"])
     """
     q = VarDiseaseAss.query.filter(VarDiseaseAss.dbsnp_id == dbsnp_id).all()
@@ -402,10 +413,10 @@ def get_diseases_from_dbsnp(dbsnp_id):
     return df
 
 
-def get_phenos_from_umls(umls_id):
+def get_phenos_from_umls(umls_id: str) -> pd.DataFrame:
     """
     Retrieve phenotypes associated with the given disease using its UMLS ID.
-    :param umls_id: [str] query UMLS ID
+    :param str umls_id: query UMLS ID
     :return: pd.DataFrame(columns=["umls_disease_id", "disease_name", "disease_id", "phenotype_id",
     "phenotype_name"])
     """
@@ -430,20 +441,21 @@ def get_phenos_from_umls(umls_id):
     return df
 
 
-def get_diseases_from_variant(chrom, var_start, var_end=None):
+def get_diseases_from_variant(chrom: Union[int, str], var_start: Union[int, str],
+                              var_end: Optional[Union[int, str]] = None) -> pd.DataFrame:
     """
     Retrieve diseases associated with the given variant, exploiting the get_gene_from_variant and
     get_diseases_from_gene_name functions.
-    :param chrom: [str] chromosome name (chr + 1:22, X, Y, M)
-    :param var_start: [str, int] variant starting position
-    :param var_end: [str, int] variant ending position
+    :param Union[int, str] chrom: chromosome name (chr + 1:22, X, Y, M)
+    :param Union[int, str] var_start: variant starting position
+    :param Optional[Union[int, str]] var_end: variant ending position
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "location", "variation",
     "disease", "phenotypes"])
     """
-    chrom = chrom.lstrip("chr").upper()
+    chrom = str(chrom).lstrip("chr").upper()
+    var_start = str(var_start)
     if chrom == "M":
         chrom = "MT"
-    var_start = str(var_start)
     if var_end is None:
         var_end = var_start
     else:
@@ -470,13 +482,14 @@ def get_diseases_from_variant(chrom, var_start, var_end=None):
     return diseases
 
 
-def json_from_variant(variant_chr, variant_start, variant_end=None):
+def json_from_variant(variant_chr: Union[int, str], variant_start: Union[int, str],
+                      variant_end: Optional[Union[int, str]] = None) -> dict:
     """
     Create the final json structure from variant data.
-    :param variant_chr: [str] chromosome name (chr + 1:22, X, Y, M)
-    :param variant_start: [str, int] variant starting position
-    :param variant_end: [str, int] variant ending position
-    :return: json("variants": [variants list])
+    :param Union[int, str] variant_chr: chromosome name (chr + 1:22, X, Y, M)
+    :param Union[int, str] variant_start: variant starting position
+    :param Optional[Union[int, str]] variant_end: variant ending position
+    :return: dict json("variants": [variants list])
     """
     gene = get_gene_from_variant(variant_chr, variant_start, variant_end)
     dbsnps = get_dbsnp_from_variant(variant_chr, variant_start, variant_end)
@@ -535,7 +548,7 @@ def json_from_variant(variant_chr, variant_start, variant_end=None):
 
     vars_json = json.loads(df.to_json(orient="records"))
 
-    final_json = {}
+    final_json = dict()
     final_json["variants"] = vars_json
     final_json["genes"] = gene_json
     final_json["diseases"] = disease_json
@@ -544,10 +557,10 @@ def json_from_variant(variant_chr, variant_start, variant_end=None):
     return final_json
 
 
-def network_from_variant_json(final_json):
+def network_from_variant_json(final_json: dict) -> dict:
     """
     Create the required nodes and edges dictionaries to build the network from variant data.
-    :param final_json: output from json_from_variant()
+    :param dict final_json: output from json_from_variant()
     :return: dict("nodes": [nodes list], "edges": [edges list])
     """
     var_json = final_json["variants"]
@@ -636,14 +649,13 @@ def network_from_variant_json(final_json):
 # FROM GENE #
 
 
-def get_vars_from_gene_name(gene_name):
+def get_vars_from_gene_name(gene_name: str) -> pd.DataFrame:
     """
     Retrieve all variants associated with a specific gene, using Biomart.
-    :param gene_name: [str] name of the query gene
+    :param str gene_name: name of the query gene
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
     "start_pos", "alt_allele", "variant", "dbsnp_id", "phenotype"])
     """
-    # gene_name = gene_name.upper().lstrip("MT-")
     if gene_name.startswith("MT-"):
         gene_name = gene_name.upper().split("-")[1]
 
@@ -681,10 +693,10 @@ def get_vars_from_gene_name(gene_name):
     return res
 
 
-def get_vars_from_gene_id(ens_gene_id):
+def get_vars_from_gene_id(ens_gene_id: str) -> pd.DataFrame:
     """
     Retrieve all variants associated with a specific Ensembl gene ID, using Biomart.
-    :param ens_gene_id: [str] query Ensembl gene ID
+    :param str ens_gene_id: query Ensembl gene ID
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
     "start_pos", "alt_allele", "variant", "dbsnp_id", "phenotype"])
     """
@@ -726,10 +738,10 @@ def get_vars_from_gene_id(ens_gene_id):
     return res
 
 
-def get_vars_from_gene_id_alt(ens_gene_id):
+def get_vars_from_gene_id_alt(ens_gene_id: str) -> pd.DataFrame:
     """
     Retrieve all variants associated with a specific Ensembl gene ID, using Ensembl REST.
-    :param ens_gene_id: [str] query Ensembl gene ID
+    :param str ens_gene_id: query Ensembl gene ID
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
     "start_pos", "alt_allele", "variant", "dbsnp_id"])
     """
@@ -784,10 +796,10 @@ def get_vars_from_gene_id_alt(ens_gene_id):
     return df
 
 
-def get_diseases_from_gene(gene, with_vars=False):
+def get_diseases_from_gene(gene: str, with_vars: bool = False) -> pd.DataFrame:
     """Retrieve diseases associated to a specific gene, using Ensembl.
-    :param gene: [str] query gene Ensembl ID or common name
-    :param with_vars: [bool] True to also retrieve phenotypes associated to variants of the gene
+    :param str gene: query gene Ensembl ID or common name
+    :param bool with_vars: True to also retrieve phenotypes associated to variants of the gene
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "disease_name", "phenotype_ids"])
     or pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "variation", "disease_name",
     "phenotype_ids"]) if with_vars=True
@@ -844,10 +856,10 @@ def get_diseases_from_gene(gene, with_vars=False):
     return df
 
 
-def get_diseases_from_gene_id(ens_gene_id):
+def get_diseases_from_gene_id(ens_gene_id: str) -> pd.DataFrame:
     """
     Retrieve diseases associated with a specific Ensembl gene id, using Ensembl.
-    :param ens_gene_id: [str] query Ensembl gene id
+    :param str ens_gene_id: query Ensembl gene id
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "disease_id", "disease_name",
     "ass_score"])
     """
@@ -877,11 +889,11 @@ def get_diseases_from_gene_id(ens_gene_id):
     return df
 
 
-def json_from_gene(gene_input):
+def json_from_gene(gene_input: str) -> dict:
     """
     Create the final json structure from gene data.
-    :param gene_input: [str] Ensemble gene ID to use for the queries
-    :return: json("variants": [variants list], "diseases": [diseases list])
+    :param str gene_input: Ensemble gene ID to use for the queries
+    :return: dict json("variants": [variants list], "diseases": [diseases list])
     """
     gene_name = Mitocarta.query.filter(Mitocarta.ensembl_id == gene_input).first().gene_symbol
     gene_df = pd.DataFrame({"ensembl_gene_id": [gene_input], "gene_name": [gene_name]})
@@ -942,7 +954,7 @@ def json_from_gene(gene_input):
 
     phenos_json = json.loads(phenos_df.to_json(orient="records"))
 
-    final_json = {}
+    final_json = dict()
     final_json["variants"] = vars_json
     final_json["genes"] = gene_json
     final_json["diseases"] = disease_json
@@ -951,10 +963,10 @@ def json_from_gene(gene_input):
     return final_json
 
 
-def network_from_gene_json(final_json):
+def network_from_gene_json(final_json: dict) -> dict:
     """
     Create the required nodes and edges dictionaries to build the network from gene data.
-    :param final_json: output from json_from_gene()
+    :param dict final_json: output from json_from_gene()
     :return: dict("nodes": [nodes list], "edges": [edges list])
     """
     var_json = final_json["variants"]
@@ -1062,10 +1074,10 @@ def network_from_gene_json(final_json):
 # FROM PHENOTYPE #
 
 
-def get_genes_from_phenotype(phenotype):
+def get_genes_from_phenotype(phenotype: str) -> pd.DataFrame:
     """
     Retrieve genes related to a phenotype, using Ensembl.
-    :param phenotype: [str] accession id of the phenotype to search for
+    :param str phenotype: accession id of the phenotype to search for
     :return: pd.DataFrame(columns=["gene_name", "ensembl_gene_id", "phenotype_id", "phenotype_name"])
     """
     df = pd.DataFrame(columns=["gene_name", "ensembl_gene_id", "phenotype_id", "phenotype_name"])
@@ -1091,11 +1103,11 @@ def get_genes_from_phenotype(phenotype):
     return df
 
 
-def get_vars_from_phenotype(phenotype):
+def get_vars_from_phenotype(phenotype: str) -> pd.DataFrame:
     """
     Retrieve variants related to a phenotype, exploiting the get_genes_from_phenotype() and
     get_vars_from_gene_name() functions.
-    :param phenotype: [str] accession id of the phenotype to search for
+    :param str phenotype: accession id of the phenotype to search for
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
     "start_pos", "alt_allele", "phenotype_name", "phenotype_id"])
     """
@@ -1164,11 +1176,11 @@ def get_vars_from_phenotype(phenotype):
     return res
 
 
-def get_diseases_from_phenotype(phenotype):
+def get_diseases_from_phenotype(phenotype: str) -> pd.DataFrame:
     """
     Retrieve diseases related to a phenotype, exploiting the get_genes_from_phenotype() and
     get_diseases_from_gene_name() functions.
-    :param phenotype: [str] accession id of the phenotype to search for
+    :param str phenotype: accession id of the phenotype to search for
     :return: pd.DataFrame(columns=["pheno_id", "pheno_name", "disease_name", "disease_id",
     "umls_disease_id"])
     """
@@ -1193,11 +1205,11 @@ def get_diseases_from_phenotype(phenotype):
     return df
 
 
-def json_from_phenotype(pheno_input):
+def json_from_phenotype(pheno_input: str) -> dict:
     """
     Create the final json structure from phenotype data.
-    :param pheno_input: [str] phenotype ID to use for the queries
-    :return: json("phenotype": phenotype name, "variants": [variants list],
+    :param str pheno_input: phenotype ID to use for the queries
+    :return: dict json("phenotype": phenotype name, "variants": [variants list],
     "genes": [genes list], "diseases": [diseases list])
     """
     vars_df = get_vars_from_phenotype(pheno_input)
@@ -1212,7 +1224,7 @@ def json_from_phenotype(pheno_input):
     # Diseases
     disease_json = json.loads(disease_df.to_json(orient="records"))
 
-    final_json = {}
+    final_json = dict()
     pheno_name = DiseaseMappings.query.filter(DiseaseMappings.disease_id == pheno_input).first().disease_name
     final_json["phenotype"] = pheno_name
     final_json["variants"] = vars_json
@@ -1222,10 +1234,10 @@ def json_from_phenotype(pheno_input):
     return final_json
 
 
-def network_from_phenotype_json(final_json):
+def network_from_phenotype_json(final_json: dict) -> dict:
     """
     Create the required nodes and edges dictionaries to build the network from phenotype data.
-    :param final_json: output from json_from_phenotype()
+    :param dict final_json: output from json_from_phenotype()
     :return: dict("nodes": [nodes list], "edges": [edges list])
     """
     phenotype = final_json["phenotype"]
@@ -1330,11 +1342,11 @@ def network_from_phenotype_json(final_json):
 # FROM DISEASE #
 
 
-def get_umls_from_disease_id(disease_id):
+def get_umls_from_disease_id(disease_id: str) -> str:
     """
     Convert the general disease ID to the standard UMLS ID.
-    :param disease_id: [str] disease ID starting with "DO", "MSH", "NCI", "OMIM", "ORDO" or "ICD9CM"
-    :return: [str] the correspondent UMLS ID
+    :param str disease_id: disease ID starting with "DO", "MSH", "NCI", "OMIM", "ORDO" or "ICD9CM"
+    :return: str the correspondent UMLS ID
     """
     dis_vocab, dis_num = disease_id.split(":")
     if dis_vocab in ["DO", "MSH", "NCI", "OMIM", "ORDO", "ICD9CM"]:
@@ -1353,10 +1365,10 @@ def get_umls_from_disease_id(disease_id):
     return ""
 
 
-def get_genes_from_disease_id(disease_id):
+def get_genes_from_disease_id(disease_id: str) -> pd.DataFrame:
     """
     Retrieve genes involved in a specific disease, using the GeneDiseaseAss table from the db.
-    :param disease_id: [str] disease ID to look for
+    :param str disease_id: disease ID to look for
     :return: pd.DataFrame(columns=["umls_disease_id", "disease_name", "disease_id",
     "entrez_gene_id", "gene_name", "ensembl_gene_id", "ass_score"])
     """
@@ -1385,11 +1397,11 @@ def get_genes_from_disease_id(disease_id):
     return df
 
 
-def get_vars_from_disease_id(disease_id):
+def get_vars_from_disease_id(disease_id: str) -> pd.DataFrame:
     """
     Retrieve variants associated to a specific disease, getting their dbSNP ID and then the actual
     variant string exploiting Ensembl API.
-    :param disease_id: [str] disease ID to look for
+    :param str disease_id: disease ID to look for
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "dbsnp_id", "variant",
     "umls_disease_id", "disease_name", "disease_id"])
     """
@@ -1452,11 +1464,11 @@ def get_vars_from_disease_id(disease_id):
     return res
 
 
-def get_phenos_from_disease_id(disease_id):
+def get_phenos_from_disease_id(disease_id: str) -> pd.DataFrame:
     """
     Retrieve phenotypes associated to a specific disease, using the HpoDisGenePhen table from the
     db.
-    :param disease_id: [str] disease ID to look for
+    :param str disease_id: disease ID to look for
     :return: pd.DataFrame(columns=["umls_disease_id", "disease_name", "disease_id", "phenotype_id",
     "phenotype_name"]
     """
@@ -1482,11 +1494,11 @@ def get_phenos_from_disease_id(disease_id):
     return df
 
 
-def json_from_disease(disease_input):
+def json_from_disease(disease_input: str) -> dict:
     """
     Create the final json structure from disease data.
-    :param disease_input: [str] disease ID to use for the queries
-    :return: json("diseases": disease name, "phenotype": [phenotypes list],
+    :param str disease_input: disease ID to use for the queries
+    :return: dict json("diseases": disease name, "phenotype": [phenotypes list],
     "variants": [variants list], "genes": [genes list])
     """
     vars_df = get_vars_from_disease_id(disease_input)
@@ -1502,7 +1514,7 @@ def json_from_disease(disease_input):
     # Phenotypes
     pheno_json = json.loads(pheno_df.to_json(orient="records"))
 
-    final_json = {}
+    final_json = dict()
     disease_name = Diseases.query.filter(Diseases.disease_id == disease_input).first().disease_name
     dis_maps = DiseaseMappings.query.filter(DiseaseMappings.umls_disease_id == get_umls_from_disease_id(disease_input)).first()
     if dis_maps is not None:
@@ -1516,10 +1528,10 @@ def json_from_disease(disease_input):
     return final_json
 
 
-def network_from_disease_json(final_json):
+def network_from_disease_json(final_json: dict) -> dict:
     """
     Create the required nodes and edges dictionaries to build the network from disease data.
-    :param final_json: output from json_from_disease()
+    :param dict final_json: output from json_from_disease()
     :return: dict("nodes": [nodes list], "edges": [edges list])
     """
     phen_json = final_json["phenotype"]
