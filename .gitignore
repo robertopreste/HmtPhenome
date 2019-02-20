@@ -233,3 +233,7 @@ network_genes.ipynb
 network_phenos.ipynb
 network_variants.ipynb
 .pybiomart.sqlite
+
+# SSH keys
+hmtphenome
+hmtphenome.pub
