@@ -5,4 +5,4 @@ from app import app
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080)  # remove this in production
+    app.run(debug=True)  # remove this in production
