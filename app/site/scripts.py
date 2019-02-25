@@ -522,8 +522,8 @@ def json_from_variant(variant_chr: Union[int, str], variant_start: Union[int, st
                     for phen in rel_phenos.itertuples():
                         new_row = pd.DataFrame(
                             {"variant": [var.variant], "dbsnp_id": [var.dbsnp_id],
-                             "gene_name": [gene.gene_name[0]],
-                             "ensembl_gene_id": [gene.ensembl_gene_id[0]],
+                             "gene_name": [gene.gene_name.get(0, "none")],
+                             "ensembl_gene_id": [gene.ensembl_gene_id.get(0, "none")],
                              "umls_disease_id": [dis.umls_disease_id],
                              "disease_name": [dis.disease_name],
                              "phenotype_id": [phen.phenotype_id],
@@ -531,8 +531,8 @@ def json_from_variant(variant_chr: Union[int, str], variant_start: Union[int, st
                         df = df.append(new_row, ignore_index=True)
                 else:
                     new_row = pd.DataFrame({"variant": [var.variant], "dbsnp_id": [var.dbsnp_id],
-                                            "gene_name": [gene.gene_name[0]],
-                                            "ensembl_gene_id": [gene.ensembl_gene_id[0]],
+                                            "gene_name": [gene.gene_name.get(0, "none")],
+                                            "ensembl_gene_id": [gene.ensembl_gene_id.get(0, "none")],
                                             "umls_disease_id": [dis.umls_disease_id],
                                             "disease_name": [dis.disease_name],
                                             "phenotype_id": [""],
@@ -541,7 +541,8 @@ def json_from_variant(variant_chr: Union[int, str], variant_start: Union[int, st
         else:
             new_row = pd.DataFrame(
                 {"variant": [var.variant], "dbsnp_id": [var.dbsnp_id],
-                 "gene_name": [gene.gene_name[0]], "ensembl_gene_id": [gene.ensembl_gene_id[0]],
+                 "gene_name": [gene.gene_name.get(0, "none")],
+                 "ensembl_gene_id": [gene.ensembl_gene_id.get(0, "none")],
                  "umls_disease_id": [""], "disease_name": [""], "phenotype_id": [""],
                  "phenotype_name": [""]})
             df = df.append(new_row, ignore_index=True)
