@@ -217,6 +217,7 @@ def disease_name_to_id(disease_name: str) -> str:
     :param str disease_name: query disease name
     :return: str related disease ID from OMIM or ORPHANET
     """
+    # TODO: this should be looked for in the DiseaseMappings table 
     try:
         q = Diseases.query.filter(Diseases.disease_name == disease_name).first()
         return q.disease_id
@@ -441,6 +442,7 @@ def get_phenos_from_umls(umls_id: str) -> pd.DataFrame:
     return df
 
 
+# not used anymore
 def get_diseases_from_variant(chrom: Union[int, str], var_start: Union[int, str],
                               var_end: Optional[Union[int, str]] = None) -> pd.DataFrame:
     """
@@ -462,22 +464,25 @@ def get_diseases_from_variant(chrom: Union[int, str], var_start: Union[int, str]
         var_end = str(var_end)
 
     try:
-        gene_name = get_gene_from_variant(chrom, var_start, var_end)["gene_name"][0]
+        gene_name = get_gene_from_variant(chrom, var_start, var_end).gene_name.get(0, "")
     except (IndexError, KeyError) as e:
         gene_name = ""
     diseases = get_diseases_from_gene(gene_name, True)
-
-    try:
-        if var_end is not None:
-            diseases = diseases[(diseases["location"].str.startswith(chrom)) &
-                                (diseases["location"].str.contains(str(var_start))) &
-                                (diseases["location"].str.contains(var_end))]
-        else:
-            diseases = diseases[(diseases["location"].str.startswith(chrom)) &
-                                (diseases["location"].str.contains(str(var_start)))]
-    except KeyError:
-        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "location", "variation",
-                                     "disease", "phenotypes"])
+    if diseases.shape[0] != 0:
+        try:
+            if var_end is not None:
+                diseases = diseases[(diseases["location"].str.startswith(chrom)) &
+                                    (diseases["location"].str.contains(str(var_start))) &
+                                    (diseases["location"].str.contains(var_end))]
+            else:
+                diseases = diseases[(diseases["location"].str.startswith(chrom)) &
+                                    (diseases["location"].str.contains(str(var_start)))]
+            diseases.drop(["location"], axis=1, inplace=True)
+        except KeyError:
+            return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "variation", "disease",
+                                         "phenotypes"])
+    else:
+        diseases = get_diseases_from_gene(gene_name)
 
     return diseases
 
