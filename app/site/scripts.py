@@ -699,7 +699,7 @@ def get_vars_from_gene_name(gene_name: str) -> pd.DataFrame:
     return res
 
 
-def get_vars_from_gene_id(ens_gene_id: str) -> pd.DataFrame:
+def get_vars_from_gene_id_old(ens_gene_id: str) -> pd.DataFrame:
     """
     Retrieve all variants associated with a specific Ensembl gene ID, using Biomart.
     :param str ens_gene_id: query Ensembl gene ID
@@ -744,7 +744,7 @@ def get_vars_from_gene_id(ens_gene_id: str) -> pd.DataFrame:
     return res
 
 
-def get_vars_from_gene_id_alt(ens_gene_id: str) -> pd.DataFrame:
+def get_vars_from_gene_id(ens_gene_id: str) -> pd.DataFrame:
     """
     Retrieve all variants associated with a specific Ensembl gene ID, using Ensembl REST.
     :param str ens_gene_id: query Ensembl gene ID
@@ -754,7 +754,8 @@ def get_vars_from_gene_id_alt(ens_gene_id: str) -> pd.DataFrame:
     try:
         gene_name = Mitocarta.query.filter(Mitocarta.ensembl_id == ens_gene_id).first().gene_symbol
     except AttributeError:
-        return pd.DataFrame()
+        return pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
+                                     "start_pos", "alt_allele", "variant", "dbsnp_id"])
 
     server = "https://rest.ensembl.org"
     ext = "/overlap/id/{}?feature=variation".format(ens_gene_id)
@@ -904,8 +905,8 @@ def json_from_gene(gene_input: str) -> dict:
     gene_name = Mitocarta.query.filter(Mitocarta.ensembl_id == gene_input).first().gene_symbol
     gene_df = pd.DataFrame({"ensembl_gene_id": [gene_input], "gene_name": [gene_name]})
     gene_json = json.loads(gene_df.to_json(orient="records"))
-    # vars_df = get_vars_from_gene_id(gene_input)
-    vars_df = get_vars_from_gene_id_alt(gene_input)  # we might want to add phenotypes --> get_diseases_from_dbsnp()
+    # vars_df = get_vars_from_gene_id_old(gene_input)
+    vars_df = get_vars_from_gene_id(gene_input)  # we might want to add phenotypes --> get_diseases_from_dbsnp()
     vars_df["disease_name"] = ""
     vars_df["umls_disease_id"] = ""
     # disease_df = get_diseases_from_gene_id(gene_input)  # get_disease_from_gene_name to grep diseases and phenos

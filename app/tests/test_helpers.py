@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
+import pandas as pd
+from pandas.testing import assert_frame_equal
 import pytest
-from app.site.scripts import create_variant_string, pheno_name_to_id, pheno_id_to_term
+from app.site.scripts import create_variant_string, pheno_name_to_id, pheno_id_to_term, ensembl_gene_id_to_entrez
 
 
 def test_mt_snp_variant():
@@ -59,3 +61,15 @@ def test_pheno_id_to_term_EFO():
 
 def test_disease_id_to_name():
     pass
+
+
+def test_ensembl_gene_id_to_entrez():
+    expect = pd.DataFrame({
+        "ensembl_gene_id": ["ENSG00000198888"],
+        "gene_name": ["MT-ND1"],
+        "entrez_gene_id": [4535]
+    })
+    result = ensembl_gene_id_to_entrez("ENSG00000198888")
+    assert_frame_equal(result.reset_index(drop=True),
+                       expect.reset_index(drop=True))
+
