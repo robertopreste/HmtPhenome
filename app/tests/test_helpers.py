@@ -4,7 +4,7 @@
 import pandas as pd
 from pandas.testing import assert_frame_equal
 import pytest
-from app.site.scripts import create_variant_string, pheno_name_to_id, pheno_id_to_term, ensembl_gene_id_to_entrez
+from app.site.scripts import create_variant_string, pheno_name_to_id, pheno_id_to_term, ensembl_gene_id_to_entrez, disease_id_to_name, disease_name_to_id
 
 
 def test_mt_snp_variant():
@@ -59,8 +59,32 @@ def test_pheno_id_to_term_EFO():
     pass
 
 
-def test_disease_id_to_name():
-    pass
+def test_disease_id_to_name_OMIM():
+    expect = "ADULT SYNDROME"
+    result = disease_id_to_name("OMIM:103285")
+
+    assert result == expect
+
+
+def test_disease_id_to_name_Orpha():
+    expect = "Oligodontia"
+    result = disease_id_to_name("ORPHA:99798")
+
+    assert result == expect
+
+
+def test_disease_name_to_id_OMIM():
+    expect = "OMIM:103285"
+    result = disease_name_to_id("ADULT SYNDROME")
+
+    assert result == expect
+
+
+def test_disease_name_to_id_Orpha():
+    expect = "ORPHA:99798"
+    result = disease_name_to_id("Oligodontia")
+
+    assert result == expect
 
 
 def test_ensembl_gene_id_to_entrez():
