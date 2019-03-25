@@ -10,6 +10,8 @@ from fuzzywuzzy import fuzz
 import json
 import math
 from typing import List, Union, Optional
+import asyncio
+import aiohttp
 
 
 def get_genes():
@@ -141,15 +143,27 @@ function populateGenes(s1, s2) {
     return base_string
 
 
+async def get_json_request(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, ssl=False) as res:
+            return await res.json()
+
+
 def pheno_name_to_id(pheno_name: str) -> List[str]:
     """
     Retrieve the related HP id from a given phenotype name.
     :param str pheno_name: phenotype name
     :return: List[str] with the related id(s)
     """
-    r = requests.get("https://hpo.jax.org/api/hpo/search?q={}".format(pheno_name),
-                     headers={"Content-Type": "application/json"})
-    res = r.json()
+    # r = requests.get("https://hpo.jax.org/api/hpo/search?q={}".format(pheno_name),
+    #                  headers={"Content-Type": "application/json"})
+    # res = r.json()
+    url = "https://hpo.jax.org/api/hpo/search?q={}".format(pheno_name)
+    loop = asyncio.get_event_loop()
+    # expl: this is used to get multiple urls in the same loop
+    # tasks = [get_json_request(url), get_json_request(url)]
+    # res = loop.run_until_complete(asyncio.gather(*tasks))
+    res = loop.run_until_complete(get_json_request(url))
     ids = []
 
     if res["termsTotalCount"] == 0:
