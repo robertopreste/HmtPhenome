@@ -143,9 +143,13 @@ function populateGenes(s1, s2) {
     return base_string
 
 
-async def get_json_request(url):
+async def get_json_request(url, headers=None):
+    if headers is None:
+        headers = {"Content-Type": "application/json"}
     async with aiohttp.ClientSession() as session:
-        async with session.get(url, ssl=False) as res:
+        async with session.get(url,
+                               ssl=False,
+                               headers=headers) as res:
             return await res.json()
 
 
@@ -197,8 +201,10 @@ def pheno_id_to_term(pheno_id: str) -> str:
         efo_id = pheno_id.strip("EFO:")
         base_url = "https://www.ebi.ac.uk/ols/api/ontologies/efo/terms?"
         iri_url = "iri=http://www.ebi.ac.uk/efo/EFO_{}".format(efo_id)
-        r = requests.get(base_url + iri_url, headers={"Content-Type": "application/json"})
-        res = r.json()
+        # r = requests.get(base_url + iri_url, headers={"Content-Type": "application/json"})
+        # res = r.json()
+        loop = asyncio.get_event_loop()
+        res = loop.run_until_complete(get_json_request(base_url + iri_url))
         pheno_name = res["_embedded"]["terms"][0]["label"]
 
     return pheno_name
@@ -260,6 +266,8 @@ def create_variant_string(chrom: Union[int, str], nt_start: Union[int, str],
     # if math.isnan(nt_start) or type(ref_all) == float or type(alt_all) == float:
     # if math.isnan(chrom) or math.isnan(nt_start) or math.isnan(ref_all) or math.isnan(alt_all):
     #     return "chr_:_>_"
+    if type(ref_all) is float or type(alt_all) is float:
+        return "chr_:_>_"
     base_str = "chr{}:{}{}"
     try:
         change = "{}>{}".format(ref_all.upper(), alt_all.upper())
@@ -684,8 +692,10 @@ def get_vars_from_gene(ens_gene_id: str) -> pd.DataFrame:
 
     server = "https://rest.ensembl.org"
     ext = "/overlap/id/{}?feature=variation".format(ens_gene_id)
-    r = requests.get(server + ext, headers={"Content-Type": "application/json"})
-    res = r.json()
+    # r = requests.get(server + ext, headers={"Content-Type": "application/json"})
+    # res = r.json()
+    loop = asyncio.get_event_loop()
+    res = loop.run_until_complete(get_json_request(server + ext))
 
     df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome", "ref_allele",
                                "start_pos", "alt_allele", "variant", "dbsnp_id"])
@@ -741,8 +751,10 @@ def get_diseases_from_gene(gene: str, with_vars: bool = False) -> pd.DataFrame:
 
     server = "https://rest.ensembl.org"
     ext = "/phenotype/gene/homo_sapiens/{}?include_associated={}".format(gene, int(with_vars))
-    r = requests.get(server + ext, headers={"Content-Type": "application/json"})
-    res = r.json()
+    # r = requests.get(server + ext, headers={"Content-Type": "application/json"})
+    # res = r.json()
+    loop = asyncio.get_event_loop()
+    res = loop.run_until_complete(get_json_request(server + ext))
 
     if with_vars:
         df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "variation", "disease_name",
@@ -1043,8 +1055,8 @@ def get_vars_from_phenotype(phenotype: str) -> pd.DataFrame:
                                                   "19", "20", "21", "22", "X", "Y", "M", "MT"])]
     variants = []
     for el in res.itertuples():
-        variants.append(create_variant_string(el.chromosome, el.start_pos, el.ref_allele,
-                                              el.alt_allele))
+        variants.append(create_variant_string(el.chromosome, el.start_pos,
+                                              el.ref_allele, el.alt_allele))
     res["variant"] = variants
     res["phenotype_name"] = pheno_name
     res["phenotype_id"] = phenotype
@@ -1083,8 +1095,8 @@ def get_diseases_from_phenotype(phenotype: str) -> pd.DataFrame:
     """
     hpo_dis = HpoDisGenePhen.query.filter(HpoDisGenePhen.hpo_id == phenotype).all()
     pheno_name = DiseaseMappings.query.filter(DiseaseMappings.disease_id == phenotype).first().disease_name
-    df = pd.DataFrame(columns=["pheno_id", "pheno_name", "disease_name", "disease_id",
-                               "umls_disease_id"])
+    df = pd.DataFrame(columns=["phenotype_id", "phenotype_name", "disease_name",
+                               "disease_id", "umls_disease_id"])
 
     if hpo_dis:
         for el in hpo_dis:
