@@ -1298,10 +1298,24 @@ def get_genes_from_disease_id(disease_id: str) -> pd.DataFrame:
                                 "ass_score": [el.score]})
             df = df.append(row, ignore_index=True)
     else:
-        return df
+        ass_genes = HpoDisGenePhen.query.filter(HpoDisGenePhen.disease_id == disease_id).all()
+        for el in ass_genes:
+            ens_gene_id = ""
+            mitoq = Mitocarta.query.filter(Mitocarta.gene_symbol == el.gene_symbol).first()
+            if mitoq is not None:
+                ens_gene_id = mitoq.ensembl_id
+            row = pd.DataFrame({"disease_id": [disease_id],
+                                "umls_disease_id": [dis_umls],
+                                "disease_name": [disease_id_to_name(disease_id)],
+                                "entrez_gene_id": [el.entrez_gene_id],
+                                "gene_name": [el.gene_symbol],
+                                "ensembl_gene_id": [ens_gene_id],
+                                "ass_score": [0.0]})
+            df = df.append(row, ignore_index=True)
+        # return df
 
     df.drop_duplicates(inplace=True)
-    df.sort_values(by="ass_score", ascending=False, inplace=True)
+    # df.sort_values(by="ass_score", ascending=False, inplace=True)
 
     return df
 
