@@ -4,7 +4,8 @@
 import pandas as pd
 from pandas.testing import assert_frame_equal
 import pytest
-from app.site.scripts import get_vars_from_gene, get_diseases_from_gene, json_from_gene
+from app.site.scripts import get_vars_from_gene, get_diseases_from_gene, \
+    json_from_gene
 
 
 def test_get_vars_from_gene():
@@ -104,5 +105,3 @@ def test_json_from_gene():
                             'variant': 'chrMT:16023G>A'}]}
     result = json_from_gene("ENSG00000210196")
     assert result == expect
-
-

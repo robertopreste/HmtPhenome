@@ -4,7 +4,8 @@
 import pandas as pd
 from pandas.testing import assert_frame_equal
 import pytest
-from app.site.scripts import get_genes_from_phenotype, get_vars_from_phenotype, get_diseases_from_phenotype, json_from_phenotype
+from app.site.scripts import get_genes_from_phenotype, \
+    get_vars_from_phenotype, get_diseases_from_phenotype, json_from_phenotype
 
 
 def test_get_genes_from_phenotype():
