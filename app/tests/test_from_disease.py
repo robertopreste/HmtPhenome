@@ -46,6 +46,15 @@ def test_get_genes_from_disease_id_Orpha():
                        expect.reset_index(drop=True))
 
 
+def test_get_genes_from_disease_id_empty():
+    expect = pd.DataFrame(columns=["umls_disease_id", "disease_name",
+                                   "disease_id", "entrez_gene_id", "gene_name",
+                                   "ensembl_gene_id", "ass_score"])
+    result = get_genes_from_disease_id("OMIM:666666666")
+    assert_frame_equal(result.reset_index(drop=True),
+                       expect.reset_index(drop=True))
+
+
 def test_get_vars_from_disease_id():
     expect = pd.DataFrame({
         "ensembl_gene_id": ["ENSG00000122691" for _ in range(3)],
@@ -58,6 +67,15 @@ def test_get_vars_from_disease_id():
         "disease_id": ["OMIM:101400" for _ in range(3)]
     })
     result = get_vars_from_disease_id("OMIM:101400")
+    assert_frame_equal(result.reset_index(drop=True),
+                       expect.reset_index(drop=True))
+
+
+def test_get_vars_from_disease_id_empty():
+    expect = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "dbsnp_id",
+                                   "variant", "umls_disease_id",
+                                   "disease_name", "disease_id"])
+    result = get_vars_from_disease_id("OMIM:66666666")
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 
@@ -90,5 +108,14 @@ def test_get_phenos_from_disease_id():
                            "Hypohidrosis"]
     })
     result = get_phenos_from_disease_id("OMIM:613451")
+    assert_frame_equal(result.reset_index(drop=True),
+                       expect.reset_index(drop=True))
+
+
+def test_get_phenos_from_disease_id_empty():
+    expect = pd.DataFrame(columns=["umls_disease_id", "disease_name",
+                                   "disease_id", "phenotype_id",
+                                   "phenotype_name"])
+    result = get_phenos_from_disease_id("OMIM:666666666")
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))

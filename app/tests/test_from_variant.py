@@ -18,12 +18,26 @@ def test_get_gene_from_variant():
                        expect.reset_index(drop=True))
 
 
+def test_get_gene_from_variant_empty():
+    expect = pd.DataFrame(columns=["ensembl_gene_id", "gene_name"])
+    result = get_gene_from_variant("M", 17000)
+    assert_frame_equal(result.reset_index(drop=True),
+                       expect.reset_index(drop=True))
+
+
 def test_get_dbsnp_from_variant():
     expect = pd.DataFrame({
         "dbsnp_id": ["rs28358582", "rs28358582", "rs28358582"],
         "variant": ["chrMT:3308T>A", "chrMT:3308T>C", "chrMT:3308T>G"]
     })
     result = get_dbsnp_from_variant("M", 3308)
+    assert_frame_equal(result.reset_index(drop=True),
+                       expect.reset_index(drop=True))
+
+
+def test_get_dbsnp_from_variant_empty():
+    expect = pd.DataFrame(columns=["dbsnp_id", "variant"])
+    result = get_dbsnp_from_variant("M", 170000)
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 
@@ -36,6 +50,14 @@ def test_get_diseases_from_dbsnp():
         "ass_score": [0.7]
     })
     result = get_diseases_from_dbsnp("rs28358582")
+    assert_frame_equal(result.reset_index(drop=True),
+                       expect.reset_index(drop=True))
+
+
+def test_get_diseases_from_dbsnp_empty():
+    expect = pd.DataFrame(columns=["dbsnp_id", "umls_disease_id",
+                                   "disease_name", "ass_score"])
+    result = get_diseases_from_dbsnp("rs6666666")
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 
@@ -56,6 +78,15 @@ def test_get_phenos_from_umls():
                            "Omphalocele", "Abnormality of metabolism/homeostasis"]
     })
     result = get_phenos_from_umls("C3665349")
+    assert_frame_equal(result.reset_index(drop=True),
+                       expect.reset_index(drop=True))
+
+
+def test_get_phenos_from_umls_empty():
+    expect = pd.DataFrame(columns=["umls_disease_id", "disease_name",
+                                   "disease_id", "phenotype_id",
+                                   "phenotype_name"])
+    result = get_phenos_from_umls("C6666666")
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 

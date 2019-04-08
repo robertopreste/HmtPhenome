@@ -29,6 +29,14 @@ def test_get_genes_from_phenotype():
                        expect.reset_index(drop=True))
 
 
+def test_get_genes_from_phenotype_empty():
+    expect = pd.DataFrame(columns=["gene_name", "ensembl_gene_id",
+                                   "phenotype_id", "phenotype_name"])
+    result = get_genes_from_phenotype("HP:66666666")
+    assert_frame_equal(result.reset_index(drop=True),
+                       expect.reset_index(drop=True))
+
+
 def test_get_vars_from_phenotype():
     expect = pd.DataFrame({
         "chromosome": [19, 19, 19, 7, 7, 12, 12],
@@ -56,6 +64,16 @@ def test_get_vars_from_phenotype():
                        expect.reset_index(drop=True))
 
 
+def test_get_vars_from_phenotype_empty():
+    expect = pd.DataFrame(columns=["ensembl_gene_id", "gene_name",
+                                   "chromosome", "ref_allele", "start_pos",
+                                   "alt_allele", "phenotype_name",
+                                   "phenotype_id"])
+    result = get_vars_from_phenotype("HP:66666666")
+    assert_frame_equal(result.reset_index(drop=True),
+                       expect.reset_index(drop=True))
+
+
 def test_get_diseases_from_phenotype():
     expect = pd.DataFrame({
         "phenotype_id": ["HP:0000456" for _ in range(6)],
@@ -72,6 +90,15 @@ def test_get_diseases_from_phenotype():
                             "C1876203", "C3150703"]
     })
     result = get_diseases_from_phenotype("HP:0000456")
+    assert_frame_equal(result.reset_index(drop=True),
+                       expect.reset_index(drop=True))
+
+
+def test_get_diseases_from_phenotype_empty():
+    expect = pd.DataFrame(columns=["phenotype_id", "phenotype_name",
+                                   "disease_name", "disease_id",
+                                   "umls_disease_id"])
+    result = get_diseases_from_phenotype("HP:66666666")
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 

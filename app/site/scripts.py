@@ -16,11 +16,11 @@ import asyncio
 import aiohttp
 
 
-def get_genes():
+def get_genes() -> dict:
     """
     Retrieve Mitocarta genes from the database and create a dictionary that
     will be used to populate the related dropdown menu in query page.
-    :return: dictionary with chromosome as keys and genes as values
+    :return: dict
     """
     chr_dict = {}
     chrs = ["chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8",
@@ -37,11 +37,11 @@ def get_genes():
     return chr_dict
 
 
-def get_phenos():
+def get_phenos() -> list:
     """
     Retrieve phenotypes from the database and create a list that will be used
     to populate the related dropdown menu in the query page.
-    :return: list of phenotypes
+    :return: list
     """
     pheno_list = []
     q = Phenotypes.query.all()
@@ -51,11 +51,11 @@ def get_phenos():
     return pheno_list
 
 
-def get_diseases():
+def get_diseases() -> list:
     """
     Retrieve diseases from the database and create a list that will be used
     to populate the related dropdown menu in the query page.
-    :return: list of diseases
+    :return: list
     """
     disease_list = []
     q = Diseases.query.all()
@@ -65,11 +65,11 @@ def get_diseases():
     return disease_list
 
 
-def populate_phenos():
+def populate_phenos() -> str:
     """
     Add phenotypes data for the autocomplete function in the script.js file,
     during the update of the database.
-    :return: JavaScript autocomplete function for phenotypes
+    :return: str
     """
     phenos = get_phenos()
     base_string = """
@@ -80,11 +80,11 @@ new Awesomplete(pheno_compl, {list: %s});
     return base_string
 
 
-def populate_diseases():
+def populate_diseases() -> str:
     """
     Add diseases data for the autocomplete function in the script.js file,
     during the update of the database.
-    :return: JavaScript autocomplete function for diseases
+    :return: str
     """
     diseases = get_diseases()
     base_string = """
@@ -95,12 +95,12 @@ new Awesomplete(disease_compl, {list: %s});
     return base_string
 
 
-def populate_genes():
+def populate_genes() -> str:
     """
     Add genes for each chromosome in the script.js file, during the update
     of the database, in order to populate the related dropdown menu in the
     query page.
-    :return: JavaScript function for genes/chromosomes
+    :return: str
     """
     base_string = """
 function populateGenes(s1, s2) {
@@ -163,14 +163,8 @@ def pheno_name_to_id(pheno_name: str) -> List[str]:
     :param str pheno_name: phenotype name
     :return: List[str] with the related id(s)
     """
-    # r = requests.get("https://hpo.jax.org/api/hpo/search?q={}".format(pheno_name),
-    #                  headers={"Content-Type": "application/json"})
-    # res = r.json()
     url = "https://hpo.jax.org/api/hpo/search?q={}".format(pheno_name)
     loop = asyncio.get_event_loop()
-    # expl: this is used to get multiple urls in the same loop
-    # tasks = [get_json_request(url), get_json_request(url)]
-    # res = loop.run_until_complete(asyncio.gather(*tasks))
     res = loop.run_until_complete(get_json_request(url))
     ids = []
 
@@ -179,8 +173,7 @@ def pheno_name_to_id(pheno_name: str) -> List[str]:
     elif res["termsTotalCount"] == 1:
         ids.append(res["terms"][0]["id"])
     else:
-        for el in res["terms"]:
-            ids.append(el["id"])
+        ids = [el["id"] for el in res["terms"]]
 
     return ids
 
@@ -210,8 +203,6 @@ def pheno_id_to_term(pheno_id: str) -> str:
         efo_id = pheno_id.strip("EFO:")
         base_url = "https://www.ebi.ac.uk/ols/api/ontologies/efo/terms?"
         iri_url = "iri=http://www.ebi.ac.uk/efo/EFO_{}".format(efo_id)
-        # r = requests.get(base_url + iri_url, headers={"Content-Type": "application/json"})
-        # res = r.json()
         loop = asyncio.get_event_loop()
         res = loop.run_until_complete(get_json_request(base_url + iri_url))
         pheno_name = res["_embedded"]["terms"][0]["label"]
@@ -281,9 +272,6 @@ def create_variant_string(chrom: Union[int, str],
     :param str alt_all: alternate allele
     :return: str with variant formatted according to current standards
     """
-    # if math.isnan(nt_start) or type(ref_all) == float or type(alt_all) == float:
-    # if math.isnan(chrom) or math.isnan(nt_start) or math.isnan(ref_all) or math.isnan(alt_all):
-    #     return "chr_:_>_"
     if type(ref_all) is float or type(alt_all) is float:
         return "chr_:_>_"
     base_str = "chr{}:{}{}"
@@ -307,14 +295,6 @@ def ensembl_gene_id_to_entrez(ens_gene_id: str) -> pd.DataFrame:
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name",
     "entrez_gene_id"])
     """
-    # server = Server(host="http://www.ensembl.org")
-    # dataset = server.marts["ENSEMBL_MART_ENSEMBL"].datasets["hsapiens_gene_ensembl"]
-    # res = dataset.query(attributes=["ensembl_gene_id", "external_gene_name", "entrezgene"],
-    #                     filters={"link_ensembl_gene_id": ens_gene_id})
-    # res = apy.query(attributes=["ensembl_gene_id", "external_gene_name",
-    #                             "entrezgene"],
-    #                 filters={"link_ensembl_gene_id": ens_gene_id},
-    #                 dataset="hsapiens_gene_ensembl")
     loop = asyncio.get_event_loop()
     res = loop.run_until_complete(
         apy.aquery(attributes=["ensembl_gene_id", "external_gene_name",
@@ -350,16 +330,6 @@ def get_dbsnp_from_variant(chrom: Union[int, str],
     else:
         var_end = str(var_end)
 
-    # server = Server(host="http://www.ensembl.org")
-    # dataset = server.marts["ENSEMBL_MART_SNP"].datasets["hsapiens_snp"]
-    # res = dataset.query(attributes=["chr_name", "chrom_start", "consequence_allele_string",
-    #                                 "refsnp_id"],
-    #                     filters={"chr_name": chrom, "start": var_start, "end": var_end})
-    # res = apy.query(attributes=["chr_name", "chrom_start",
-    #                             "consequence_allele_string", "refsnp_id"],
-    #                 filters={"chr_name": chrom, "start": var_start,
-    #                          "end": var_end},
-    #                 dataset="hsapiens_snp")
     loop = asyncio.get_event_loop()
     res = loop.run_until_complete(
         apy.aquery(attributes=["chr_name", "chrom_start",
@@ -376,11 +346,9 @@ def get_dbsnp_from_variant(chrom: Union[int, str],
         res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
         res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
         res = res[res["alt_allele"] != "HGMD_MUTATION"]
-        variants = []
-        for el in res.itertuples():
-            variants.append(create_variant_string(el.chromosome, el.start_pos,
-                                                  el.ref_allele, el.alt_allele))
-        res["variant"] = variants
+        res["variant"] = [create_variant_string(el.chromosome, el.start_pos,
+                                                el.ref_allele, el.alt_allele)
+                          for el in res.itertuples()]
         res.drop_duplicates(subset="variant", inplace=True)
         res.drop(["chromosome", "start_pos", "ref_allele", "alt_allele",
                   "ref/alt allele"], axis=1, inplace=True)
@@ -392,7 +360,8 @@ def get_dbsnp_from_variant(chrom: Union[int, str],
 
 def get_gene_from_variant(chrom: Union[int, str],
                           var_start: Union[int, str],
-                          var_end: Optional[Union[int, str]] = None) -> pd.DataFrame:
+                          var_end: Optional[Union[int, str]] = None) \
+        -> pd.DataFrame:
     """
     Retrieve the gene to which the provided variant belongs, using Biomart.
     :param Union[int, str] chrom: chromosome name (chr + 1:22, X, Y, M)
@@ -419,66 +388,6 @@ def get_gene_from_variant(chrom: Union[int, str],
     return res
 
 
-# TODO: this can be removed
-def get_phenos_from_variant(chrom: Union[int, str],
-                            var_start: Union[int, str],
-                            var_end: Optional[Union[int, str]] = None) -> pd.DataFrame:
-    """
-    Retrieve phenotypes associated with a specific variant, using Biomart.
-    :param Union[int, str] chrom: chromosome name (chr + 1:22, X, Y, M)
-    :param Union[int, str] var_start: variant starting position
-    :param Optional[Union[int, str]] var_end: variant ending position
-    :return: pd.DataFrame(columns=["chromosome", "ref_allele", "start_pos",
-    "alt_allele", "phenotype"])
-    """
-    chrom = str(chrom).lstrip("chr").upper()
-    var_start = str(var_start)
-    if chrom == "M":
-        chrom = "MT"
-    if var_end is None:
-        var_end = var_start
-    else:
-        var_end = str(var_end)
-
-    # server = Server(host="http://www.ensembl.org")
-    # dataset = server.marts["ENSEMBL_MART_SNP"].datasets["hsapiens_snp"]
-    # res = dataset.query(attributes=["chr_name", "chrom_start", "consequence_allele_string",
-    #                                 "phenotype_description"],
-    #                     filters={"chr_name": chrom, "start": var_start, "end": var_end})
-    # res = apy.query(attributes=["chr_name", "chrom_start",
-    #                             "consequence_allele_string",
-    #                             "phenotype_description"],
-    #                 filters={"chr_name": chrom, "start": var_start,
-    #                          "end": var_end},
-    #                 dataset="hsapiens_snp")
-    loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(
-        apy.aquery(attributes=["chr_name", "chrom_start",
-                               "consequence_allele_string",
-                               "phenotype_description"],
-                   filters={"chr_name": chrom, "start": var_start,
-                            "end": var_end},
-                   dataset="hsapiens_snp")
-    )
-    res.rename({"Chromosome/scaffold name": "chromosome",
-                "Chromosome/scaffold position start (bp)": "start_pos",
-                "Consequence specific allele": "ref/alt allele",
-                "Phenotype description": "phenotype"}, axis=1, inplace=True)
-    if len(res) > 0:
-        res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
-        res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
-        res = res[res["alt_allele"] != "HGMD_MUTATION"]
-        res = res[["chromosome", "ref_allele", "start_pos", "alt_allele",
-                   "phenotype"]]
-        res.drop_duplicates(subset="phenotype", inplace=True)
-    else:
-        res = pd.DataFrame(columns=["chromosome", "ref_allele", "start_pos",
-                                    "alt_allele", "phenotype"])
-    res["phenotype_id"] = res["phenotype"].apply(pheno_name_to_id)
-
-    return res
-
-
 def get_diseases_from_dbsnp(dbsnp_id: str) -> pd.DataFrame:
     """
     Retrieve diseases associated with the given dbSNP ID.
@@ -496,7 +405,7 @@ def get_diseases_from_dbsnp(dbsnp_id: str) -> pd.DataFrame:
                                     "disease_name": [el.disease_name],
                                     "ass_score": [el.score]})
             df = df.append(new_row, ignore_index=True)
-    df.sort_values(by="ass_score", ascending=False, inplace=True)
+        df.sort_values(by="ass_score", ascending=False, inplace=True)
 
     return df
 
@@ -534,58 +443,6 @@ def get_phenos_from_umls(umls_id: str) -> pd.DataFrame:
     df.drop_duplicates(inplace=True)
 
     return df
-
-
-# not used anymore
-def get_diseases_from_variant(chrom: Union[int, str],
-                              var_start: Union[int, str],
-                              var_end: Optional[Union[int, str]] = None) -> pd.DataFrame:
-    """
-    Retrieve diseases associated with the given variant, exploiting the
-    get_gene_from_variant and get_diseases_from_gene_name functions.
-    :param Union[int, str] chrom: chromosome name (chr + 1:22, X, Y, M)
-    :param Union[int, str] var_start: variant starting position
-    :param Optional[Union[int, str]] var_end: variant ending position
-    :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "location",
-    "variation", "disease", "phenotypes"])
-    """
-    chrom = str(chrom).lstrip("chr").upper()
-    var_start = str(var_start)
-    if chrom == "M":
-        chrom = "MT"
-    if var_end is None:
-        var_end = var_start
-    else:
-        var_end = str(var_end)
-
-    try:
-        gene_name = get_gene_from_variant(
-            chrom, var_start, var_end
-        ).gene_name.get(0, "")
-    except (IndexError, KeyError) as e:
-        gene_name = ""
-    diseases = get_diseases_from_gene(gene_name, True)
-    if diseases.shape[0] != 0:
-        try:
-            if var_end is not None:
-                diseases = diseases[
-                    (diseases["location"].str.startswith(chrom)) &
-                    (diseases["location"].str.contains(str(var_start))) &
-                    (diseases["location"].str.contains(var_end))
-                    ]
-            else:
-                diseases = diseases[
-                    (diseases["location"].str.startswith(chrom)) &
-                    (diseases["location"].str.contains(str(var_start)))
-                    ]
-            diseases.drop(["location"], axis=1, inplace=True)
-        except KeyError:
-            return pd.DataFrame(columns=["ensembl_gene_id", "gene_name",
-                                         "variation", "disease", "phenotypes"])
-    else:
-        diseases = get_diseases_from_gene(gene_name)
-
-    return diseases
 
 
 def json_from_variant(variant_chr: Union[int, str],
@@ -758,9 +615,6 @@ def network_from_variant_json(final_json: dict) -> dict:
             dise_set.add((el["disease_name"], el["umls_disease_id"]))
             connected_nodes.add(id_dict[el["phenotype_name"]])
             phen_set.add((el["phenotype_name"], el["phenotype_id"]))
-        # for pheno in el["phenotype_names"]:
-        #     # disease to phenotypes
-        #     edges.append({"from": id_dict[el["disease_name"]], "to": id_dict[pheno]})
 
     # delete orphan nodes
     candidates = [n for n, el in enumerate(nodes, start=1)]
@@ -795,8 +649,6 @@ def get_vars_from_gene(ens_gene_id: str) -> pd.DataFrame:
 
     server = "https://rest.ensembl.org"
     ext = "/overlap/id/{}?feature=variation".format(ens_gene_id)
-    # r = requests.get(server + ext, headers={"Content-Type": "application/json"})
-    # res = r.json()
     loop = asyncio.get_event_loop()
     res = loop.run_until_complete(get_json_request(server + ext))
 
@@ -862,8 +714,6 @@ def get_diseases_from_gene(gene: str,
     ext = "/phenotype/gene/homo_sapiens/{}?include_associated={}".format(
         gene, int(with_vars)
     )
-    # r = requests.get(server + ext, headers={"Content-Type": "application/json"})
-    # res = r.json()
     loop = asyncio.get_event_loop()
     res = loop.run_until_complete(get_json_request(server + ext))
 
@@ -1026,7 +876,6 @@ def network_from_gene_json(final_json: dict) -> dict:
     genes = set(genes)
 
     v_diseases = []
-    # v_diseases.extend([el["disease_name"] for el in var_json])
     v_diseases.extend([el["disease_name"]
                        for el in var_json if el["disease_name"] != ""])
     v_diseases = set(v_diseases)
@@ -1192,18 +1041,6 @@ def get_vars_from_phenotype(phenotype: str) -> pd.DataFrame:
                                      "alt_allele", "phenotype_name",
                                      "phenotype_id"])
 
-    # server = Server(host="http://www.ensembl.org")
-    # dataset = server.marts["ENSEMBL_MART_SNP"].datasets["hsapiens_snp"]
-    # res = dataset.query(attributes=["chr_name", "chrom_start", "consequence_allele_string",
-    #                                 "ensembl_gene_stable_id", "associated_gene", "refsnp_id",
-    #                                 "phenotype_description"],
-    #                     filters={"snp_filter": [el.dbsnp_id for el in vars_maps]})
-    # res = apy.query(attributes=["chr_name", "chrom_start",
-    #                             "consequence_allele_string",
-    #                             "ensembl_gene_stable_id", "associated_gene",
-    #                             "refsnp_id", "phenotype_description"],
-    #                 filters={"snp_filter": [el.dbsnp_id for el in vars_maps]},
-    #                 dataset="hsapiens_snp")
     loop = asyncio.get_event_loop()
     res = loop.run_until_complete(
         apy.aquery(attributes=["chr_name", "chrom_start",
@@ -1239,8 +1076,8 @@ def get_vars_from_phenotype(phenotype: str) -> pd.DataFrame:
     res["phenotype_id"] = phenotype
     res.drop(["ref/alt allele"], axis=1, inplace=True)
     res["gene_name"] = res["gene_name"].apply(
-        lambda x: x.split("-")[1] if type(x) == str \
-                                     and x.startswith("MT-") else x)
+        lambda x: x.split("-")[1]
+            if type(x) == str and x.startswith("MT-") else x)
     res.drop_duplicates(inplace=True)
     res = res[res["variant"] != "chr_:_>_"]
     if res["gene_name"].dtype == str:
@@ -1274,14 +1111,17 @@ def get_diseases_from_phenotype(phenotype: str) -> pd.DataFrame:
     :return: pd.DataFrame(columns=["pheno_id", "pheno_name", "disease_name",
     "disease_id", "umls_disease_id"])
     """
+    df = pd.DataFrame(columns=["phenotype_id", "phenotype_name",
+                               "disease_name", "disease_id", "umls_disease_id"])
     hpo_dis = HpoDisGenePhen.query.filter(
         HpoDisGenePhen.hpo_id == phenotype
     ).all()
-    pheno_name = DiseaseMappings.query.filter(
-        DiseaseMappings.disease_id == phenotype
-    ).first().disease_name
-    df = pd.DataFrame(columns=["phenotype_id", "phenotype_name",
-                               "disease_name", "disease_id", "umls_disease_id"])
+    try:
+        pheno_name = DiseaseMappings.query.filter(
+            DiseaseMappings.disease_id == phenotype
+        ).first().disease_name
+    except AttributeError:
+        return df
 
     if hpo_dis:
         for el in hpo_dis:
@@ -1563,17 +1403,6 @@ def get_vars_from_disease_id(disease_id: str) -> pd.DataFrame:
                                      "dbsnp_id", "variant", "umls_disease_id",
                                      "disease_name", "disease_id"])
 
-    # server = Server(host="http://www.ensembl.org")
-    # dataset = server.marts["ENSEMBL_MART_SNP"].datasets["hsapiens_snp"]
-    # res = dataset.query(attributes=["chr_name", "chrom_start", "consequence_allele_string",
-    #                                 "ensembl_gene_stable_id", "associated_gene", "refsnp_id"],
-    #                     filters={"snp_filter": [el.dbsnp_id for el in ass_vars]})
-    # res = apy.query(attributes=["chr_name", "chrom_start",
-    #                             "consequence_allele_string",
-    #                             "ensembl_gene_stable_id", "associated_gene",
-    #                             "refsnp_id"],
-    #                 filters={"snp_filter": [el.dbsnp_id for el in ass_vars]},
-    #                 dataset="hsapiens_snp")
     loop = asyncio.get_event_loop()
     res = loop.run_until_complete(
         apy.aquery(attributes=["chr_name", "chrom_start",
@@ -1596,21 +1425,16 @@ def get_vars_from_disease_id(disease_id: str) -> pd.DataFrame:
     res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
     res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
     res = res[res["alt_allele"] != "HGMD_MUTATION"]
-    variants = []
-    # genes = []
-    for el in res.itertuples():
-        variants.append(create_variant_string(el.chromosome, el.start_pos,
-                                              el.ref_allele, el.alt_allele))
-
-    res["variant"] = variants
-    # res["gene_name"] = genes
+    res["variant"] = [create_variant_string(el.chromosome, el.start_pos,
+                                            el.ref_allele, el.alt_allele)
+                      for el in res.itertuples()]
     res["umls_disease_id"] = dis_umls
     res["disease_name"] = dis_name
     res.drop(["ref/alt allele", "ref_allele", "alt_allele", "chromosome",
               "start_pos"], axis=1, inplace=True)
     res["gene_name"] = res["gene_name"].apply(
-        lambda x: x.split("-")[1] if type(x) == str \
-                                     and x.startswith("MT-") else x)
+        lambda x: x.split("-")[1]
+            if type(x) == str and x.startswith("MT-") else x)
     gene_dict = dict(zip(res["ensembl_gene_id"], res["gene_name"]))
     res["gene_name"] = res.apply(
         lambda row: gene_dict[row["ensembl_gene_id"]]
@@ -1636,12 +1460,17 @@ def get_phenos_from_disease_id(disease_id: str) -> pd.DataFrame:
     :return: pd.DataFrame(columns=["umls_disease_id", "disease_name",
     "disease_id", "phenotype_id", "phenotype_name"]
     """
+    df = pd.DataFrame(columns=["umls_disease_id", "disease_name", "disease_id",
+                               "phenotype_id", "phenotype_name"])
     ass_phenos = HpoDisGenePhen.query.filter(
         HpoDisGenePhen.disease_id == disease_id
     ).all()
-    disease_name = Diseases.query.filter(
-        Diseases.disease_id == disease_id
-    ).first().disease_name
+    try:
+        disease_name = Diseases.query.filter(
+            Diseases.disease_id == disease_id
+        ).first().disease_name
+    except AttributeError:
+        return df
     dis_maps = DiseaseMappings.query.filter(
         DiseaseMappings.umls_disease_id == get_umls_from_disease_id(disease_id)
     ).first()
@@ -1649,8 +1478,6 @@ def get_phenos_from_disease_id(disease_id: str) -> pd.DataFrame:
     if dis_maps is not None:
         disease_name = dis_maps.disease_name
         disease_umls = dis_maps.umls_disease_id
-    df = pd.DataFrame(columns=["umls_disease_id", "disease_name", "disease_id",
-                               "phenotype_id", "phenotype_name"])
 
     if ass_phenos:
         for el in ass_phenos:
