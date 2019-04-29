@@ -37,6 +37,22 @@ def get_genes() -> dict:
     return chr_dict
 
 
+def get_genes_autocomplete() -> list:
+    """
+    Retrieve genes from the database and create a list that will be used
+    to populate the related dropdown menu in the query page.
+
+    :return: list
+    """
+    gene_list = []
+    q = Mitocarta.query.all()
+    for el in q:
+        if el.ensembl_id is not None:
+            gene_list.append([el.gene_symbol, el.ensembl_id])
+
+    return gene_list
+
+
 def get_phenos() -> list:
     """
     Retrieve phenotypes from the database and create a list that will be used
@@ -91,6 +107,22 @@ def populate_diseases() -> str:
 var disease_compl = document.getElementById("disease_input"); 
 new Awesomplete(disease_compl, {list: %s});     
     """ % repr(diseases)
+
+    return base_string
+
+
+def populate_genes_autocomplete() -> str:
+    """
+    Add genes for the autocomplete function in the script.js file,
+    during the update of the database.
+
+    :return: str
+    """
+    genes = get_genes_autocomplete()
+    base_string = """
+var gene_compl = document.getElementById("gene_input");
+new Awesomplete(gene_compl, {list: %s});
+    """ % repr(genes)
 
     return base_string
 

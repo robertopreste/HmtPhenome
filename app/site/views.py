@@ -58,7 +58,7 @@ async def query():
                                 variant_chr=form_var.variant_chr.data,
                                 variant_input=form_var.variant_input.data,
                                 variant_submit=form_var.variant_submit.data,
-                                gene_chr=form_gene.gene_chr.data,
+                                # gene_chr=form_gene.gene_chr.data,
                                 gene_input=form_gene.gene_input.data,
                                 gene_submit=form_gene.gene_submit.data,
                                 pheno_input=form_phen.pheno_input.data,
@@ -73,7 +73,7 @@ async def results():
     variant_chr = request.args.get("variant_chr", "", type=str)
     variant_input = request.args.get("variant_input", "", type=str)
     variant_submit = request.args.get("variant_submit")
-    gene_chr = request.args.get("gene_chr", "", type=str)
+    # gene_chr = request.args.get("gene_chr", "", type=str)
     gene_input = request.args.get("gene_input", "", type=str)
     gene_submit = request.args.get("gene_submit")
     pheno_input = request.args.get("pheno_input", "", type=str)

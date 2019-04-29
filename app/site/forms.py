@@ -12,8 +12,9 @@ class QueryVariantsForm(FlaskForm):
 
 
 class QueryGenesForm(FlaskForm):
-    gene_chr = SelectField("gene_chr", default=None)
-    gene_input = SelectField("gene_input", default=None)
+    # gene_chr = SelectField("gene_chr", default=None)
+    # gene_input = SelectField("gene_input", default=None)
+    gene_input = StringField("gene_input", default=None)
     gene_submit = SubmitField("gene_submit")
 
 
