@@ -4,7 +4,9 @@
 import pandas as pd
 from pandas.testing import assert_frame_equal
 import pytest
-from app.site.scripts import create_variant_string, pheno_name_to_id, pheno_id_to_term, ensembl_gene_id_to_entrez, disease_id_to_name, disease_name_to_id
+from app.site.scripts import create_variant_string, pheno_name_to_id, \
+    pheno_id_to_term, ensembl_gene_id_to_entrez, disease_id_to_name, \
+    disease_name_to_id
 
 
 def test_mt_snp_variant():
@@ -39,7 +41,8 @@ def test_mt_ins_variant():
 
 def test_pheno_name_to_id():
     pheno_name = "Myopia"
-    expect = ["HP:0000545", "HP:0031624", "HP:0025573", "HP:0500066", "HP:0011003", "HP:0031730"]
+    expect = ["HP:0000545", "HP:0031624", "HP:0025573", "HP:0500066",
+              "HP:0011003", "HP:0031730"]
 
     assert pheno_name_to_id(pheno_name) == expect
 

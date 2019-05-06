@@ -1,0 +1,34 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+quart-openapi = "*"
+flask-marshmallow = "*"
+marshmallow-sqlalchemy = "*"
+flask-restplus = "*"
+sqlalchemy-migrate = "*"
+requests = "*"
+fuzzywuzzy = "*"
+pytest = "*"
+wget = "*"
+xlrd = ">=0.9.0"
+asyncio = "*"
+aiohttp = "*"
+apybiomart = "*"
+nest-asyncio = "*"
+Quart = "*"
+Flask = "*"
+Flask-SQLAlchemy = "*"
+Flask-WTF = "*"
+Flask-Bootstrap = "*"
+Flask-Cors = "*"
+Flask-Login = "*"
+Flask-Mail = "*"
+python-Levenshtein = "*"
+
+[requires]
+python_version = "3.7"

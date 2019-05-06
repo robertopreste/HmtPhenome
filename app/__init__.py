@@ -62,7 +62,7 @@ def create_db():
     click.echo("Done.")
 
 
-from app.site.scripts import populate_genes, populate_phenos, populate_diseases
+from app.site.scripts import populate_genes, populate_phenos, populate_diseases, populate_genes_autocomplete
 
 
 @app.cli.command()
@@ -83,7 +83,8 @@ def migrate_db():
     v = api.db_version(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
 
     with open("app/static/js/script.js", "w") as f:
-        f.write(populate_genes())
+        # f.write(populate_genes())
+        f.write(populate_genes_autocomplete())
         f.write("\n")
         f.write(populate_phenos())
         f.write("\n")

@@ -7,14 +7,14 @@
     clip: rect(0, 0, 0, 0);
 }
 
-/*.awesomplete {*/
-    /*display: inline-block;*/
-    /*position: relative;*/
-/*}*/
+.awesomplete {
+    display: inline-block;
+    position: relative;
+}
 
-/*.awesomplete > input {*/
-    /*display: block;*/
-/*}*/
+.awesomplete > input {
+    display: block;
+}
 
 .awesomplete > ul {
     position: absolute;

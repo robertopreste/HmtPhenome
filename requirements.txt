@@ -12,9 +12,12 @@ flask-login
 flask-mail
 sqlalchemy-migrate
 requests
-pybiomart
 fuzzywuzzy
 python-Levenshtein
 pytest
 wget
 xlrd>=0.9.0
+asyncio
+aiohttp
+apybiomart
+nest_asyncio

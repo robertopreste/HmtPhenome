@@ -4,7 +4,8 @@
 import pandas as pd
 from pandas.testing import assert_frame_equal
 import pytest
-from app.site.scripts import get_gene_from_variant, get_dbsnp_from_variant, get_diseases_from_dbsnp, get_phenos_from_umls, json_from_variant, network_from_variant_json
+from app.site.scripts import get_gene_from_variant, get_dbsnp_from_variant, \
+    get_diseases_from_dbsnp, get_phenos_from_umls, json_from_variant
 
 
 def test_get_gene_from_variant():
@@ -13,6 +14,13 @@ def test_get_gene_from_variant():
         "gene_name": ["ND1"]
     })
     result = get_gene_from_variant("M", 3308)
+    assert_frame_equal(result.reset_index(drop=True),
+                       expect.reset_index(drop=True))
+
+
+def test_get_gene_from_variant_empty():
+    expect = pd.DataFrame(columns=["ensembl_gene_id", "gene_name"])
+    result = get_gene_from_variant("M", 17000)
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 
@@ -27,6 +35,13 @@ def test_get_dbsnp_from_variant():
                        expect.reset_index(drop=True))
 
 
+def test_get_dbsnp_from_variant_empty():
+    expect = pd.DataFrame(columns=["dbsnp_id", "variant"])
+    result = get_dbsnp_from_variant("M", 170000)
+    assert_frame_equal(result.reset_index(drop=True),
+                       expect.reset_index(drop=True))
+
+
 def test_get_diseases_from_dbsnp():
     expect = pd.DataFrame({
         "dbsnp_id": ["rs28358582"],
@@ -35,6 +50,14 @@ def test_get_diseases_from_dbsnp():
         "ass_score": [0.7]
     })
     result = get_diseases_from_dbsnp("rs28358582")
+    assert_frame_equal(result.reset_index(drop=True),
+                       expect.reset_index(drop=True))
+
+
+def test_get_diseases_from_dbsnp_empty():
+    expect = pd.DataFrame(columns=["dbsnp_id", "umls_disease_id",
+                                   "disease_name", "ass_score"])
+    result = get_diseases_from_dbsnp("rs6666666")
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 
@@ -55,6 +78,15 @@ def test_get_phenos_from_umls():
                            "Omphalocele", "Abnormality of metabolism/homeostasis"]
     })
     result = get_phenos_from_umls("C3665349")
+    assert_frame_equal(result.reset_index(drop=True),
+                       expect.reset_index(drop=True))
+
+
+def test_get_phenos_from_umls_empty():
+    expect = pd.DataFrame(columns=["umls_disease_id", "disease_name",
+                                   "disease_id", "phenotype_id",
+                                   "phenotype_name"])
+    result = get_phenos_from_umls("C6666666")
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 
@@ -93,32 +125,3 @@ def test_json_from_variant():
                             'variant': 'chrMT:3308T>G'}]}
     result = json_from_variant("M", 3308)
     assert result == expect
-
-
-# TODO: some items are sorted differently in the results
-# def test_network_from_variant_json():
-#     expect = {'diseases': {('Sudden infant death syndrome', 'C0038644')},
-#               'edges': [{'from': 3, 'to': 4},
-#                         {'from': 3, 'to': 5},
-#                         {'from': 2, 'to': 4},
-#                         {'from': 2, 'to': 5},
-#                         {'from': 1, 'to': 4},
-#                         {'from': 1, 'to': 5}],
-#               'genes': {('ND1', 'ENSG00000198888')},
-#               'nodes': [{'color': {'background': '#F9CF45', 'border': '#CCAA39'},
-#                          'id': 1, 'label': 'chrMT:3308T>G'},
-#                         {'color': {'background': '#F9CF45', 'border': '#CCAA39'},
-#                          'id': 2, 'label': 'chrMT:3308T>C'},
-#                         {'color': {'background': '#F9CF45', 'border': '#CCAA39'},
-#                          'id': 3, 'label': 'chrMT:3308T>A'},
-#                         {'color': {'background': '#739E82', 'border': '#5F826B'},
-#                          'id': 4, 'label': 'ND1'},
-#                         {'color': {'background': '#D7816A', 'border': '#B06A57'},
-#                          'id': 5, 'label': 'Sudden infant death syndrome'}],
-#               'phenotypes': set(),
-#               'variants': {('chrMT:3308T>A', 'rs28358582', 'ND1'),
-#                            ('chrMT:3308T>C', 'rs28358582', 'ND1'),
-#                            ('chrMT:3308T>G', 'rs28358582', 'ND1')}}
-#     result = network_from_variant_json(json_from_variant("M", 3308))
-#     assert result == expect
-
