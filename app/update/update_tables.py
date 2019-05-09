@@ -8,20 +8,24 @@ import wget
 import xml.etree.cElementTree as et
 
 
-parser = argparse.ArgumentParser(description="""Update the data used by HmtPhenome by downloading 
-the new data from the web and creating the related database tables.""")
+parser = argparse.ArgumentParser(description="""Update the data used by 
+HmtPhenome by downloading the new data from the web and creating the related 
+database tables.""")
 parser.add_argument("-download", action="store_true", dest="only_download",
-                    help="""Only download the new data from the various web resources. Default: False.""")
+                    help="""Only download the new data from the various web 
+                    resources. Default: False.""")
 parser.add_argument("-tables", action="store_true", dest="only_tables",
-                    help="""Only create the new tables from already downloaded data available in 
-                    data/raw/. Default: False.""")
+                    help="""Only create the new tables from already downloaded 
+                    data available in data/raw/. Default: False.""")
 args = parser.parse_args()
 
 
 def get_node_val(node):
     """
     Return the value of the given node, if present, otherwise return None.
+
     :param node: node provided by cElementTree.getroot()
+
     :return:
     """
     return node.text if node is not None else None
@@ -30,8 +34,11 @@ def get_node_val(node):
 def download_source(url, out):
     """
     Retrieve the given file from the web and save it with the given name in data/raw/.
+
     :param url: URL of the file to download
+
     :param out: name of the output file
+
     :return:
     """
     print("Downloading file from {} and saving it to {}...".format(url, out))
@@ -42,8 +49,11 @@ def download_source(url, out):
 def process_mitocarta(in_file, out_file):
     """
     Process the dataset downloaded from Mitocarta to produce the related database table.
+
     :param in_file: file downloaded from Mitocarta
+
     :param out_file: final table to upload to the database
+
     :return:
     """
     print("Processing Mitocarta data...")
@@ -96,9 +106,13 @@ def process_hpo_disgenphen(in_file, out_file, mitocarta_file):
     """
     Process the disease-gene-phenotype association file downloaded from HPO to produce the related
     database table.
+
     :param in_file: file downloaded from HPO
+
     :param out_file: final table to upload to the database
+
     :param mitocarta_file: Mitocarta final table (used to filter genes)
+
     :return:
     """
     print("Processing HPO disease_gene_pheno data...")
@@ -116,9 +130,13 @@ def process_hpo_genphen(in_file, out_file, mitocarta_file):
     """
     Process the gene-phenotype association file downloaded from HPO to produce the related
     database table.
+
     :param in_file: file downloaded from HPO
+
     :param out_file: final table to upload to the database
+
     :param mitocarta_file: Mitocarta final table (used to filter genes)
+
     :return:
     """
     print("Processing HPO gene_pheno data...")
@@ -135,9 +153,13 @@ def process_hpo_phengen(in_file, out_file, mitocarta_file):
     """
     Process the phenotype-gene association file downloaded from HPO to produce the related
     database table.
+
     :param in_file: file downloaded from HPO
+
     :param out_file: final table to upload to the database
+
     :param mitocarta_file: Mitocarta final table (used to filter genes)
+
     :return:
     """
     print("Processing HPO pheno_gene data...")
@@ -153,8 +175,11 @@ def process_hpo_phengen(in_file, out_file, mitocarta_file):
 def process_omim(in_file, out_file):
     """
     Process the dataset downloaded from Omim to produce the related database table.
+
     :param in_file: file downloaded from Omim
+
     :param out_file: final table to upload to the database
+
     :return:
     """
     print("Processing OMIM data...")
@@ -169,8 +194,11 @@ def process_omim(in_file, out_file):
 def process_orphanet(in_file, out_file):
     """
     Process the dataset downloaded from Orphanet to produce the related database table.
+
     :param in_file: file downloaded from Orphanet
+
     :param out_file: final table to upload to the database
+
     :return:
     """
     print("Processing Orphanet data...")
@@ -193,9 +221,13 @@ def process_disgenet_gene(in_file, out_file, mitocarta_file):
     """
     Process the gene-disease association file downloaded from Disgenet to produce the related
     database table.
+
     :param in_file: file downloaded from Disgenet
+
     :param out_file: final table to upload to the database
+
     :param mitocarta_file: Mitocarta final table (used to filter genes)
+
     :return:
     """
     print("Processing Disgenet gene_disease data...")
@@ -215,8 +247,11 @@ def process_disgenet_vars(in_file, out_file):
     """
     Process the variant-disease association file downloaded from Disgenet to produce the related
     database table.
+
     :param in_file: file downloaded from Disgenet
+
     :param out_file: final table to upload to the database
+
     :return:
     """
     print("Processing Disgenet vars_disease data...")
@@ -234,8 +269,11 @@ def process_disgenet_maps(in_file, out_file):
     """
     Process the disease mappings file downloaded from Disgenet to produce the related database
     table.
+
     :param in_file: file downloaded from Disgenet
+
     :param out_file: final table to upload to the database
+
     :return:
     """
     print("Processing Disgenet disease_mappings data...")
@@ -250,10 +288,15 @@ def process_disgenet_maps(in_file, out_file):
 def create_diseases(hpo_file, omim_file, orpha_file, out_file):
     """
     Create the Diseases table by grepping diseases from the HpoDisGenePhen table.
+
     :param hpo_file: HpoDisGenePhen final table
+
     :param omim_file: Omim final table
+
     :param orpha_file: Orphanet final table
+
     :param out_file: final table to upload to the database
+
     :return:
     """
     print("Creating Diseases table...")
@@ -286,8 +329,11 @@ def create_diseases(hpo_file, omim_file, orpha_file, out_file):
 def create_phenotypes(hpo_file, out_file):
     """
     Create the Phenotypes table by grepping phenotypes from the HpoDisGenePhen table.
+
     :param hpo_file: HpoDisGenePhen final table
+
     :param out_file: final table to upload to the database
+
     :return:
     """
     print("Creating Phenotypes table...")
@@ -302,7 +348,9 @@ def create_phenotypes(hpo_file, out_file):
 def perform_download_data(sources):
     """
     Download the needed data from the web and save them to data/raw/.
+
     :param sources: dictionary with elements to download
+
     :return:
     """
     if not os.path.isdir(os.path.join(os.getcwd(), "data/raw/")):
@@ -317,7 +365,9 @@ def perform_create_tables(sources):
     """
     Process all the needed data after they have been downloaded from the web to create the final
     tables that will be uploaded to the database, and save them to data/tables/.
+
     :param sources: dictionary with elements to process
+
     :return:
     """
     if not os.path.isdir(os.path.join(os.getcwd(), "data/tables/")):
