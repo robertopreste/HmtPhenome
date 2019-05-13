@@ -29,6 +29,8 @@ Flask-Cors = "*"
 Flask-Login = "*"
 Flask-Mail = "*"
 python-Levenshtein = "*"
+mysqlclient = "*"
+mysql-python = "*"
 
 [requires]
 python_version = "3.7"

@@ -11,7 +11,10 @@ SECRET_KEY = "secret_key"
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # database
-SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "hmtphenome.db")
+# SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "hmtphenome.db")
+# TODO: switch to mysql
+# SQLALCHEMY_DATABASE_URI = "mysql://'hmtphenome_admin'+'test_pass'@localhost/HmtPhenome"
+SQLALCHEMY_DATABASE_URI = "mysql://root@localhost/HmtPhenome"
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, "db_repo")
 
 # DA CONFIGURARE

@@ -7,9 +7,11 @@ from app import db
 class Diseases(db.Model):
     __tablename__ = "Diseases"
 
-    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
-    disease_id = db.Column(db.String, index=True, unique=True, nullable=False)
-    disease_name = db.Column(db.String, index=True, nullable=False)
+    id = db.Column(db.Integer, nullable=False, autoincrement=True,
+                   primary_key=True)
+    disease_id = db.Column(db.String(32), index=True, unique=True,
+                           nullable=False)
+    disease_name = db.Column(db.String(200), index=True, nullable=False)
 
     def __repr__(self):
         return """Diseases(id: {self.id}, disease_id: {self.disease_id}, 
@@ -20,10 +22,10 @@ class Mitocarta(db.Model):
     __tablename__ = "Mitocarta"
 
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
-    ensembl_id = db.Column(db.String, nullable=True, default=None)
-    gene_symbol = db.Column(db.String, index=True, unique=True, nullable=False)
+    ensembl_id = db.Column(db.String(32), nullable=True, default=None)
+    gene_symbol = db.Column(db.String(32), index=True, unique=True, nullable=False)
     description = db.Column(db.Text, nullable=False)
-    hg_chr = db.Column(db.String, nullable=False)
+    hg_chr = db.Column(db.String(32), nullable=False)
     hg_start = db.Column(db.Integer, nullable=False)
     hg_stop = db.Column(db.Integer, nullable=False)
 
@@ -37,8 +39,8 @@ class Phenotypes(db.Model):
     __tablename__ = "Phenotypes"
 
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
-    hpo_id = db.Column(db.String, index=True, unique=True, nullable=False)
-    hpo_term_name = db.Column(db.String, index=True, unique=True, nullable=False)
+    hpo_id = db.Column(db.String(32), index=True, unique=True, nullable=False)
+    hpo_term_name = db.Column(db.String(200), index=True, unique=True, nullable=False)
 
     def __repr__(self):
         return """Phenotypes(id: {self.id}, hpo_id: {self.hpo_id}, 
@@ -50,8 +52,8 @@ class Omim(db.Model):
 
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
     mim_number = db.Column(db.Integer, nullable=False, index=True)
-    mim_name = db.Column(db.String, nullable=False, index=True)
-    prefix = db.Column(db.String, nullable=True, default=None)
+    mim_name = db.Column(db.String(200), nullable=False, index=True)
+    prefix = db.Column(db.String(32), nullable=True, default=None)
 
     def __repr__(self):
         return """Omim(id: {self.id}, mim_number: {self.mim_number}, mim_name: {self.mim_name}, 
@@ -63,7 +65,7 @@ class Orphanet(db.Model):
 
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
     orpha_num = db.Column(db.Integer, nullable=False, index=True)
-    orpha_name = db.Column(db.String, nullable=False, index=True)
+    orpha_name = db.Column(db.String(200), nullable=False, index=True)
 
     def __repr__(self):
         return """Orphanet(id: {self.id}, orpha_num: {self.orpha_num}, 
@@ -74,10 +76,10 @@ class GeneDiseaseAss(db.Model):
     __tablename__ = "GeneDiseaseAss"
 
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
-    entrez_gene_id = db.Column(db.String, nullable=True, default=None)
-    gene_symbol = db.Column(db.String, nullable=False, index=True)
-    umls_disease_id = db.Column(db.String, nullable=False)
-    disease_name = db.Column(db.String, nullable=False, index=True)
+    entrez_gene_id = db.Column(db.String(32), nullable=True, default=None)
+    gene_symbol = db.Column(db.String(32), nullable=False, index=True)
+    umls_disease_id = db.Column(db.String(32), nullable=False)
+    disease_name = db.Column(db.String(200), nullable=False, index=True)
     score = db.Column(db.Float, nullable=True, default=None)
 
     def __repr__(self):
@@ -90,9 +92,9 @@ class VarDiseaseAss(db.Model):
     __tablename__ = "VarDiseaseAss"
 
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
-    dbsnp_id = db.Column(db.String, nullable=False, index=True)
-    umls_disease_id = db.Column(db.String, nullable=False)
-    disease_name = db.Column(db.String, nullable=False, index=True)
+    dbsnp_id = db.Column(db.String(32), nullable=False, index=True)
+    umls_disease_id = db.Column(db.String(32), nullable=False)
+    disease_name = db.Column(db.String(200), nullable=False, index=True)
     score = db.Column(db.Float, nullable=True, default=None)
 
     def __repr__(self):
@@ -105,11 +107,11 @@ class DiseaseMappings(db.Model):
     __tablename__ = "DiseaseMappings"
 
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
-    umls_disease_id = db.Column(db.String, nullable=False)
-    disease_name = db.Column(db.String, nullable=False, index=True)
-    vocabulary = db.Column(db.String, nullable=True, default=None)
-    disease_id = db.Column(db.String, nullable=False, index=True)
-    alt_disease_name = db.Column(db.String, nullable=False, index=True)
+    umls_disease_id = db.Column(db.String(32), nullable=False)
+    disease_name = db.Column(db.String(200), nullable=False, index=True)
+    vocabulary = db.Column(db.String(32), nullable=True, default=None)
+    disease_id = db.Column(db.String(32), nullable=False, index=True)
+    alt_disease_name = db.Column(db.String(400), nullable=False, index=True)
 
     def __repr__(self):
         return """DiseaseMappings(id: {self.id}, umls_disease_id: {self.umls_disease_id}, 
@@ -121,11 +123,11 @@ class HpoDisGenePhen(db.Model):
     __tablename__ = "HpoDisGenePhen"
 
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
-    disease_id = db.Column(db.String, nullable=False, index=True)
-    gene_symbol = db.Column(db.String, nullable=False, index=True)
-    entrez_gene_id = db.Column(db.String, nullable=False)
-    hpo_id = db.Column(db.String, nullable=False, index=True)
-    hpo_term_name = db.Column(db.String, nullable=False, index=True)
+    disease_id = db.Column(db.String(32), nullable=False, index=True)
+    gene_symbol = db.Column(db.String(32), nullable=False, index=True)
+    entrez_gene_id = db.Column(db.String(32), nullable=False)
+    hpo_id = db.Column(db.String(32), nullable=False, index=True)
+    hpo_term_name = db.Column(db.String(200), nullable=False, index=True)
 
     def __repr__(self):
         return """HpoDisGenePhen(id: {self.id}, disease_id: {self.disease_id}, 
@@ -137,10 +139,10 @@ class HpoGenePhen(db.Model):
     __tablename__ = "HpoGenePhen"
 
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
-    entrez_gene_id = db.Column(db.String, nullable=False)
-    gene_symbol = db.Column(db.String, nullable=False, index=True)
-    hpo_term_name = db.Column(db.String, nullable=False, index=True)
-    hpo_id = db.Column(db.String, nullable=False, index=True)
+    entrez_gene_id = db.Column(db.String(32), nullable=False)
+    gene_symbol = db.Column(db.String(32), nullable=False, index=True)
+    hpo_term_name = db.Column(db.String(200), nullable=False, index=True)
+    hpo_id = db.Column(db.String(32), nullable=False, index=True)
 
     def __repr__(self):
         return """HpoGenePhen(id: {self.id}, gene_id: {self.gene_id}, 
@@ -152,10 +154,10 @@ class HpoPhenGene(db.Model):
     __tablename__ = "HpoPhenGene"
 
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
-    hpo_id = db.Column(db.String, nullable=False, index=True)
-    hpo_term_name = db.Column(db.String, nullable=False, index=True)
-    entrez_gene_id = db.Column(db.String, nullable=False)
-    gene_symbol = db.Column(db.String, nullable=False, index=True)
+    hpo_id = db.Column(db.String(32), nullable=False, index=True)
+    hpo_term_name = db.Column(db.String(200), nullable=False, index=True)
+    entrez_gene_id = db.Column(db.String(32), nullable=False)
+    gene_symbol = db.Column(db.String(32), nullable=False, index=True)
 
     def __repr__(self):
         return """HpoPhenGene(id: {self.id}, hpo_id: {self.hpo_id}, 

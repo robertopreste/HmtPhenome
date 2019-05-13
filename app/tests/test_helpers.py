@@ -81,11 +81,11 @@ def test_disease_id_to_name_Orpha():
     assert result == expect
 
 
-def test_disease_name_to_id_OMIM():
-    expect = "OMIM:103285"
-    result = disease_name_to_id("ADULT SYNDROME")
-
-    assert result == expect
+# def test_disease_name_to_id_OMIM():
+#     expect = "OMIM:103285"
+#     result = disease_name_to_id("ADULT SYNDROME")
+#
+#     assert result == expect
 
 
 def test_disease_name_to_id_Orpha():
