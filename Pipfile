@@ -30,7 +30,8 @@ Flask-Login = "*"
 Flask-Mail = "*"
 python-Levenshtein = "*"
 mysqlclient = "*"
-mysql-python = "*"
+flask-migrate = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.7"

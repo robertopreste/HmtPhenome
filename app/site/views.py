@@ -4,20 +4,17 @@
 # import requests
 # import json
 import pprint
-from quart import Blueprint, render_template, request, redirect, url_for, jsonify, flash, escape
+from quart import Blueprint, render_template, request, redirect, url_for, \
+    jsonify, flash, escape
 from app.static import dbdata
-from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, QueryDiseasesForm
-from app.site.scripts import json_from_variant, network_from_variant_json, json_from_gene, network_from_gene_json, json_from_phenotype, network_from_phenotype_json, json_from_disease, network_from_disease_json
-# from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g, jsonify, send_file
-# from werkzeug.urls import url_parse
+from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, \
+    QueryDiseasesForm
+from app.site.scripts import json_from_variant, network_from_variant_json, \
+    json_from_gene, network_from_gene_json, json_from_phenotype, \
+    network_from_phenotype_json, json_from_disease, network_from_disease_json
+
 
 www = Blueprint("site", __name__)
-
-# from sqlalchemy import or_, and_
-# from app import app, db
-# from config import ADMINS
-# from .forms import LoginForm, RegistrationForm
-# from .models import User
 
 
 # Home Page
@@ -121,9 +118,12 @@ async def results():
     return await render_template("results.html",
                                  title="Results",
                                  json_data=pprint.pformat(json_data),
-                                 nodes=networks["nodes"], edges=networks["edges"],
-                                 variants=networks["variants"], genes=networks["genes"],
-                                 diseases=networks["diseases"], phenotypes=networks["phenotypes"])
+                                 nodes=networks["nodes"],
+                                 edges=networks["edges"],
+                                 variants=networks["variants"],
+                                 genes=networks["genes"],
+                                 diseases=networks["diseases"],
+                                 phenotypes=networks["phenotypes"])
 
 
 @www.errorhandler(404)

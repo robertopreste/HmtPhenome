@@ -5,8 +5,6 @@
 
 Create a new virtual environment (using Python 3):  
 
-
-~~virtualenv -p python3.6 venv~~
 ```
 pipenv install
 ```
@@ -14,7 +12,6 @@ pipenv install
 
 Activate the virtual environment:  
 
-~~source venv/bin/activate~~
 ```
 pipenv shell  
 ```
@@ -30,14 +27,14 @@ Create a new user for HmtPhenome:
 ```mysql
 USE mysql;
 CREATE USER 'hmtphenome_admin'@'localhost' IDENTIFIED BY 'password';
-GRANT ALL PRIVILEGES ON *.* TO 'username'@'localhost';
+GRANT ALL PRIVILEGES ON *.* TO 'hmtphenome_admin'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
 Exit MySQL (using `\q`) and enter back using the new credentials:  
 
 ```bash
-mysql -u username -p  # (then type the user password)
+mysql -u hmtphenome_admin -p password 
 ```
 
 Create the database:  
@@ -46,9 +43,6 @@ Create the database:
 CREATE DATABASE HmtPhenome;
 ```
 
-~~Install all required modules:~~  
-
-~~pip install -r requirements.txt~~
 
 ## Migration and upgrade  
 
@@ -62,15 +56,12 @@ Export the Quart app using `export QUART_APP=app:app`, then:
     db.drop_all()
     db.create_all()
     ```
-~~migrate the database (after having populated it): quart migrate-db~~  
 * download and process all the required tables: `python app/update/update_tables.py`  
 * update the db: `quart update-db`  
 * migrate the db (actually saves data needed to populate HTML menus): `quart migrate-db`  
 
 
 When finished, deactivate the virtual environment:  
-
-~~deactivate~~
 
 ```
 exit
