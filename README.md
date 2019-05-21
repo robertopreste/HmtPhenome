@@ -9,6 +9,14 @@ Create a new virtual environment (using Python 3):
 pipenv install
 ```
 
+**If an error occurs, most likely it is due to MySQL:** install MySQL:  
+
+```bash
+apt install mysql-server
+apt install libmysqlclient-dev
+```
+After that, re-issue the above `pipenv` command.  
+
 
 Activate the virtual environment:  
 
@@ -34,7 +42,7 @@ FLUSH PRIVILEGES;
 Exit MySQL (using `\q`) and enter back using the new credentials:  
 
 ```bash
-mysql -u hmtphenome_admin -p password 
+mysql -u hmtphenome_admin -p  
 ```
 
 Create the database:  

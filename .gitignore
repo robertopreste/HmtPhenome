@@ -223,7 +223,6 @@ fabric.properties
 
 .idea/
 
-app/static/dbdata.py
 db_repo/
 app/site/.pybiomart.sqlite
 app/update/data/
