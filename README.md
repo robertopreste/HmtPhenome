@@ -64,7 +64,11 @@ Export the Quart app using `export QUART_APP=app:app`, then:
     db.drop_all()
     db.create_all()
     ```
-* download and process all the required tables: `python app/update/update_tables.py`  
+* download and process all the required tables:  
+```bash
+cd app/update/ 
+python update_tables.py
+```
 * update the db: `quart update-db`  
 * migrate the db (actually saves data needed to populate HTML menus): `quart migrate-db`  
 
