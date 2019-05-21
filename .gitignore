@@ -225,7 +225,6 @@ fabric.properties
 
 db_repo/
 app/site/.pybiomart.sqlite
-app/update/data/
 hmtphenome.db
 network_disease.ipynb
 network_genes.ipynb
