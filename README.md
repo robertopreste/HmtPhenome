@@ -30,26 +30,28 @@ pipenv shell
 mysql -u root -p  # (then type the root password)
 ```
 
-Create a new user for HmtPhenome:  
-
-```mysql
-USE mysql;
-CREATE USER 'hmtphenome_admin'@'localhost' IDENTIFIED BY 'password';
-GRANT ALL PRIVILEGES ON *.* TO 'hmtphenome_admin'@'localhost';
-FLUSH PRIVILEGES;
-```
-
-Exit MySQL (using `\q`) and enter back using the new credentials:  
-
-```bash
-mysql -u hmtphenome_admin -p  
-```
-
 Create the database:  
 
 ```mysql
 CREATE DATABASE HmtPhenome;
 ```
+
+Create a new user for HmtPhenome:  
+
+```mysql
+USE mysql;
+CREATE USER 'hmtphenome_admin'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON HmtPhenome.* TO 'hmtphenome_admin'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+Exit MySQL (using `\q`) and enter back using the new credentials, to be sure that everything works:  
+
+```bash
+mysql -u hmtphenome_admin -p  
+```
+
+Then log out using `\q`.  
 
 
 ## Migration and upgrade  
@@ -64,11 +66,7 @@ Export the Quart app using `export QUART_APP=app:app`, then:
     db.drop_all()
     db.create_all()
     ```
-* download and process all the required tables:  
-```bash
-cd app/update/ 
-python update_tables.py
-```
+* download and process all the required tables: `python app/update/update_tables.py`  
 * update the db: `quart update-db`  
 * migrate the db (actually saves data needed to populate HTML menus): `quart migrate-db`  
 
