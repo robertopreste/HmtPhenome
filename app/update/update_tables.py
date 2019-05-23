@@ -119,8 +119,8 @@ def process_hpo_disgenphen(in_file, out_file, mitocarta_file):
     hpo = pd.read_csv("data/raw/{}".format(in_file), sep="\t", skiprows=1,
                       names=["disease_id", "gene_symbol", "entrez_gene_id", "hpo_id",
                              "hpo_term_name"])
-    mitocarta = pd.read_csv("data/tables/{}".format(mitocarta_file))
-    hpo = hpo[hpo.gene_symbol.isin(mitocarta.gene_symbol)]
+    # mitocarta = pd.read_csv("data/tables/{}".format(mitocarta_file))
+    # hpo = hpo[hpo.gene_symbol.isin(mitocarta.gene_symbol)]
     print("Saving processed HPO disease_gene_pheno data to {}...".format(out_file))
     hpo.to_csv("data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
@@ -142,8 +142,8 @@ def process_hpo_genphen(in_file, out_file, mitocarta_file):
     print("Processing HPO gene_pheno data...")
     hpo = pd.read_csv("data/raw/{}".format(in_file), sep="\t", skiprows=1,
                       names=["entrez_gene_id", "gene_symbol", "hpo_term_name", "hpo_id"])
-    mitocarta = pd.read_csv("data/tables/{}".format(mitocarta_file))
-    hpo = hpo[hpo.gene_symbol.isin(mitocarta.gene_symbol)]
+    # mitocarta = pd.read_csv("data/tables/{}".format(mitocarta_file))
+    # hpo = hpo[hpo.gene_symbol.isin(mitocarta.gene_symbol)]
     print("Saving processed HPO gene_pheno data to {}...".format(out_file))
     hpo.to_csv("data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
@@ -165,8 +165,8 @@ def process_hpo_phengen(in_file, out_file, mitocarta_file):
     print("Processing HPO pheno_gene data...")
     hpo = pd.read_csv("data/raw/{}".format(in_file), sep="\t", skiprows=1,
                       names=["hpo_id", "hpo_term_name", "entrez_gene_id", "gene_symbol"])
-    mitocarta = pd.read_csv("data/tables/{}".format(mitocarta_file))
-    hpo = hpo[hpo.gene_symbol.isin(mitocarta.gene_symbol)]
+    # mitocarta = pd.read_csv("data/tables/{}".format(mitocarta_file))
+    # hpo = hpo[hpo.gene_symbol.isin(mitocarta.gene_symbol)]
     print("Saving processed HPO pheno_gene data to {}...".format(out_file))
     hpo.to_csv("data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
@@ -256,7 +256,7 @@ def process_disgenet_vars(in_file, out_file):
     """
     print("Processing Disgenet vars_disease data...")
     disge = pd.read_csv("data/raw/{}".format(in_file), sep="\t")
-    disge = disge[disge.chromosome != "Y"]
+    # disge = disge[disge.chromosome != "Y"]
     disge = disge[["snpId", "diseaseId", "diseaseName", "score"]]
     disge.rename({"snpId": "dbsnp_id", "diseaseId": "umls_disease_id",
                   "diseaseName": "disease_name"}, axis=1, inplace=True)
@@ -357,7 +357,7 @@ def perform_download_data(sources):
         os.makedirs(os.path.join(os.getcwd(), "data/raw/"))
 
     for el in sources:
-        if el != "omim":  # TODO: temporary fix
+        if el != "omim" and el != "mitocarta":  # TODO: temporary fix
             download_source(sources[el][0], sources[el][1])
 
 
