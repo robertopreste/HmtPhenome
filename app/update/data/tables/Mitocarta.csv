@@ -1,0 +1,1181 @@
+ensembl_id,gene_symbol,description,hg_chr,hg_start,hg_stop
+ENSG00000179091,CYC1,cytochrome c-1,chr8,145149937,145152430
+ENSG00000117118,SDHB,"succinate dehydrogenase complex, subunit B, iron sulfur (Ip)",chr1,17345224,17380665
+ENSG00000167186,COQ7,"coenzyme Q7 homolog, ubiquinone (yeast)",chr16,19078916,19091417
+ENSG00000073578,SDHA,"succinate dehydrogenase complex, subunit A, flavoprotein (Fp)",chr5,218355,256814
+ENSG00000010256,UQCRC1,ubiquinol-cytochrome c reductase core protein I,chr3,48636431,48647098
+ENSG00000110871,COQ5,"coenzyme Q5 homolog, methyltransferase (S. cerevisiae)",chr12,120941081,120966964
+ENSG00000131828,PDHA1,pyruvate dehydrogenase (lipoamide) alpha 1,chrX,19362010,19379825
+ENSG00000088682,COQ9,coenzyme Q9,chr16,57481336,57495187
+ENSG00000262814,MRPL12,mitochondrial ribosomal protein L12,chr17,79670399,79674556
+ENSG00000099624,ATP5D,"ATP synthase, H+ transporting, mitochondrial F1 complex, delta subunit",chr19,1241748,1244824
+ENSG00000178741,COX5A,cytochrome c oxidase subunit Va,chr15,75212616,75230495
+ENSG00000165898,ISCA2,iron-sulfur cluster assembly 2,chr14,74960422,74962271
+ENSG00000105819,PMPCB,peptidase (mitochondrial processing) beta,chr7,102937872,102955133
+ENSG00000169021,UQCRFS1,"ubiquinol-cytochrome c reductase, Rieske iron-sulfur polypeptide 1",chr19,29698166,29704136
+ENSG00000152234,ATP5A1,"ATP synthase, H+ transporting, mitochondrial F1 complex, alpha subunit 1, cardiac muscle",chr18,43664109,43684199
+ENSG00000105953,OGDH,oxoglutarate (alpha-ketoglutarate) dehydrogenase (lipoamide),chr7,44646120,44748669
+ENSG00000168291,PDHB,pyruvate dehydrogenase (lipoamide) beta,chr3,58413356,58419579
+ENSG00000140740,UQCRC2,ubiquinol-cytochrome c reductase core protein II,chr16,21964608,21994668
+ENSG00000204370,SDHD,"succinate dehydrogenase complex, subunit D, integral membrane protein",chr11,111957547,111966525
+ENSG00000061794,MRPS35,mitochondrial ribosomal protein S35,chr12,27863705,27909237
+ENSG00000164405,UQCRQ,"ubiquinol-cytochrome c reductase, complex III subunit VII, 9.5kDa",chr5,132202318,132204536
+ENSG00000204822,MRPL53,mitochondrial ribosomal protein L53,chr2,74699084,74699942
+ENSG00000137992,DBT,dihydrolipoamide branched chain transacylase E2,chr1,100652477,100715409
+ENSG00000004799,PDK4,"pyruvate dehydrogenase kinase, isozyme 4",chr7,95212808,95225925
+ENSG00000146701,MDH2,"malate dehydrogenase 2, NAD (mitochondrial)",chr7,75677336,75696827
+ENSG00000113048,MRPS27,mitochondrial ribosomal protein S27,chr5,71515235,71616084
+ENSG00000062485,CS,citrate synthase,chr12,56665482,56694175
+ENSG00000109519,GRPEL1,"GrpE-like 1, mitochondrial (E. coli)",chr4,7061779,7069800
+ENSG00000150768,DLAT,dihydrolipoamide S-acetyltransferase,chr11,111895537,111935002
+ENSG00000138095,LRPPRC,leucine-rich pentatricopeptide repeat containing,chr2,44113362,44223144
+ENSG00000119689,DLST,dihydrolipoamide S-succinyltransferase (E2 component of 2-oxo-glutarate complex),chr14,75348593,75370450
+ENSG00000110435,PDHX,"pyruvate dehydrogenase complex, component X",chr11,34937676,35017675
+ENSG00000168827,GFM1,"G elongation factor, mitochondrial 1",chr3,158362316,158410360
+ENSG00000143158,MPC2,mitochondrial pyruvate carrier 2,chr1,167885912,167906307
+ENSG00000023228,NDUFS1,"NADH dehydrogenase (ubiquinone) Fe-S protein 1, 75kDa (NADH-coenzyme Q reductase)",chr2,206987802,207024243
+ENSG00000259494,MRPL46,mitochondrial ribosomal protein L46,chr15,89002708,89010633
+ENSG00000124172,ATP5E,"ATP synthase, H+ transporting, mitochondrial F1 complex, epsilon subunit",chr20,57603732,57607422
+ENSG00000075415,SLC25A3,"solute carrier family 25 (mitochondrial carrier; phosphate carrier), member 3",chr12,98987402,98995778
+ENSG00000181610,MRPS23,mitochondrial ribosomal protein S23,chr17,55916286,55927433
+ENSG00000091483,FH,fumarate hydratase,chr1,241660856,241683085
+ENSG00000165688,PMPCA,peptidase (mitochondrial processing) alpha,chr9,139305024,139318213
+ENSG00000110955,ATP5B,"ATP synthase, H+ transporting, mitochondrial F1 complex, beta polypeptide",chr12,57031958,57039852
+ENSG00000154079,C6orf57,chromosome 6 open reading frame 57,chr6,71276624,71298606
+ENSG00000184076,UQCR10,"ubiquinol-cytochrome c reductase, complex III subunit X",chr22,30163357,30166402
+ENSG00000135070,ISCA1,iron-sulfur cluster assembly 1,chr9,88879462,88897490
+ENSG00000136143,SUCLA2,"succinate-CoA ligase, ADP-forming, beta subunit",chr13,48516790,48575462
+ENSG00000132423,COQ3,coenzyme Q3 methyltransferase,chr6,99817347,99842082
+ENSG00000067704,IARS2,"isoleucyl-tRNA synthetase 2, mitochondrial",chr1,220267454,220321383
+ENSG00000116898,MRPS15,mitochondrial ribosomal protein S15,chr1,36921361,36930040
+ENSG00000166411,IDH3A,isocitrate dehydrogenase 3 (NAD+) alpha,chr15,78441718,78462884
+ENSG00000166260,COX11,cytochrome c oxidase assembly homolog 11 (yeast),chr17,53038566,53046064
+ENSG00000171503,ETFDH,electron-transferring-flavoprotein dehydrogenase,chr4,159593252,159629865
+ENSG00000134809,TIMM10,translocase of inner mitochondrial membrane 10 homolog (yeast),chr11,57295935,57298232
+ENSG00000130312,MRPL34,mitochondrial ribosomal protein L34,chr19,17416476,17417652
+ENSG00000112651,MRPL2,mitochondrial ribosomal protein L2,chr6,43021766,43027242
+ENSG00000248098,BCKDHA,"branched chain keto acid dehydrogenase E1, alpha polypeptide",chr19,41903693,41930910
+ENSG00000173660,UQCRH,ubiquinol-cytochrome c reductase hinge protein,chr1,46769379,46782447
+ENSG00000146066,HIGD2A,"HIG1 hypoxia inducible domain family, member 2A",chr5,175815783,175816751
+ENSG00000241837,ATP5O,"ATP synthase, H+ transporting, mitochondrial F1 complex, O subunit",chr21,35275756,35288158
+ENSG00000127884,ECHS1,"enoyl CoA hydratase, short chain, 1, mitochondrial",chr10,135175986,135186908
+ENSG00000050426,LETMD1,LETM1 domain containing 1,chr12,51442081,51454207
+ENSG00000111775,COX6A1,cytochrome c oxidase subunit VIa polypeptide 1,chr12,120875892,120878545
+ENSG00000014919,COX15,cytochrome c oxidase assembly homolog 15 (yeast),chr10,101468504,101492423
+ENSG00000141385,AFG3L2,AFG3-like AAA ATPase 2,chr18,12328942,12377275
+ENSG00000084754,HADHA,"hydroxyacyl-CoA dehydrogenase/3-ketoacyl-CoA thiolase/enoyl-CoA hydratase (trifunctional protein), alpha subunit",chr2,26413503,26467594
+ENSG00000140374,ETFA,"electron-transfer-flavoprotein, alpha polypeptide",chr15,76508628,76603810
+ENSG00000115286,NDUFS7,"NADH dehydrogenase (ubiquinone) Fe-S protein 7, 20kDa (NADH-coenzyme Q reductase)",chr19,1383882,1395588
+ENSG00000157184,CPT2,carnitine palmitoyltransferase 2,chr1,53662100,53679869
+ENSG00000083123,BCKDHB,"branched chain keto acid dehydrogenase E1, beta polypeptide",chr6,80816343,81055987
+ENSG00000101365,IDH3B,isocitrate dehydrogenase 3 (NAD+) beta,chr20,2639040,2644865
+ENSG00000011376,LARS2,"leucyl-tRNA synthetase 2, mitochondrial",chr3,45430074,45590328
+ENSG00000122971,ACADS,"acyl-CoA dehydrogenase, C-2 to C-3 short chain",chr12,121163570,121177811
+ENSG00000168924,LETM1,leucine zipper-EF-hand containing transmembrane protein 1,chr4,1813205,1857974
+ENSG00000169020,ATP5I,"ATP synthase, H+ transporting, mitochondrial Fo complex, subunit E",chr4,666224,668127
+ENSG00000198836,OPA1,optic atrophy 1 (autosomal dominant),chr3,193310932,193415600
+ENSG00000148090,AUH,AU RNA binding protein/enoyl-CoA hydratase,chr9,93976096,94124206
+ENSG00000163541,SUCLG1,"succinate-CoA ligase, alpha subunit",chr2,84650646,84686586
+ENSG00000178127,NDUFV2,"NADH dehydrogenase (ubiquinone) flavoprotein 2, 24kDa",chr18,9102627,9134343
+ENSG00000119723,COQ6,coenzyme Q6 monooxygenase,chr14,74416636,74429813
+ENSG00000055950,MRPL43,mitochondrial ribosomal protein L43,chr10,102737578,102747272
+ENSG00000106077,ABHD11,abhydrolase domain containing 11,chr7,73150424,73153184
+ENSG00000154723,ATP5J,"ATP synthase, H+ transporting, mitochondrial Fo complex, subunit F6",chr21,27096790,27107965
+ENSG00000166136,NDUFB8,"NADH dehydrogenase (ubiquinone) 1 beta subcomplex, 8, 19kDa",chr10,102283485,102289680
+ENSG00000196365,LONP1,"lon peptidase 1, mitochondrial",chr19,5691844,5720463
+ENSG00000091140,DLD,dihydrolipoamide dehydrogenase,chr7,107531551,107561643
+ENSG00000156709,AIFM1,"apoptosis-inducing factor, mitochondrion-associated, 1",chrX,129263337,129299861
+ENSG00000134463,ECHDC3,enoyl CoA hydratase domain containing 3,chr10,11784355,11806065
+ENSG00000155008,APOOL,apolipoprotein O-like,chrX,84258897,84348323
+ENSG00000159111,MRPL10,mitochondrial ribosomal protein L10,chr17,45900637,45908907
+ENSG00000148187,MRRF,mitochondrial ribosome recycling factor,chr9,125026881,125085742
+ENSG00000110717,NDUFS8,"NADH dehydrogenase (ubiquinone) Fe-S protein 8, 23kDa (NADH-coenzyme Q reductase)",chr11,67798083,67804114
+ENSG00000117054,ACADM,"acyl-CoA dehydrogenase, C-4 to C-12 straight chain",chr1,76190031,76229363
+ENSG00000132305,IMMT,"inner membrane protein, mitochondrial",chr2,86371054,86422893
+ENSG00000100575,TIMM9,translocase of inner mitochondrial membrane 9 homolog (yeast),chr14,58875369,58894232
+ENSG00000151729,SLC25A4,"solute carrier family 25 (mitochondrial carrier; adenine nucleotide translocator), member 4",chr4,186064416,186071538
+ENSG00000100347,SAMM50,SAMM50 sorting and assembly machinery component,chr22,44351260,44392412
+ENSG00000158864,NDUFS2,"NADH dehydrogenase (ubiquinone) Fe-S protein 2, 49kDa (NADH-coenzyme Q reductase)",chr1,161169104,161184184
+ENSG00000167792,NDUFV1,"NADH dehydrogenase (ubiquinone) flavoprotein 1, 51kDa",chr11,67374322,67380012
+ENSG00000100412,ACO2,"aconitase 2, mitochondrial",chr22,41865128,41924993
+ENSG00000156502,SUPV3L1,"suppressor of var1, 3-like 1 (S. cerevisiae)",chr10,70939992,70968849
+ENSG00000066926,FECH,ferrochelatase,chr18,55212072,55253969
+ENSG00000085760,MTIF2,mitochondrial translational initiation factor 2,chr2,55463755,55496384
+ENSG00000167085,PHB,prohibitin,chr17,47481409,47492267
+ENSG00000198130,HIBCH,3-hydroxyisobutyryl-CoA hydrolase,chr2,191069359,191184771
+ENSG00000122140,MRPS2,mitochondrial ribosomal protein S2,chr9,138392476,138396519
+ENSG00000113013,HSPA9,heat shock 70kDa protein 9 (mortalin),chr5,137890570,137911318
+ENSG00000148290,SURF1,surfeit 1,chr9,136218659,136223361
+ENSG00000165672,PRDX3,peroxiredoxin 3,chr10,120927214,120938377
+ENSG00000165678,GHITM,growth hormone inducible transmembrane protein,chr10,85899184,85913311
+ENSG00000151806,GUF1,GUF1 GTPase homolog (S. cerevisiae),chr4,44680432,44702697
+ENSG00000099800,TIMM13,translocase of inner mitochondrial membrane 13 homolog (yeast),chr19,2425621,2427914
+ENSG00000214113,LYRM4,LYR motif containing 4,chr6,5108652,5261183
+ENSG00000166902,MRPL16,mitochondrial ribosomal protein L16,chr11,59573607,59578345
+ENSG00000185608,MRPL40,mitochondrial ribosomal protein L40,chr22,19420035,19423596
+ENSG00000067829,IDH3G,isocitrate dehydrogenase 3 (NAD+) gamma,chrX,153051220,153059978
+ENSG00000143252,SDHC,"succinate dehydrogenase complex, subunit C, integral membrane protein, 15kDa",chr1,161284165,161334535
+ENSG00000136521,NDUFB5,"NADH dehydrogenase (ubiquinone) 1 beta subcomplex, 5, 16kDa",chr3,179322574,179342288
+ENSG00000167985,SDHAF2,succinate dehydrogenase complex assembly factor 2,chr11,61197596,61214239
+ENSG00000135469,COQ10A,coenzyme Q10 homolog A (S. cerevisiae),chr12,56660641,56664750
+ENSG00000160221,C21orf33,chromosome 21 open reading frame 33,chr21,45553493,45565605
+ENSG00000100348,TXN2,thioredoxin 2,chr22,36863092,36877687
+ENSG00000096080,MRPS18A,mitochondrial ribosomal protein S18A,chr6,43638933,43655549
+ENSG00000164919,COX6C,cytochrome c oxidase subunit VIc,chr8,100890222,100906242
+ENSG00000147684,NDUFB9,"NADH dehydrogenase (ubiquinone) 1 beta subcomplex, 9, 22kDa",chr8,125551342,125562227
+ENSG00000109919,MTCH2,mitochondrial carrier 2,chr11,47638857,47664206
+ENSG00000184983,NDUFA6,"NADH dehydrogenase (ubiquinone) 1 alpha subcomplex, 6, 14kDa",chr22,42481529,42486888
+ENSG00000178537,SLC25A20,"solute carrier family 25 (carnitine/acylcarnitine translocase), member 20",chr3,48894355,48936426
+ENSG00000169288,MRPL1,mitochondrial ribosomal protein L1,chr4,78783804,78873944
+ENSG00000104980,TIMM44,translocase of inner mitochondrial membrane 44 homolog (yeast),chr19,7991602,8008708
+ENSG00000138495,COX17,COX17 cytochrome c oxidase copper chaperone,chr3,119388371,119396243
+ENSG00000173436,MINOS1,mitochondrial inner membrane organizing system 1,chr1,19923470,19956315
+ENSG00000112096,SOD2,"superoxide dismutase 2, mitochondrial",chr6,160100148,160114353
+ENSG00000126267,COX6B1,cytochrome c oxidase subunit VIb polypeptide 1 (ubiquitous),chr19,36139124,36149686
+ENSG00000073905,VDAC1,voltage-dependent anion channel 1,chr5,133307565,133340824
+ENSG00000125656,CLPP,caseinolytic mitochondrial matrix peptidase proteolytic subunit,chr19,6361462,6368915
+ENSG00000138796,HADH,hydroxyacyl-CoA dehydrogenase,chr4,108910869,108956331
+ENSG00000115361,ACADL,"acyl-CoA dehydrogenase, long chain",chr2,211052715,211090215
+ENSG00000075239,ACAT1,acetyl-CoA acetyltransferase 1,chr11,107992257,108018891
+ENSG00000156928,MALSU1,mitochondrial assembly of ribosomal large subunit 1,chr7,23338939,23349180
+ENSG00000166855,CLPX,caseinolytic mitochondrial matrix peptidase chaperone subunit,chr15,65442783,65477563
+ENSG00000164258,NDUFS4,"NADH dehydrogenase (ubiquinone) Fe-S protein 4, 18kDa (NADH-coenzyme Q reductase)",chr5,52856464,52979171
+ENSG00000105364,MRPL4,mitochondrial ribosomal protein L4,chr19,10362639,10370736
+ENSG00000108561,C1QBP,"complement component 1, q subcomponent binding protein",chr17,5336098,5342471
+ENSG00000107959,PITRM1,pitrilysin metallopeptidase 1,chr10,3179918,3215033
+ENSG00000101019,UQCC1,ubiquinol-cytochrome c reductase complex assembly factor 1,chr20,33890368,33999945
+ENSG00000162910,MRPL55,mitochondrial ribosomal protein L55,chr1,228294379,228297013
+ENSG00000129282,MRM1,mitochondrial rRNA methyltransferase 1 homolog (S. cerevisiae),chr17,34958024,34965407
+ENSG00000116353,MECR,mitochondrial trans-2-enoyl-CoA reductase,chr1,29519168,29557470
+ENSG00000135900,MRPL44,mitochondrial ribosomal protein L44,chr2,224822120,224832431
+ENSG00000119471,HSDL2,hydroxysteroid dehydrogenase like 2,chr9,115142188,115234685
+ENSG00000120333,MRPS14,mitochondrial ribosomal protein S14,chr1,174982093,174992591
+ENSG00000197150,ABCB8,"ATP-binding cassette, sub-family B (MDR/TAP), member 8",chr7,150725508,150744869
+ENSG00000171953,ATPAF2,ATP synthase mitochondrial F1 complex assembly factor 2,chr17,17921333,17942480
+ENSG00000139180,NDUFA9,"NADH dehydrogenase (ubiquinone) 1 alpha subcomplex, 9, 39kDa",chr12,4758263,4796720
+ENSG00000168275,COA6,cytochrome c oxidase assembly factor 6 homolog (S. cerevisiae),chr1,234509213,234519795
+ENSG00000099821,POLRMT,polymerase (RNA) mitochondrial (DNA directed),chr19,617222,633568
+ENSG00000136003,ISCU,iron-sulfur cluster assembly enzyme,chr12,108956293,108963160
+ENSG00000130347,RTN4IP1,reticulon 4 interacting protein 1,chr6,107018902,107077373
+ENSG00000197444,OGDHL,oxoglutarate dehydrogenase-like,chr10,50942686,50970425
+ENSG00000165629,ATP5C1,"ATP synthase, H+ transporting, mitochondrial F1 complex, gamma polypeptide 1",chr10,7830092,7849762
+ENSG00000103507,BCKDK,branched chain ketoacid dehydrogenase kinase,chr16,31119614,31124112
+ENSG00000164347,GFM2,"G elongation factor, mitochondrial 2",chr5,74017028,74063196
+ENSG00000123545,NDUFAF4,"NADH dehydrogenase (ubiquinone) complex I, assembly factor 4",chr6,97337186,97345767
+ENSG00000125434,SLC25A35,"solute carrier family 25, member 35",chr17,8191081,8198170
+ENSG00000108528,SLC25A11,"solute carrier family 25 (mitochondrial carrier; oxoglutarate carrier), member 11",chr17,4840425,4843462
+ENSG00000150779,TIMM8B,translocase of inner mitochondrial membrane 8 homolog B (yeast),chr11,111955538,111957522
+ENSG00000100294,MCAT,malonyl CoA:ACP acyltransferase (mitochondrial),chr22,43528211,43539403
+ENSG00000181873,IBA57,"IBA57, iron-sulfur cluster assembly homolog (S. cerevisiae)",chr1,228353428,228369958
+ENSG00000215021,PHB2,prohibitin 2,chr12,7074514,7079916
+ENSG00000132676,DAP3,death associated protein 3,chr1,155658881,155708800
+ENSG00000103121,CMC2,C-x(9)-C motif containing 2,chr16,81009698,81040502
+ENSG00000205138,SDHAF1,succinate dehydrogenase complex assembly factor 1,chr19,36486089,36487220
+ENSG00000239789,MRPS17,mitochondrial ribosomal protein S17,chr7,56019610,56023033
+ENSG00000147576,ADHFE1,"alcohol dehydrogenase, iron containing, 1",chr8,67344717,67381044
+ENSG00000244005,NFS1,NFS1 cysteine desulfurase,chr20,34256609,34287287
+ENSG00000101247,NDUFAF5,"NADH dehydrogenase (ubiquinone) complex I, assembly factor 5",chr20,13765671,13799067
+ENSG00000158042,MRPL17,mitochondrial ribosomal protein L17,chr11,6701615,6704632
+ENSG00000136463,TACO1,translational activator of mitochondrially encoded cytochrome c oxidase I,chr17,61678230,61685725
+ENSG00000171109,MFN1,mitofusin 1,chr3,179065479,179111008
+ENSG00000196850,PPTC7,PTC7 protein phosphatase homolog (S. cerevisiae),chr12,110972236,111021064
+ENSG00000174547,MRPL11,mitochondrial ribosomal protein L11,chr11,66202549,66206310
+ENSG00000131143,COX4I1,cytochrome c oxidase subunit IV isoform 1,chr16,85833172,85840607
+ENSG00000145494,NDUFS6,"NADH dehydrogenase (ubiquinone) Fe-S protein 6, 13kDa (NADH-coenzyme Q reductase)",chr5,1801495,1816167
+ENSG00000172172,MRPL13,mitochondrial ribosomal protein L13,chr8,121408082,121457647
+ENSG00000083720,OXCT1,3-oxoacid CoA transferase 1,chr5,41730166,41870791
+ENSG00000135940,COX5B,cytochrome c oxidase subunit Vb,chr2,98262520,98264657
+ENSG00000005882,PDK2,"pyruvate dehydrogenase kinase, isozyme 2",chr17,48172100,48188733
+ENSG00000023330,ALAS1,"aminolevulinate, delta-, synthase 1",chr3,52232098,52248343
+ENSG00000243147,MRPL33,mitochondrial ribosomal protein L33,chr2,27994583,28002608
+ENSG00000135297,MTO1,mitochondrial tRNA translation optimization 1,chr6,74171453,74211179
+ENSG00000121897,LIAS,lipoic acid synthetase,chr4,39460643,39479271
+ENSG00000128609,NDUFA5,"NADH dehydrogenase (ubiquinone) 1 alpha subcomplex, 5",chr7,123181082,123197958
+ENSG00000165264,NDUFB6,"NADH dehydrogenase (ubiquinone) 1 beta subcomplex, 6, 17kDa",chr9,32553523,32573182
+ENSG00000128654,MTX2,metaxin 2,chr2,177134122,177202753
+ENSG00000172340,SUCLG2,"succinate-CoA ligase, GDP-forming, beta subunit",chr3,67410883,67705038
+ENSG00000137714,FDX1,ferredoxin 1,chr11,110300660,110335608
+ENSG00000100075,SLC25A1,"solute carrier family 25 (mitochondrial carrier; citrate transporter), member 1",chr22,19163087,19166376
+ENSG00000147586,MRPS28,mitochondrial ribosomal protein S28,chr8,80831094,80942506
+ENSG00000105197,TIMM50,translocase of inner mitochondrial membrane 50 homolog (S. cerevisiae),chr19,39971051,39981528
+ENSG00000165637,VDAC2,voltage-dependent anion channel 2,chr10,76969911,76991207
+ENSG00000181035,SLC25A42,"solute carrier family 25, member 42",chr19,19174802,19223841
+ENSG00000196683,TOMM7,translocase of outer mitochondrial membrane 7 homolog (yeast),chr7,22852250,22862471
+ENSG00000104823,ECH1,"enoyl CoA hydratase 1, peroxisomal",chr19,39306061,39322497
+ENSG00000059691,PET112,PET112 homolog (yeast),chr4,152591808,152682175
+ENSG00000074582,BCS1L,BC1 (ubiquinol-cytochrome c reductase) synthesis-like,chr2,219524378,219528166
+ENSG00000132591,ERAL1,Era-like 12S mitochondrial rRNA chaperone 1,chr17,27182042,27188072
+ENSG00000187118,CMC1,C-x(9)-C motif containing 1,chr3,28283123,28361263
+ENSG00000086504,MRPL28,mitochondrial ribosomal protein L28,chr16,417383,420569
+ENSG00000123297,TSFM,"Ts translation elongation factor, mitochondrial",chr12,58176527,58196639
+ENSG00000165060,FXN,frataxin,chr9,71650478,71715094
+ENSG00000169599,NFU1,NFU1 iron-sulfur cluster scaffold homolog (S. cerevisiae),chr2,69623244,69664760
+ENSG00000139131,YARS2,"tyrosyl-tRNA synthetase 2, mitochondrial",chr12,32899477,32908887
+ENSG00000197345,MRPL21,mitochondrial ribosomal protein L21,chr11,68658745,68671303
+ENSG00000159423,ALDH4A1,"aldehyde dehydrogenase 4 family, member A1",chr1,19197923,19229293
+ENSG00000158882,TOMM40L,translocase of outer mitochondrial membrane 40 homolog (yeast)-like,chr1,161195728,161200536
+ENSG00000137806,NDUFAF1,"NADH dehydrogenase (ubiquinone) complex I, assembly factor 1",chr15,41679546,41694658
+ENSG00000140990,NDUFB10,"NADH dehydrogenase (ubiquinone) 1 beta subcomplex, 10, 22kDa",chr16,2009516,2011976
+ENSG00000196177,ACADSB,"acyl-CoA dehydrogenase, short/branched chain",chr10,124768428,124817806
+ENSG00000135972,MRPS9,mitochondrial ribosomal protein S9,chr2,105654482,105716418
+ENSG00000163050,ADCK3,aarF domain containing kinase 3,chr1,227127937,227175246
+ENSG00000072778,ACADVL,"acyl-CoA dehydrogenase, very long chain",chr17,7120443,7128586
+ENSG00000167113,COQ4,coenzyme Q4,chr9,131084790,131096351
+ENSG00000137547,MRPL15,mitochondrial ribosomal protein L15,chr8,55047780,55061074
+ENSG00000131495,NDUFA2,"NADH dehydrogenase (ubiquinone) 1 alpha subcomplex, 2, 8kDa",chr5,140024947,140027370
+ENSG00000143314,MRPL24,mitochondrial ribosomal protein L24,chr1,156707093,156710923
+ENSG00000144381,HSPD1,heat shock 60kDa protein 1 (chaperonin),chr2,198351307,198364998
+ENSG00000168653,NDUFS5,"NADH dehydrogenase (ubiquinone) Fe-S protein 5, 15kDa (NADH-coenzyme Q reductase)",chr1,39491966,39500308
+ENSG00000147853,AK3,adenylate kinase 3,chr9,4709556,4742043
+ENSG00000172115,CYCS,"cytochrome c, somatic",chr7,25158269,25164980
+ENSG00000027001,MIPEP,mitochondrial intermediate peptidase,chr13,24304327,24463587
+ENSG00000186687,LYRM7,LYR motif containing 7,chr5,130506640,130541119
+ENSG00000095321,CRAT,carnitine O-acetyltransferase,chr9,131857072,131873070
+ENSG00000114054,PCCB,"propionyl CoA carboxylase, beta polypeptide",chr3,135969166,136049013
+ENSG00000125445,MRPS7,mitochondrial ribosomal protein S7,chr17,73257748,73262457
+ENSG00000114686,MRPL3,mitochondrial ribosomal protein L3,chr3,131181044,131221860
+ENSG00000100033,PRODH,proline dehydrogenase (oxidase) 1,chr22,18900286,18924066
+ENSG00000175198,PCCA,"propionyl CoA carboxylase, alpha polypeptide",chr13,100741268,101182691
+ENSG00000078070,MCCC1,methylcrotonoyl-CoA carboxylase 1 (alpha),chr3,182733005,182817365
+ENSG00000128626,MRPS12,mitochondrial ribosomal protein S12,chr19,39421347,39423659
+ENSG00000162129,CLPB,ClpB caseinolytic peptidase B homolog (E. coli),chr11,72003469,72145724
+ENSG00000152256,PDK1,"pyruvate dehydrogenase kinase, isozyme 1",chr2,173420696,173463862
+ENSG00000149792,MRPL49,mitochondrial ribosomal protein L49,chr11,64889715,64894841
+ENSG00000112695,COX7A2,cytochrome c oxidase subunit VIIa polypeptide 2 (liver),chr6,75947390,75953644
+ENSG00000171202,TMEM126A,transmembrane protein 126A,chr11,85358962,85367597
+ENSG00000121310,ECHDC2,enoyl CoA hydratase domain containing 2,chr1,53361581,53387446
+ENSG00000004961,HCCS,holocytochrome c synthase,chrX,11129405,11141204
+ENSG00000106049,HIBADH,3-hydroxyisobutyrate dehydrogenase,chr7,27565058,27702620
+ENSG00000115364,MRPL19,mitochondrial ribosomal protein L19,chr2,75873908,75889334
+ENSG00000171421,MRPL36,mitochondrial ribosomal protein L36,chr5,1798498,1799956
+ENSG00000174032,SLC25A30,"solute carrier family 25, member 30",chr13,45967453,45992590
+ENSG00000161267,BDH1,"3-hydroxybutyrate dehydrogenase, type 1",chr3,197236653,197300194
+ENSG00000145982,FARS2,"phenylalanyl-tRNA synthetase 2, mitochondrial",chr6,5261583,5771816
+ENSG00000131269,ABCB7,"ATP-binding cassette, sub-family B (MDR/TAP), member 7",chrX,74273006,74376175
+ENSG00000173171,MTX1,metaxin 1,chr1,155178489,155183624
+ENSG00000167774,NDUFA7,"NADH dehydrogenase (ubiquinone) 1 alpha subcomplex, 7, 14.5kDa",chr19,8376183,8386280
+ENSG00000134375,TIMM17A,translocase of inner mitochondrial membrane 17 homolog A (yeast),chr1,201924618,201939789
+ENSG00000143149,ALDH9A1,"aldehyde dehydrogenase 9 family, member A1",chr1,165631448,165667900
+ENSG00000163319,MRPS18C,mitochondrial ribosomal protein S18C,chr4,84377117,84382929
+ENSG00000247626,MARS2,"methionyl-tRNA synthetase 2, mitochondrial",chr2,198570027,198573114
+ENSG00000119711,ALDH6A1,"aldehyde dehydrogenase 6 family, member A1",chr14,74524367,74551196
+ENSG00000161513,FDXR,ferredoxin reductase,chr17,72858618,72869156
+ENSG00000111786,GATC,"glutamyl-tRNA(Gln) amidotransferase, subunit C",chr12,120884240,120901556
+ENSG00000126602,TRAP1,TNF receptor-associated protein 1,chr16,3708037,3767598
+ENSG00000151498,ACAD8,"acyl-CoA dehydrogenase family, member 8",chr11,134123433,134135746
+ENSG00000111275,ALDH2,aldehyde dehydrogenase 2 family (mitochondrial),chr12,112204690,112247789
+ENSG00000108179,PPIF,peptidylprolyl isomerase F,chr10,81107219,81115089
+ENSG00000177370,TIMM22,translocase of inner mitochondrial membrane 22 homolog (yeast),chr17,900356,905390
+ENSG00000128928,IVD,isovaleryl-CoA dehydrogenase,chr15,40697685,40713512
+ENSG00000087299,L2HGDH,L-2-hydroxyglutarate dehydrogenase,chr14,50709151,50778947
+ENSG00000105755,ETHE1,ethylmalonic encephalopathy 1,chr19,44010870,44031396
+ENSG00000242485,MRPL20,mitochondrial ribosomal protein L20,chr1,1337275,1342693
+ENSG00000005022,SLC25A5,"solute carrier family 25 (mitochondrial carrier; adenine nucleotide translocator), member 5",chrX,118602362,118605359
+ENSG00000115840,SLC25A12,"solute carrier family 25 (aspartate/glutamate carrier), member 12",chr2,172639914,172750816
+ENSG00000187145,MRPS21,mitochondrial ribosomal protein S21,chr1,150266261,150281414
+ENSG00000100216,TOMM22,translocase of outer mitochondrial membrane 22 homolog (yeast),chr22,39077953,39080766
+ENSG00000167315,ACAA2,acetyl-CoA acyltransferase 2,chr18,47309873,47340251
+ENSG00000185414,MRPL30,mitochondrial ribosomal protein L30,chr2,99797541,99816020
+ENSG00000103423,DNAJA3,"DnaJ (Hsp40) homolog, subfamily A, member 3",chr16,4475805,4506775
+ENSG00000090266,NDUFB2,"NADH dehydrogenase (ubiquinone) 1 beta subcomplex, 2, 8kDa",chr7,140396480,140406446
+ENSG00000074071,MRPS34,mitochondrial ribosomal protein S34,chr16,1821895,1823140
+ENSG00000105379,ETFB,"electron-transfer-flavoprotein, beta polypeptide",chr19,51848408,51869672
+ENSG00000135537,LACE1,lactation elevated 1,chr6,108616097,108844251
+ENSG00000130770,ATPIF1,ATPase inhibitory factor 1,chr1,28562601,28564616
+ENSG00000116459,ATP5F1,"ATP synthase, H+ transporting, mitochondrial Fo complex, subunit B1",chr1,111991742,112004525
+ENSG00000127184,COX7C,cytochrome c oxidase subunit VIIc,chr5,85913783,85916583
+ENSG00000106554,CHCHD3,coiled-coil-helix-coiled-coil-helix domain containing 3,chr7,132469622,132766828
+ENSG00000115520,COQ10B,coenzyme Q10 homolog B (S. cerevisiae),chr2,198318230,198339851
+ENSG00000176715,ACSF3,acyl-CoA synthetase family member 3,chr16,89160216,89222254
+ENSG00000004142,POLDIP2,"polymerase (DNA-directed), delta interacting protein 2",chr17,26673658,26684603
+ENSG00000183048,SLC25A10,"solute carrier family 25 (mitochondrial carrier; dicarboxylate transporter), member 10",chr17,79679265,79688046
+ENSG00000004864,SLC25A13,"solute carrier family 25 (aspartate/glutamate carrier), member 13",chr7,95749531,95951459
+ENSG00000067992,PDK3,"pyruvate dehydrogenase kinase, isozyme 3",chrX,24483343,24568583
+ENSG00000151376,ME3,"malic enzyme 3, NADP(+)-dependent, mitochondrial",chr11,86152149,86383678
+ENSG00000082515,MRPL22,mitochondrial ribosomal protein L22,chr5,154320632,154348971
+ENSG00000182054,IDH2,"isocitrate dehydrogenase 2 (NADP+), mitochondrial",chr15,90627210,90645708
+ENSG00000105607,GCDH,glutaryl-CoA dehydrogenase,chr19,13001942,13010813
+ENSG00000136522,MRPL47,mitochondrial ribosomal protein L47,chr3,179306254,179322434
+ENSG00000138777,PPA2,pyrophosphatase (inorganic) 2,chr4,106290233,106395227
+ENSG00000143436,MRPL9,mitochondrial ribosomal protein L9,chr1,151732122,151736040
+ENSG00000250479,CHCHD10,coiled-coil-helix-coiled-coil-helix domain containing 10,chr22,24108020,24110141
+ENSG00000116874,WARS2,"tryptophanyl tRNA synthetase 2, mitochondrial",chr1,119573838,119683295
+ENSG00000125454,SLC25A19,"solute carrier family 25 (mitochondrial thiamine pyrophosphate carrier), member 19",chr17,73269060,73285530
+ENSG00000145439,CBR4,carbonyl reductase 4,chr4,169908741,169931468
+ENSG00000183172,SMDT1,single-pass membrane protein with aspartate-rich tail 1,chr22,42475694,42480288
+ENSG00000063854,HAGH,hydroxyacylglutathione hydrolase,chr16,1859103,1877195
+ENSG00000161281,COX7A1,cytochrome c oxidase subunit VIIa polypeptide 1 (muscle),chr19,36641823,36643771
+ENSG00000148824,MTG1,mitochondrial ribosome-associated GTPase 1,chr10,135207620,135234174
+ENSG00000178449,COX14,cytochrome c oxidase assembly homolog 14 (S. cerevisiae),chr12,50505763,50514240
+ENSG00000184752,NDUFA12,"NADH dehydrogenase (ubiquinone) 1 alpha subcomplex, 12",chr12,95365103,95397489
+ENSG00000182180,MRPS16,mitochondrial ribosomal protein S16,chr10,75008600,75012451
+ENSG00000120832,MTERFD3,MTERF domain containing 3,chr12,107371068,107380944
+ENSG00000205707,LYRM5,LYR motif containing 5,chr12,25348149,25357949
+ENSG00000115159,GPD2,glycerol-3-phosphate dehydrogenase 2 (mitochondrial),chr2,157291964,157442915
+ENSG00000130414,NDUFA10,"NADH dehydrogenase (ubiquinone) 1 alpha subcomplex, 10, 42kDa",chr2,240896788,240964819
+ENSG00000151366,NDUFC2,"NADH dehydrogenase (ubiquinone) 1, subcomplex unknown, 2, 14.5kDa",chr11,77779392,77791265
+ENSG00000119705,SLIRP,SRA stem-loop interacting RNA binding protein,chr14,78174413,78183941
+ENSG00000198899,ATP6,ATP synthase F0 subunit 6,chrM,8527,9207
+ENSG00000198712,COX2,cytochrome c oxidase subunit II,chrM,7586,8269
+ENSG00000075336,TIMM21,translocase of inner mitochondrial membrane 21 homolog (yeast),chr18,71815745,71826204
+ENSG00000119421,NDUFA8,"NADH dehydrogenase (ubiquinone) 1 alpha subcomplex, 8, 19kDa",chr9,124906337,124922098
+ENSG00000115419,GLS,glutaminase,chr2,191745546,191830270
+ENSG00000147123,NDUFB11,"NADH dehydrogenase (ubiquinone) 1 beta subcomplex, 11, 17.3kDa",chrX,47001614,47004609
+ENSG00000181192,DHTKD1,dehydrogenase E1 and transketolase domain containing 1,chr10,12110915,12165227
+ENSG00000115042,FAHD2A,fumarylacetoacetate hydrolase domain containing 2A,chr2,96068447,96078879
+ENSG00000112474,HSD17B8,hydroxysteroid (17-beta) dehydrogenase 8,chr6,33172413,33174608
+ENSG00000137133,HINT2,histidine triad nucleotide binding protein 2,chr9,35812956,35815042
+ENSG00000144029,MRPS5,mitochondrial ribosomal protein S5,chr2,95752951,95787754
+ENSG00000204564,C6orf136,chromosome 6 open reading frame 136,chr6,30614815,30620987
+ENSG00000176422,SPRYD4,SPRY domain containing 4,chr12,56862300,56864767
+ENSG00000175536,LIPT2,lipoyl(octanoyl) transferase 2 (putative),chr11,74202922,74204755
+ENSG00000104325,DECR1,"2,4-dienoyl CoA reductase 1, mitochondrial",chr8,91013579,91064227
+ENSG00000125901,MRPS26,mitochondrial ribosomal protein S26,chr20,3026674,3028896
+ENSG00000102743,SLC25A15,solute carrier family 25 (mitochondrial carrier; ornithine transporter) member 15,chr13,41363546,41386596
+ENSG00000160194,NDUFV3,"NADH dehydrogenase (ubiquinone) flavoprotein 3, 10kDa",chr21,44313377,44329773
+ENSG00000137274,BPHL,biphenyl hydrolase-like (serine hydrolase),chr6,3118925,3153432
+ENSG00000165283,STOML2,stomatin (EPB72)-like 2,chr9,35099772,35103192
+ENSG00000148450,MSRB2,methionine sulfoxide reductase B2,chr10,23384426,23410942
+ENSG00000103642,LACTB,"lactamase, beta",chr15,63413998,63434264
+ENSG00000130204,TOMM40,translocase of outer mitochondrial membrane 40 homolog (yeast),chr19,45394476,45406946
+ENSG00000148339,SLC25A25,"solute carrier family 25 (mitochondrial carrier; phosphate carrier), member 25",chr9,130830478,130871537
+ENSG00000173137,ADCK5,aarF domain containing kinase 5,chr8,145597703,145618453
+ENSG00000111271,ACAD10,"acyl-CoA dehydrogenase family, member 10",chr12,112123856,112194911
+ENSG00000102763,VWA8,von Willebrand factor A domain containing 8,chr13,42140960,42535221
+ENSG00000137500,CCDC90B,coiled-coil domain containing 90B,chr11,82970134,82997450
+ENSG00000007923,DNAJC11,"DnaJ (Hsp40) homolog, subfamily C, member 11",chr1,6694227,6761966
+ENSG00000125652,ALKBH7,"alkB, alkylation repair homolog 7 (E. coli)",chr19,6372443,6375261
+ENSG00000178445,GLDC,glycine dehydrogenase (decarboxylating),chr9,6532463,6645692
+,MPC1L,mitochondrial pyruvate carrier 1-like,chrX,40482817,40483391
+ENSG00000159445,THEM4,thioesterase superfamily member 4,chr1,151843342,151882361
+ENSG00000106028,SSBP1,"single-stranded DNA binding protein 1, mitochondrial",chr7,141438120,141450288
+ENSG00000108826,MRPL27,mitochondrial ribosomal protein L27,chr17,48445227,48450562
+ENSG00000100209,HSCB,HscB mitochondrial iron-sulfur cluster co-chaperone,chr22,29138042,29153496
+ENSG00000048544,MRPS10,mitochondrial ribosomal protein S10,chr6,42174538,42185633
+ENSG00000162433,AK4,adenylate kinase 4,chr1,65613231,65697828
+ENSG00000197785,ATAD3A,"ATPase family, AAA domain containing 3A",chr1,1447522,1470067
+ENSG00000116221,MRPL37,mitochondrial ribosomal protein L37,chr1,54665839,54684056
+ENSG00000148334,PTGES2,prostaglandin E synthase 2,chr9,130882971,130890741
+ENSG00000184470,TXNRD2,thioredoxin reductase 2,chr22,19863040,19929515
+ENSG00000183549,ACSM5,acyl-CoA synthetase medium-chain family member 5,chr16,20420855,20452281
+ENSG00000122873,CISD1,CDGSH iron sulfur domain 1,chr10,60028861,60049019
+ENSG00000182154,MRPL41,mitochondrial ribosomal protein L41,chr9,140446308,140447007
+ENSG00000117791,MARC2,mitochondrial amidoxime reducing component 2,chr1,220921675,220957596
+ENSG00000243927,MRPS6,mitochondrial ribosomal protein S6,chr21,35445822,35515334
+ENSG00000214026,MRPL23,mitochondrial ribosomal protein L23,chr11,1968501,1977839
+ENSG00000137767,SQRDL,sulfide quinone reductase-like (yeast),chr15,45923345,45983492
+ENSG00000133028,SCO1,SCO1 cytochrome c oxidase assembly protein,chr17,10583648,10600885
+ENSG00000100116,GCAT,glycine C-acetyltransferase,chr22,38203911,38213183
+ENSG00000120254,MTHFD1L,methylenetetrahydrofolate dehydrogenase (NADP+ dependent) 1-like,chr6,151186814,151423023
+ENSG00000198721,ECI2,enoyl-CoA delta isomerase 2,chr6,4115926,4135831
+ENSG00000156467,UQCRB,ubiquinol-cytochrome c reductase binding protein,chr8,97238903,97247862
+ENSG00000167863,ATP5H,"ATP synthase, H+ transporting, mitochondrial Fo complex, subunit d",chr17,73034954,73043074
+ENSG00000167283,ATP5L,"ATP synthase, H+ transporting, mitochondrial Fo complex, subunit G",chr11,118272103,118280562
+ENSG00000160124,CCDC58,coiled-coil domain containing 58,chr3,122078435,122102074
+ENSG00000131844,MCCC2,methylcrotonoyl-CoA carboxylase 2 (beta),chr5,70883114,70954530
+ENSG00000124370,MCEE,methylmalonyl CoA epimerase,chr2,71336805,71357394
+ENSG00000124615,MOCS1,molybdenum cofactor synthesis 1,chr6,39872033,39902290
+ENSG00000146085,MUT,methylmalonyl CoA mutase,chr6,49398072,49431041
+ENSG00000122696,SLC25A51,"solute carrier family 25, member 51",chr9,37887593,37904350
+ENSG00000197912,SPG7,spastic paraplegia 7 (pure and complicated autosomal recessive),chr16,89574804,89624174
+ENSG00000154518,ATP5G3,"ATP synthase, H+ transporting, mitochondrial Fo complex, subunit C3 (subunit 9)",chr2,176040985,176046490
+ENSG00000138138,ATAD1,"ATPase family, AAA domain containing 1",chr10,89512874,89577917
+ENSG00000154814,OXNAD1,oxidoreductase NAD-binding domain containing 1,chr3,16306666,16347594
+ENSG00000101181,MTG2,mitochondrial ribosome-associated GTPase 2,chr20,60758080,60777810
+ENSG00000117593,DARS2,"aspartyl-tRNA synthetase 2, mitochondrial",chr1,173793796,173827682
+ENSG00000111639,MRPL51,mitochondrial ribosomal protein L51,chr12,6601315,6602471
+ENSG00000173599,PC,pyruvate carboxylase,chr11,66615996,66725847
+ENSG00000125246,CLYBL,citrate lyase beta like,chr13,100258917,100545018
+ENSG00000135241,PNPLA8,patatin-like phospholipase domain containing 8,chr7,108110865,108168605
+ENSG00000103150,MLYCD,malonyl-CoA decarboxylase,chr16,83932729,83949787
+ENSG00000145337,PYURF,PIGY upstream reading frame,chr4,89442128,89444952
+ENSG00000126768,TIMM17B,translocase of inner mitochondrial membrane 17 homolog B (yeast),chrX,48750729,48755426
+ENSG00000106591,MRPL32,mitochondrial ribosomal protein L32,chr7,42971938,42977453
+ENSG00000144741,SLC25A26,"solute carrier family 25 (S-adenosylmethionine carrier), member 26",chr3,66119284,66429351
+ENSG00000250799,PRODH2,proline dehydrogenase (oxidase) 2,chr19,36290891,36304201
+ENSG00000114021,NIT2,"nitrilase family, member 2",chr3,100053561,100074478
+ENSG00000267673,FDX1L,ferredoxin 1-like,chr19,10420890,10426691
+ENSG00000082212,ME2,"malic enzyme 2, NAD(+)-dependent, mitochondrial",chr18,48405431,48476162
+ENSG00000178952,TUFM,"Tu translation elongation factor, mitochondrial",chr16,28853731,28857729
+ENSG00000156885,COX6A2,cytochrome c oxidase subunit VIa polypeptide 2,chr16,31439051,31439749
+ENSG00000014824,SLC30A9,"solute carrier family 30 (zinc transporter), member 9",chr4,41992522,42089551
+ENSG00000144559,TAMM41,"TAM41, mitochondrial translocator assembly and maintenance protein, homolog (S. cerevisiae)",chr3,11831915,11888393
+ENSG00000138297,TIMM23,translocase of inner mitochondrial membrane 23 homolog (yeast),chr10,51592080,51623386
+ENSG00000155906,RMND1,required for meiotic nuclear division 1 homolog (S. cerevisiae),chr6,151725896,151773316
+ENSG00000116688,MFN2,mitofusin 2,chr1,12040237,12073572
+ENSG00000187796,DNLZ,DNL-type zinc finger,chr9,139256351,139258263
+ENSG00000163528,CHCHD4,coiled-coil-helix-coiled-coil-helix domain containing 4,chr3,14153576,14166371
+ENSG00000004779,NDUFAB1,"NADH dehydrogenase (ubiquinone) 1, alpha/beta subcomplex, 1, 8kDa",chr16,23592334,23607639
+ENSG00000166743,ACSM1,acyl-CoA synthetase medium-chain family member 1,chr16,20634558,20702578
+ENSG00000183513,COA5,cytochrome c oxidase assembly factor 5,chr2,99215785,99224981
+ENSG00000173085,COQ2,coenzyme Q2 4-hydroxybenzoate polyprenyltransferase,chr4,84184976,84206067
+ENSG00000164494,PDSS2,"prenyl (decaprenyl) diphosphate synthase, subunit 2",chr6,107473760,107780779
+ENSG00000113790,EHHADH,"enoyl-CoA, hydratase/3-hydroxyacyl CoA dehydrogenase",chr3,184908411,184971886
+ENSG00000213619,NDUFS3,"NADH dehydrogenase (ubiquinone) Fe-S protein 3, 30kDa (NADH-coenzyme Q reductase)",chr11,47600561,47606115
+ENSG00000135776,ABCB10,"ATP-binding cassette, sub-family B (MDR/TAP), member 10",chr1,229652328,229694442
+ENSG00000131730,CKMT2,"creatine kinase, mitochondrial 2 (sarcomeric)",chr5,80529138,80562217
+ENSG00000131368,MRPS25,mitochondrial ribosomal protein S25,chr3,15090018,15106816
+ENSG00000177646,ACAD9,"acyl-CoA dehydrogenase family, member 9",chr3,128598332,128631957
+ENSG00000133983,COX16,COX16 cytochrome c oxidase assembly homolog (S. cerevisiae),chr14,70791797,70826448
+ENSG00000177150,FAM210A,"family with sequence similarity 210, member A",chr18,13663345,13726591
+ENSG00000112304,ACOT13,acyl-CoA thioesterase 13,chr6,24667262,24705295
+ENSG00000110090,CPT1A,carnitine palmitoyltransferase 1A (liver),chr11,68522087,68609399
+ENSG00000198814,GK,glycerol kinase,chrX,30671475,30749577
+ENSG00000157326,DHRS4,dehydrogenase/reductase (SDR family) member 4,chr14,24422943,24438488
+ENSG00000186314,PRELID2,PRELI domain containing 2,chr5,145135906,145214932
+ENSG00000134905,CARS2,"cysteinyl-tRNA synthetase 2, mitochondrial (putative)",chr13,111293756,111358480
+ENSG00000146729,GBAS,glioblastoma amplified sequence,chr7,56032269,56067875
+ENSG00000099795,NDUFB7,"NADH dehydrogenase (ubiquinone) 1 beta subcomplex, 7, 18kDa",chr19,14676889,14682889
+ENSG00000174917,C19orf70,chromosome 19 open reading frame 70,chr19,5678432,5680911
+ENSG00000023572,GLRX2,glutaredoxin 2,chr1,193065594,193075244
+ENSG00000112996,MRPS30,mitochondrial ribosomal protein S30,chr5,44809026,44815618
+ENSG00000130489,SCO2,SCO2 cytochrome c oxidase assembly protein,chr22,50961996,50964868
+ENSG00000072506,HSD17B10,hydroxysteroid (17-beta) dehydrogenase 10,chrX,53458205,53461323
+ENSG00000137513,NARS2,"asparaginyl-tRNA synthetase 2, mitochondrial (putative)",chr11,78147006,78285909
+ENSG00000156990,RPUSD3,RNA pseudouridylate synthase domain containing 3,chr3,9879532,9885702
+ENSG00000139531,SUOX,sulfite oxidase,chr12,56391042,56399309
+ENSG00000123453,SARDH,sarcosine dehydrogenase,chr9,136528683,136605077
+ENSG00000132541,HRSP12,heat-responsive protein 12,chr8,99114566,99129418
+ENSG00000176340,COX8A,cytochrome c oxidase subunit VIIIA (ubiquitous),chr11,63742078,63744015
+ENSG00000116096,SPR,"sepiapterin reductase (7,8-dihydrobiopterin:NADP+ oxidoreductase)",chr2,73114511,73119289
+ENSG00000115204,MPV17,MpV17 mitochondrial inner membrane protein,chr2,27532359,27545969
+ENSG00000180011,ZADH2,zinc binding alcohol dehydrogenase domain containing 2,chr18,72909277,72921281
+ENSG00000112110,MRPL18,mitochondrial ribosomal protein L18,chr6,160211491,160219461
+ENSG00000137124,ALDH1B1,"aldehyde dehydrogenase 1 family, member B1",chr9,38392660,38398662
+ENSG00000172586,CHCHD1,coiled-coil-helix-coiled-coil-helix domain containing 1,chr10,75541807,75543406
+ENSG00000126953,TIMM8A,translocase of inner mitochondrial membrane 8 homolog A (yeast),chrX,100600643,100603957
+ENSG00000078668,VDAC3,voltage-dependent anion channel 3,chr8,42249278,42263455
+ENSG00000085491,SLC25A24,"solute carrier family 25 (mitochondrial carrier; phosphate carrier), member 24",chr1,108677343,108742980
+ENSG00000060762,MPC1,mitochondrial pyruvate carrier 1,chr6,166778407,166796501
+ENSG00000177542,SLC25A22,"solute carrier family 25 (mitochondrial carrier: glutamate), member 22",chr11,790474,798269
+ENSG00000151475,SLC25A31,"solute carrier family 25 (mitochondrial carrier; adenine nucleotide translocator), member 31",chr4,128651554,128695447
+ENSG00000182902,SLC25A18,"solute carrier family 25 (glutamate carrier), member 18",chr22,18043182,18073647
+ENSG00000072756,TRNT1,"tRNA nucleotidyl transferase, CCA-adding, 1",chr3,3168599,3190706
+ENSG00000119912,IDE,insulin-degrading enzyme,chr10,94211440,94333852
+ENSG00000197448,GSTK1,glutathione S-transferase kappa 1,chr7,142960521,142966222
+ENSG00000137411,VARS2,"valyl-tRNA synthetase 2, mitochondrial",chr6,30881981,30894235
+ENSG00000115541,HSPE1,heat shock 10kDa protein 1,chr2,198364720,198368187
+ENSG00000183617,MRPL54,mitochondrial ribosomal protein L54,chr19,3762664,3767563
+ENSG00000204316,MRPL38,mitochondrial ribosomal protein L38,chr17,73894723,73901181
+ENSG00000167862,ICT1,immature colon carcinoma transcript 1,chr17,73008779,73017356
+ENSG00000137409,MTCH1,mitochondrial carrier 1,chr6,36935910,36954327
+ENSG00000170855,TRIAP1,TP53 regulated inhibitor of apoptosis 1,chr12,120881763,120884215
+ENSG00000132300,PTCD3,pentatricopeptide repeat domain 3,chr2,86333304,86369280
+ENSG00000006695,COX10,cytochrome c oxidase assembly homolog 10 (yeast),chr17,13972718,14111996
+ENSG00000121057,AKAP1,A kinase (PRKA) anchor protein 1,chr17,55162552,55198710
+ENSG00000171861,RNMTL1,RNA methyltransferase like 1,chr17,685512,695741
+ENSG00000004455,AK2,adenylate kinase 2,chr1,33473540,33502512
+ENSG00000175606,TMEM70,transmembrane protein 70,chr8,74888376,74895018
+ENSG00000084092,NOA1,nitric oxide associated 1,chr4,57829515,57843826
+ENSG00000050393,MCUR1,mitochondrial calcium uniporter regulator 1,chr6,13786780,13814792
+ENSG00000111843,TMEM14C,transmembrane protein 14C,chr6,10723147,10731362
+ENSG00000109390,NDUFC1,"NADH dehydrogenase (ubiquinone) 1, subcomplex unknown, 1, 6kDa",chr4,140211070,140223705
+ENSG00000132313,MRPL35,mitochondrial ribosomal protein L35,chr2,86426555,86440477
+ENSG00000170906,NDUFA3,"NADH dehydrogenase (ubiquinone) 1 alpha subcomplex, 3, 9kDa",chr19,54606159,54610281
+ENSG00000148459,PDSS1,"prenyl (decaprenyl) diphosphate synthase, subunit 1",chr10,26986594,27035726
+ENSG00000122912,SLC25A16,"solute carrier family 25 (mitochondrial carrier; Graves disease autoantigen), member 16",chr10,70242089,70287280
+ENSG00000164898,C7orf55,chromosome 7 open reading frame 55,chr7,139025877,139031065
+ENSG00000005187,ACSM3,acyl-CoA synthetase medium-chain family member 3,chr16,20775311,20808479
+ENSG00000156170,NDUFAF6,"NADH dehydrogenase (ubiquinone) complex I, assembly factor 6",chr8,96037213,96070944
+ENSG00000109424,UCP1,"uncoupling protein 1 (mitochondrial, proton carrier)",chr4,141481049,141489959
+ENSG00000164466,SFXN1,sideroflexin 1,chr5,174905513,174955621
+ENSG00000182512,GLRX5,glutaredoxin 5,chr14,96001322,96011055
+ENSG00000187024,PTRH1,peptidyl-tRNA hydrolase 1 homolog (S. cerevisiae),chr9,130476226,130477936
+ENSG00000181991,MRPS11,mitochondrial ribosomal protein S11,chr15,89010683,89021861
+ENSG00000196236,XPNPEP3,"X-prolyl aminopeptidase (aminopeptidase P) 3, putative",chr22,41253084,41328823
+ENSG00000164951,PDP1,pyruvate dehyrogenase phosphatase catalytic subunit 1,chr8,94929082,94938296
+ENSG00000167969,ECI1,enoyl-CoA delta isomerase 1,chr16,2289872,2301602
+ENSG00000183032,SLC25A21,"solute carrier family 25 (mitochondrial oxoadipate carrier), member 21",chr14,37147125,37641865
+ENSG00000197119,SLC25A29,"solute carrier family 25 (mitochondrial carnitine/acylcarnitine carrier), member 29",chr14,100757452,100772860
+ENSG00000162241,SLC25A45,"solute carrier family 25, member 45",chr11,65142662,65151172
+ENSG00000196636,ACN9,ACN9 homolog (S. cerevisiae),chr7,96745904,96811075
+ENSG00000101166,SLMO2,slowmo homolog 2 (Drosophila),chr20,57608199,57617901
+ENSG00000013306,SLC25A39,"solute carrier family 25, member 39",chr17,42396992,42402217
+ENSG00000119013,NDUFB3,"NADH dehydrogenase (ubiquinone) 1 beta subcomplex, 3, 12kDa",chr2,201936461,201950473
+ENSG00000076043,REXO2,RNA exonuclease 2,chr11,114310107,114321000
+ENSG00000171766,GATM,glycine amidinotransferase (L-arginine:glycine amidinotransferase),chr15,45653321,45670980
+ENSG00000132286,TIMM10B,translocase of inner mitochondrial membrane 10 homolog B (yeast),chr11,6502676,6505911
+ENSG00000104835,SARS2,"seryl-tRNA synthetase 2, mitochondrial",chr19,39405903,39421536
+ENSG00000016391,CHDH,choline dehydrogenase,chr3,53850323,53880420
+ENSG00000173141,MRPL57,mitochondrial ribosomal protein L57,chr13,21750371,21753220
+ENSG00000213563,C8orf82,chromosome 8 open reading frame 82,chr8,145751602,145754458
+ENSG00000103356,EARS2,"glutamyl-tRNA synthetase 2, mitochondrial",chr16,23533333,23568696
+ENSG00000137106,GRHPR,glyoxylate reductase/hydroxypyruvate reductase,chr9,37422706,37436986
+ENSG00000103707,MTFMT,mitochondrial methionyl-tRNA formyltransferase,chr15,65293849,65321977
+ENSG00000049883,PTCD2,pentatricopeptide repeat domain 2,chr5,71616193,71655180
+ENSG00000093144,ECHDC1,enoyl CoA hydratase domain containing 1,chr6,127609856,127664754
+ENSG00000112855,HARS2,"histidyl-tRNA synthetase 2, mitochondrial",chr5,140071010,140078903
+ENSG00000189043,NDUFA4,"NADH dehydrogenase (ubiquinone) 1 alpha subcomplex, 4, 9kDa",chr7,10971579,10979813
+ENSG00000186010,NDUFA13,"NADH dehydrogenase (ubiquinone) 1 alpha subcomplex, 13",chr19,19627018,19639013
+ENSG00000163382,APOA1BP,apolipoprotein A-I binding protein,chr1,156561557,156564091
+ENSG00000178307,TMEM11,transmembrane protein 11,chr17,21101262,21117908
+ENSG00000073169,SELO,selenoprotein O,chr22,50639407,50656045
+ENSG00000161653,NAGS,N-acetylglutamate synthase,chr17,42082031,42086436
+ENSG00000133835,HSD17B4,hydroxysteroid (17-beta) dehydrogenase 4,chr5,118788137,118878030
+ENSG00000003509,NDUFAF7,"NADH dehydrogenase (ubiquinone) complex I, assembly factor 7",chr2,37458773,37476303
+ENSG00000065154,OAT,ornithine aminotransferase,chr10,126085871,126107545
+ENSG00000136897,MRPL50,mitochondrial ribosomal protein L50,chr9,104152248,104160919
+ENSG00000131174,COX7B,cytochrome c oxidase subunit VIIb,chrX,77154960,77160881
+ENSG00000146282,RARS2,"arginyl-tRNA synthetase 2, mitochondrial",chr6,88224095,88299735
+ENSG00000204237,OXLD1,oxidoreductase-like domain containing 1,chr17,79632065,79633618
+ENSG00000147592,LACTB2,"lactamase, beta 2",chr8,71549500,71581447
+ENSG00000174886,NDUFA11,"NADH dehydrogenase (ubiquinone) 1 alpha subcomplex, 11, 14.7kDa",chr19,5891286,5904024
+ENSG00000175756,AURKAIP1,aurora kinase A interacting protein 1,chr1,1309109,1310818
+ENSG00000170791,CHCHD7,coiled-coil-helix-coiled-coil-helix domain containing 7,chr8,57124314,57131176
+ENSG00000182199,SHMT2,serine hydroxymethyltransferase 2 (mitochondrial),chr12,57623355,57628718
+ENSG00000065911,MTHFD2,"methylenetetrahydrofolate dehydrogenase (NADP+ dependent) 2, methenyltetrahydrofolate cyclohydrolase",chr2,74425689,74442424
+ENSG00000176623,RMDN1,regulator of microtubule dynamics 1,chr8,87484577,87521009
+ENSG00000021826,CPS1,"carbamoyl-phosphate synthase 1, mitochondrial",chr2,211342405,211543831
+ENSG00000180992,MRPL14,mitochondrial ribosomal protein L14,chr6,44081372,44095191
+ENSG00000130349,C6orf203,chromosome 6 open reading frame 203,chr6,107349375,107372790
+ENSG00000160439,RDH13,retinol dehydrogenase 13 (all-trans/9-cis),chr19,55555691,55580914
+ENSG00000188917,TRMT2B,tRNA methyltransferase 2 homolog B (S. cerevisiae),chrX,100264333,100307105
+ENSG00000062582,MRPS24,mitochondrial ribosomal protein S24,chr7,43906156,43909145
+ENSG00000183978,COA3,cytochrome c oxidase assembly factor 3,chr17,40949635,40950743
+ENSG00000104687,GSR,glutathione reductase,chr8,30535579,30585486
+ENSG00000167136,ENDOG,endonuclease G,chr9,131580778,131584955
+ENSG00000105552,BCAT2,"branched chain amino-acid transaminase 2, mitochondrial",chr19,49298318,49314320
+ENSG00000172171,TEFM,"transcription elongation factor, mitochondrial",chr17,29226000,29233286
+ENSG00000167107,ACSF2,acyl-CoA synthetase family member 2,chr17,48503518,48552206
+ENSG00000100416,TRMU,tRNA 5-methylaminomethyl-2-thiouridylate methyltransferase,chr22,46731297,46753237
+ENSG00000175110,MRPS22,mitochondrial ribosomal protein S22,chr3,139062860,139075887
+ENSG00000002549,LAP3,leucine aminopeptidase 3,chr4,17578926,17609590
+ENSG00000148672,GLUD1,glutamate dehydrogenase 1,chr10,88809958,88854776
+ENSG00000117305,HMGCL,3-hydroxymethyl-3-methylglutaryl-CoA lyase,chr1,24128366,24151949
+ENSG00000189283,FHIT,fragile histidine triad,chr3,59735035,61237133
+ENSG00000090263,MRPS33,mitochondrial ribosomal protein S33,chr7,140705960,140714781
+ENSG00000151413,NUBPL,nucleotide binding protein-like,chr14,32030590,32330429
+ENSG00000083099,LYRM2,LYR motif containing 2,chr6,90341942,90348474
+ENSG00000156968,MPV17L,MPV17 mitochondrial membrane protein-like,chr16,15489610,15503543
+ENSG00000179271,GADD45GIP1,"growth arrest and DNA-damage-inducible, gamma interacting protein 1",chr19,13064969,13068068
+ENSG00000108064,TFAM,"transcription factor A, mitochondrial",chr10,60144902,60158990
+ENSG00000059573,ALDH18A1,"aldehyde dehydrogenase 18 family, member A1",chr10,97365685,97416567
+ENSG00000151093,OXSM,"3-oxoacyl-ACP synthase, mitochondrial",chr3,25831562,25836025
+ENSG00000137944,CCBL2,cysteine conjugate-beta lyase 2,chr1,89401455,89458643
+ENSG00000143374,TARS2,"threonyl-tRNA synthetase 2, mitochondrial (putative)",chr1,150459839,150480085
+ENSG00000136270,TBRG4,transforming growth factor beta regulator 4,chr7,45139698,45151346
+ENSG00000164983,TMEM65,transmembrane protein 65,chr8,125323158,125384940
+ENSG00000125995,ROMO1,reactive oxygen species modulator 1,chr20,34287231,34288902
+ENSG00000126432,PRDX5,peroxiredoxin 5,chr11,64085559,64089295
+ENSG00000120675,DNAJC15,"DnaJ (Hsp40) homolog, subfamily C, member 15",chr13,43597361,43683306
+ENSG00000162972,C2orf47,chromosome 2 open reading frame 47,chr2,200820039,200828847
+ENSG00000181061,HIGD1A,"HIG1 hypoxia inducible domain family, member 1A",chr3,42824399,42846027
+ENSG00000174109,C16orf91,chromosome 16 open reading frame 91,chr16,1469744,1470801
+ENSG00000140983,RHOT2,ras homolog family member T2,chr16,718082,724174
+ENSG00000160785,SLC25A44,"solute carrier family 25, member 44",chr1,156163722,156182587
+ENSG00000116882,HAO2,hydroxyacid oxidase 2 (long chain),chr1,119911401,119936751
+ENSG00000155463,OXA1L,oxidase (cytochrome c) assembly 1-like,chr14,23235730,23240998
+ENSG00000164209,SLC25A46,"solute carrier family 25, member 46",chr5,110074753,110098484
+ENSG00000240857,RDH14,retinol dehydrogenase 14 (all-trans/9-cis/11-cis),chr2,18735988,18741959
+ENSG00000156411,C14orf2,chromosome 14 open reading frame 2,chr14,104378624,104387903
+ENSG00000169239,CA5B,"carbonic anhydrase VB, mitochondrial",chrX,15756411,15805748
+ENSG00000068120,COASY,CoA synthase,chr17,40714091,40718299
+ENSG00000230055,CISD3,CDGSH iron sulfur domain 3,chr17,36886509,36891858
+ENSG00000100577,GSTZ1,glutathione S-transferase zeta 1,chr14,77787229,77797940
+ENSG00000160471,COX6B2,cytochrome c oxidase subunit VIb polypeptide 2 (testis),chr19,55861069,55866182
+ENSG00000167699,GLOD4,glyoxalase domain containing 4,chr17,662548,685571
+ENSG00000060971,ACAA1,acetyl-CoA acyltransferase 1,chr3,38164200,38178733
+ENSG00000005469,CROT,carnitine O-octanoyltransferase,chr7,86974950,87029112
+ENSG00000258429,PDF,peptide deformylase (mitochondrial),chr16,69362523,69364498
+ENSG00000240230,COX19,cytochrome c oxidase assembly homolog 19 (S. cerevisiae),chr7,1004485,1015235
+ENSG00000145020,AMT,aminomethyltransferase,chr3,49454210,49460111
+ENSG00000090857,PDPR,pyruvate dehydrogenase phosphatase regulatory subunit,chr16,70147528,70195184
+ENSG00000123213,NLN,neurolysin (metallopeptidase M3 family),chr5,65018022,65125111
+ENSG00000178096,BOLA1,bolA family member 1,chr1,149871154,149872348
+ENSG00000158578,ALAS2,"aminolevulinate, delta-, synthase 2",chrX,55035487,55057497
+ENSG00000164284,GRPEL2,"GrpE-like 2, mitochondrial (E. coli)",chr5,148724976,148734146
+ENSG00000164904,ALDH7A1,"aldehyde dehydrogenase 7 family, member A1",chr5,125877532,125931082
+ENSG00000069998,CECR5,"cat eye syndrome chromosome region, candidate 5",chr22,17618409,17646177
+ENSG00000127554,GFER,"growth factor, augmenter of liver regeneration",chr16,2034149,2037750
+ENSG00000184903,IMMP2L,IMP2 inner mitochondrial membrane peptidase-like (S. cerevisiae),chr7,110303105,111202573
+ENSG00000131055,COX4I2,cytochrome c oxidase subunit IV isoform 2 (lung),chr20,30225690,30232800
+ENSG00000154719,MRPL39,mitochondrial ribosomal protein L39,chr21,26957967,26979801
+ENSG00000109576,AADAT,aminoadipate aminotransferase,chr4,170981372,171011538
+ENSG00000165775,FUNDC2,FUN14 domain containing 2,chrX,154255063,154285191
+ENSG00000120992,LYPLA1,lysophospholipase I,chr8,54958926,55014577
+ENSG00000163114,PDHA2,pyruvate dehydrogenase (lipoamide) alpha 2,chr4,96761238,96762625
+ENSG00000112031,MTRF1L,mitochondrial translational release factor 1-like,chr6,153308399,153323925
+ENSG00000130299,GTPBP3,GTP binding protein 3 (mitochondrial),chr19,17445790,17453540
+ENSG00000163738,MTHFD2L,methylenetetrahydrofolate dehydrogenase (NADP+ dependent) 2-like,chr4,75023828,75168814
+ENSG00000136758,YME1L1,YME1-like 1 ATPase,chr10,27399039,27443349
+ENSG00000119673,ACOT2,acyl-CoA thioesterase 2,chr14,74035762,74042362
+ENSG00000256053,APOPT1,"apoptogenic 1, mitochondrial",chr14,104029298,104057236
+ENSG00000139428,MMAB,methylmalonic aciduria (cobalamin deficiency) cblB type,chr12,109991520,110011358
+ENSG00000143224,PPOX,protoporphyrinogen oxidase,chr1,161136180,161141010
+ENSG00000117528,ABCD3,"ATP-binding cassette, sub-family D (ALD), member 3",chr1,94883932,94984219
+ENSG00000142082,SIRT3,sirtuin 3,chr11,215029,236362
+ENSG00000166816,LDHD,lactate dehydrogenase D,chr16,75145757,75150670
+ENSG00000174100,MRPL45,mitochondrial ribosomal protein L45,chr17,36452988,36479101
+ENSG00000130921,C12orf65,chromosome 12 open reading frame 65,chr12,123717843,123742506
+ENSG00000148950,IMMP1L,IMP1 inner mitochondrial membrane peptidase-like (S. cerevisiae),chr11,31453948,31531169
+ENSG00000140521,POLG,"polymerase (DNA directed), gamma",chr15,89859535,89878026
+ENSG00000123472,ATPAF1,ATP synthase mitochondrial F1 complex assembly factor 1,chr1,47100710,47134099
+ENSG00000135441,BLOC1S1,"biogenesis of lysosomal organelles complex-1, subunit 1",chr12,56109817,56113491
+ENSG00000136010,ALDH1L2,"aldehyde dehydrogenase 1 family, member L2",chr12,105413561,105478341
+ENSG00000163626,COX18,COX18 cytochrome C oxidase assembly factor,chr4,73920415,73935472
+ENSG00000080819,CPOX,coproporphyrinogen oxidase,chr3,98298289,98312455
+ENSG00000112992,NNT,nicotinamide nucleotide transhydrogenase,chr5,43602790,43705668
+ENSG00000224877,C17orf89,chromosome 17 open reading frame 89,chr17,79213110,79215098
+ENSG00000166896,XRCC6BP1,XRCC6 binding protein 1,chr12,58335444,58351052
+ENSG00000172992,DCAKD,dephospho-CoA kinase domain containing,chr17,43100705,43138477
+ENSG00000241468,ATP5J2,"ATP synthase, H+ transporting, mitochondrial Fo complex, subunit F2",chr7,99055783,99063824
+ENSG00000155380,SLC16A1,"solute carrier family 16 (monocarboxylate transporter), member 1",chr1,113454469,113498975
+ENSG00000107819,SFXN3,sideroflexin 3,chr10,102790995,102800998
+ENSG00000102910,LONP2,"lon peptidase 2, peroxisomal",chr16,48278210,48387407
+ENSG00000008311,AASS,aminoadipate-semialdehyde synthase,chr7,121713597,121784344
+ENSG00000184047,DIABLO,"diablo, IAP-binding mitochondrial protein",chr12,122692208,122712081
+ENSG00000187581,COX8C,cytochrome c oxidase subunit VIIIC,chr14,93813536,93814700
+ENSG00000176894,PXMP2,"peroxisomal membrane protein 2, 22kDa",chr12,133264191,133281577
+ENSG00000113492,AGXT2,alanine--glyoxylate aminotransferase 2,chr5,34998205,35048240
+ENSG00000135423,GLS2,"glutaminase 2 (liver, mitochondrial)",chr12,56864727,56882198
+ENSG00000184831,APOO,apolipoprotein O,chrX,23851464,23926057
+ENSG00000240303,ACAD11,"acyl-CoA dehydrogenase family, member 11",chr3,132276981,132378975
+ENSG00000164241,C5orf63,chromosome 5 open reading frame 63,chr5,126378249,126409184
+ENSG00000241935,HOGA1,4-hydroxy-2-oxoglutarate aldolase 1,chr10,99344101,99372555
+ENSG00000011295,TTC19,tetratricopeptide repeat domain 19,chr17,15902693,15932723
+ENSG00000182768,NGRN,"neugrin, neurite outgrowth associated",chr15,90808894,90815443
+ENSG00000179152,TCAIM,"T cell activation inhibitor, mitochondrial",chr3,44379610,44450940
+ENSG00000140905,GCSH,glycine cleavage system protein H (aminomethyl carrier),chr16,81115551,81129980
+ENSG00000124523,SIRT5,sirtuin 5,chr6,13574760,13615390
+ENSG00000166123,GPT2,glutamic pyruvate transaminase (alanine aminotransferase) 2,chr16,46918307,46965201
+ENSG00000124593,TOMM6,translocase of outer mitochondrial membrane 6 homolog (yeast),chr6,41755180,41757634
+ENSG00000114023,FAM162A,"family with sequence similarity 162, member A",chr3,122103022,122128961
+ENSG00000115657,ABCB6,"ATP-binding cassette, sub-family B (MDR/TAP), member 6",chr2,220074487,220083712
+ENSG00000133315,MACROD1,MACRO domain containing 1,chr11,63766029,63933585
+ENSG00000128311,TST,thiosulfate sulfurtransferase (rhodanese),chr22,37406899,37416224
+ENSG00000198804,COX1,cytochrome c oxidase subunit I,chrM,5904,7445
+ENSG00000117640,MTFR1L,mitochondrial fission regulator 1-like,chr1,26146396,26159433
+ENSG00000100445,SDR39U1,"short chain dehydrogenase/reductase family 39U, member 1",chr14,24908971,24912007
+ENSG00000132837,DMGDH,dimethylglycine dehydrogenase,chr5,78293386,78365497
+ENSG00000102078,SLC25A14,"solute carrier family 25 (mitochondrial carrier, brain), member 14",chrX,129473861,129507335
+ENSG00000141391,SLMO1,slowmo homolog 1 (Drosophila),chr18,12407894,12432236
+ENSG00000100372,SLC25A17,"solute carrier family 25 (mitochondrial carrier; peroxisomal membrane protein, 34kDa), member 17",chr22,41165633,41215403
+ENSG00000125611,CHCHD5,coiled-coil-helix-coiled-coil-helix domain containing 5,chr2,113342035,113346617
+ENSG00000154174,TOMM70A,translocase of outer mitochondrial membrane 70 homolog A (S. cerevisiae),chr3,100082302,100120242
+ENSG00000158793,NIT1,nitrilase 1,chr1,161087861,161095235
+ENSG00000180185,FAHD1,fumarylacetoacetate hydrolase domain containing 1,chr16,1877224,1890203
+ENSG00000156026,MCU,mitochondrial calcium uniporter,chr10,74451888,74647452
+ENSG00000135929,CYP27A1,"cytochrome P450, family 27, subfamily A, polypeptide 1",chr2,219646471,219680016
+ENSG00000198763,ND2,MTND2,chrM,4470,5511
+ENSG00000198886,ND4,"NADH dehydrogenase, subunit 4 (complex I)",chrM,10760,12137
+ENSG00000198786,ND5,"NADH dehydrogenase, subunit 5 (complex I)",chrM,12337,14148
+ENSG00000014641,MDH1,"malate dehydrogenase 1, NAD (soluble)",chr2,63815742,63834330
+ENSG00000081791,KIAA0141,KIAA0141,chr5,141303384,141321612
+ENSG00000138399,FASTKD1,FAST kinase domains 1,chr2,170386261,170430431
+ENSG00000102738,MRPS31,mitochondrial ribosomal protein S31,chr13,41303431,41345347
+ENSG00000144908,ALDH1L1,"aldehyde dehydrogenase 1 family, member L1",chr3,125822403,125900029
+ENSG00000106246,PTCD1,pentatricopeptide repeat domain 1,chr7,99014361,99036462
+ENSG00000138029,HADHB,"hydroxyacyl-CoA dehydrogenase/3-ketoacyl-CoA thiolase/enoyl-CoA hydratase (trifunctional protein), beta subunit",chr2,26467615,26513333
+ENSG00000043514,TRIT1,tRNA isopentenyltransferase 1,chr1,40306705,40349177
+ENSG00000088766,CRLS1,cardiolipin synthase 1,chr20,5986738,6020697
+ENSG00000168237,GLYCTK,glycerate kinase,chr3,52321835,52329272
+ENSG00000164933,SLC25A32,"solute carrier family 25 (mitochondrial folate carrier), member 32",chr8,104410865,104427563
+ENSG00000124608,AARS2,"alanyl-tRNA synthetase 2, mitochondrial",chr6,44266462,44281063
+ENSG00000157036,EXOG,"endo/exonuclease (5'-3'), endonuclease G-like",chr3,38537762,38567796
+ENSG00000106153,CHCHD2,coiled-coil-helix-coiled-coil-helix domain containing 2,chr7,56169265,56174187
+ENSG00000117009,KMO,kynurenine 3-monooxygenase (kynurenine 3-hydroxylase),chr1,241695433,241758949
+ENSG00000144040,SFXN5,sideroflexin 5,chr2,73169164,73298965
+ENSG00000006744,ELAC2,elaC ribonuclease Z 2,chr17,12894928,12921381
+ENSG00000233276,GPX1,glutathione peroxidase 1,chr3,49394608,49395791
+ENSG00000205560,CPT1B,carnitine palmitoyltransferase 1B (muscle),chr22,51007289,51017096
+ENSG00000065833,ME1,"malic enzyme 1, NADP(+)-dependent, cytosolic",chr6,83920109,84140938
+ENSG00000214253,FIS1,fission 1 (mitochondrial outer membrane) homolog (S. cerevisiae),chr7,100882892,100888371
+ENSG00000169230,PRELID1,PRELI domain containing 1,chr5,176730762,176733960
+ENSG00000175564,UCP3,"uncoupling protein 3 (mitochondrial, proton carrier)",chr11,73711325,73720282
+ENSG00000153291,SLC25A27,"solute carrier family 25, member 27",chr6,46620651,46645927
+ENSG00000075303,SLC25A40,"solute carrier family 25, member 40",chr7,87463813,87505692
+ENSG00000125648,SLC25A23,"solute carrier family 25 (mitochondrial carrier; phosphate carrier), member 23",chr19,6440074,6459781
+ENSG00000114735,HEMK1,HemK methyltransferase family member 1,chr3,50606908,50622421
+ENSG00000114120,SLC25A36,"solute carrier family 25 (pyrimidine nucleotide carrier ), member 36",chr3,140660661,140698785
+ENSG00000162600,OMA1,OMA1 zinc metallopeptidase,chr1,58946390,59012446
+ENSG00000165046,LETM2,leucine zipper-EF-hand containing transmembrane protein 2,chr8,38243958,38267042
+ENSG00000157379,DHRS1,dehydrogenase/reductase (SDR family) member 1,chr14,24759803,24769039
+ENSG00000148175,STOM,stomatin,chr9,124101265,124132582
+ENSG00000138382,METTL5,methyltransferase like 5,chr2,170668267,170681353
+ENSG00000175806,MSRA,methionine sulfoxide reductase A,chr8,9911829,10286401
+ENSG00000167799,NUDT8,nudix (nucleoside diphosphate linked moiety X)-type motif 8,chr11,67395408,67397408
+ENSG00000163864,NMNAT3,nicotinamide nucleotide adenylyltransferase 3,chr3,139279022,139396885
+ENSG00000144659,SLC25A38,"solute carrier family 25, member 38",chr3,39424814,39438819
+ENSG00000254858,MPV17L2,MPV17 mitochondrial membrane protein-like 2,chr19,18304039,18307550
+ENSG00000131473,ACLY,ATP citrate lyase,chr17,40023178,40075272
+ENSG00000173208,ABCD2,"ATP-binding cassette, sub-family D (ALD), member 2",chr12,39945021,40013843
+ENSG00000160688,FLAD1,flavin adenine dinucleotide synthetase 1,chr1,154955769,154965587
+ENSG00000144182,LIPT1,lipoyltransferase 1,chr2,99771417,99779613
+ENSG00000133943,C14orf159,chromosome 14 open reading frame 159,chr14,91580356,91691740
+ENSG00000100889,PCK2,phosphoenolpyruvate carboxykinase 2 (mitochondrial),chr14,24563482,24573339
+ENSG00000152620,NADK2,"NAD kinase 2, mitochondrial",chr5,36192690,36242381
+ENSG00000159399,HK2,hexokinase 2,chr2,75059781,75120481
+ENSG00000128309,MPST,mercaptopyruvate sulfurtransferase,chr22,37415682,37425863
+ENSG00000166321,NUDT13,nudix (nucleoside diphosphate linked moiety X)-type motif 13,chr10,74870132,74891586
+ENSG00000132142,ACACA,acetyl-CoA carboxylase alpha,chr17,35441926,35766902
+ENSG00000183044,ABAT,4-aminobutyrate aminotransferase,chr16,8768443,8878432
+ENSG00000134240,HMGCS2,3-hydroxy-3-methylglutaryl-CoA synthase 2 (mitochondrial),chr1,120290618,120311555
+ENSG00000112294,ALDH5A1,"aldehyde dehydrogenase 5 family, member A1",chr6,24495196,24537435
+ENSG00000223572,CKMT1A,"creatine kinase, mitochondrial 1A",chr15,43985083,43991420
+ENSG00000241878,PISD,phosphatidylserine decarboxylase,chr22,32014476,32026810
+ENSG00000065518,NDUFB4,"NADH dehydrogenase (ubiquinone) 1 beta subcomplex, 4, 15kDa",chr3,120315127,120321258
+ENSG00000127540,UQCR11,"ubiquinol-cytochrome c reductase, complex III subunit XI",chr19,1597153,1605483
+ENSG00000035141,FAM136A,"family with sequence similarity 136, member A",chr2,70523107,70529220
+ENSG00000175768,TOMM5,translocase of outer mitochondrial membrane 5 homolog (yeast),chr9,37588411,37592636
+ENSG00000115317,HTRA2,HtrA serine peptidase 2,chr2,74756531,74760683
+ENSG00000105220,GPI,glucose-6-phosphate isomerase,chr19,34855644,34893318
+ENSG00000125356,NDUFA1,"NADH dehydrogenase (ubiquinone) 1 alpha subcomplex, 1, 7.5kDa",chrX,119005733,119010629
+ENSG00000198727,CYTB,cytochrome b,chrM,14747,15887
+ENSG00000143774,GUK1,guanylate kinase 1,chr1,228327784,228336655
+ENSG00000180902,D2HGDH,D-2-hydroxyglutarate dehydrogenase,chr2,242673993,242708231
+ENSG00000125741,OPA3,"optic atrophy 3 (autosomal recessive, with chorea and spastic paraplegia)",chr19,46031024,46088122
+ENSG00000198074,AKR1B10,"aldo-keto reductase family 1, member B10 (aldose reductase)",chr7,134212343,134226166
+ENSG00000107537,PHYH,phytanoyl-CoA 2-hydroxylase,chr10,13319795,13342130
+ENSG00000164182,NDUFAF2,"NADH dehydrogenase (ubiquinone) complex I, assembly factor 2",chr5,60240955,60448864
+ENSG00000130159,ECSIT,ECSIT signalling integrator,chr19,11616730,11639987
+ENSG00000175193,PARL,"presenilin associated, rhomboid-like",chr3,183547172,183602693
+ENSG00000198015,MRPL42,mitochondrial ribosomal protein L42,chr12,93861265,93897548
+ENSG00000110011,DNAJC4,"DnaJ (Hsp40) homolog, subfamily C, member 4",chr11,63997752,64001753
+ENSG00000217930,PAM16,presequence translocase-associated motor 16 homolog (S. cerevisiae),chr16,4390251,4401373
+ENSG00000072210,ALDH3A2,"aldehyde dehydrogenase 3 family, member A2",chr17,19552063,19580908
+ENSG00000164398,ACSL6,acyl-CoA synthetase long-chain family member 6,chr5,131285666,131347761
+ENSG00000156521,TYSND1,trypsin domain containing 1,chr10,71897736,71906496
+ENSG00000124532,MRS2,MRS2 magnesium transporter,chr6,24403135,24426422
+ENSG00000144827,ABHD10,abhydrolase domain containing 10,chr3,111697722,111712215
+ENSG00000111911,HINT3,histidine triad nucleotide binding protein 3,chr6,126277860,126301389
+ENSG00000101417,PXMP4,"peroxisomal membrane protein 4, 24kDa",chr20,32290549,32308136
+ENSG00000128694,OSGEPL1,O-sialoglycoprotein endopeptidase-like 1,chr2,190611385,190627924
+ENSG00000164978,NUDT2,nudix (nucleoside diphosphate linked moiety X)-type motif 2,chr9,34329503,34343711
+ENSG00000103018,CYB5B,cytochrome b5 type B (outer mitochondrial membrane),chr16,69458497,69500167
+ENSG00000132463,GRSF1,G-rich RNA sequence binding factor 1,chr4,71681498,71705627
+ENSG00000203624,MRPS18B,mitochondrial ribosomal protein S18B,chr6,30585485,30594174
+ENSG00000176410,DNAJC30,"DnaJ (Hsp40) homolog, subfamily C, member 30",chr7,73095247,73097781
+ENSG00000121691,CAT,catalase,chr11,34460471,34493607
+ENSG00000114956,DGUOK,deoxyguanosine kinase,chr2,74153952,74186088
+ENSG00000123130,ACOT9,acyl-CoA thioesterase 9,chrX,23721776,23761407
+ENSG00000154930,ACSS1,acyl-CoA synthetase short-chain family member 1,chr20,24986865,25038818
+ENSG00000135002,RFK,riboflavin kinase,chr9,79000432,79009444
+ENSG00000084090,STARD7,StAR-related lipid transfer (START) domain containing 7,chr2,96850602,96874573
+ENSG00000111666,CHPT1,choline phosphotransferase 1,chr12,102091416,102122846
+ENSG00000228253,ATP8,ATP synthase F0 subunit 8,chrM,8366,8572
+ENSG00000113845,TIMMDC1,translocase of inner mitochondrial membrane domain containing 1,chr3,119217367,119243125
+ENSG00000166118,SPATA19,spermatogenesis associated 19,chr11,133710516,133715392
+ENSG00000109854,HTATIP2,"HIV-1 Tat interactive protein 2, 30kDa",chr11,20385230,20405329
+ENSG00000053371,AKR7A2,"aldo-keto reductase family 7, member A2 (aflatoxin aldehyde reductase)",chr1,19629201,19638640
+ENSG00000128951,DUT,deoxyuridine triphosphatase,chr15,48623620,48635570
+ENSG00000007202,KIAA0100,KIAA0100,chr17,26941457,26972177
+ENSG00000198938,COX3,cytochrome c oxidase III,chrM,9207,9990
+ENSG00000109016,DHRS7B,dehydrogenase/reductase (SDR family) member 7B,chr17,21030240,21095285
+ENSG00000120662,MTRF1,mitochondrial translational release factor 1,chr13,41790515,41837713
+ENSG00000161558,TMEM143,transmembrane protein 143,chr19,48835615,48867186
+ENSG00000205309,NT5M,"5',3'-nucleotidase, mitochondrial",chr17,17206679,17250977
+ENSG00000126858,RHOT1,ras homolog family member T1,chr17,30469472,30552790
+ENSG00000103202,NME4,NME/NM23 nucleoside diphosphate kinase 4,chr16,446754,450754
+ENSG00000136371,MTHFS,"5,10-methenyltetrahydrofolate synthetase (5-formyltetrahydrofolate cyclo-ligase)",chr15,80135888,80189627
+ENSG00000142444,C19orf52,chromosome 19 open reading frame 52,chr19,11039423,11040916
+ENSG00000108439,PNPO,pyridoxamine 5'-phosphate oxidase,chr17,46018888,46026674
+ENSG00000138413,IDH1,"isocitrate dehydrogenase 1 (NADP+), soluble",chr2,209100950,209119867
+ENSG00000165487,MICU2,mitochondrial calcium uptake 2,chr13,22066827,22178355
+ENSG00000132570,PCBD2,pterin-4 alpha-carbinolamine dehydratase/dimerization cofactor of hepatocyte nuclear factor 1 alpha (TCF1) 2,chr5,134240809,134298336
+ENSG00000130348,QRSL1,glutaminyl-tRNA synthase (glutamine-hydrolyzing)-like 1,chr6,107077440,107116292
+ENSG00000063761,ADCK1,aarF domain containing kinase 1,chr14,78266425,78400297
+ENSG00000117592,PRDX6,peroxiredoxin 6,chr1,173446485,173457946
+ENSG00000163931,TKT,transketolase,chr3,53258722,53290130
+ENSG00000184117,NIPSNAP1,nipsnap homolog 1 (C. elegans),chr22,29950797,29977326
+ENSG00000106105,GARS,glycyl-tRNA synthetase,chr7,30634180,30673648
+ENSG00000183747,ACSM2A,acyl-CoA synthetase medium-chain family member 2A,chr16,20462858,20498991
+ENSG00000171612,SLC25A33,"solute carrier family 25 (pyrimidine nucleotide carrier), member 33",chr1,9599527,9642831
+ENSG00000169084,DHRSX,dehydrogenase/reductase (SDR family) X-linked,chrX,2137554,2419015
+ENSG00000232859,LYRM9,LYR motif containing 9,chr17,26205339,26220409
+ENSG00000169228,RAB24,"RAB24, member RAS oncogene family",chr5,176728190,176730745
+ENSG00000162396,PARS2,"prolyl-tRNA synthetase 2, mitochondrial (putative)",chr1,55222570,55230226
+ENSG00000172590,MRPL52,mitochondrial ribosomal protein L52,chr14,23299091,23304246
+ENSG00000177192,PUS1,pseudouridylate synthase 1,chr12,132413744,132428406
+ENSG00000125166,GOT2,"glutamic-oxaloacetic transaminase 2, mitochondrial",chr16,58741034,58768261
+ENSG00000213995,CARKD,carbohydrate kinase domain containing,chr13,111267806,111292342
+ENSG00000198840,ND3,"NADH dehydrogenase, subunit 3 (complex I)",chrM,10059,10404
+ENSG00000110455,ACCS,1-aminocyclopropane-1-carboxylate synthase homolog (Arabidopsis)(non-functional),chr11,44087728,44105569
+ENSG00000141378,PTRH2,peptidyl-tRNA hydrolase 2,chr17,57774666,57784856
+ENSG00000087157,PGS1,phosphatidylglycerophosphate synthase 1,chr17,76374734,76420639
+ENSG00000164830,OXR1,oxidation resistance 1,chr8,107282405,107764921
+ENSG00000143353,LYPLAL1,lysophospholipase-like 1,chr1,219347191,219386207
+ENSG00000177692,DNAJC28,"DnaJ (Hsp40) homolog, subfamily C, member 28",chr21,34860361,34864030
+ENSG00000148834,GSTO1,glutathione S-transferase omega 1,chr10,106013951,106027222
+ENSG00000136877,FPGS,folylpolyglutamate synthase,chr9,130565136,130576360
+ENSG00000105518,TMEM205,transmembrane protein 205,chr19,11453451,11456981
+ENSG00000176274,SLC25A53,"solute carrier family 25, member 53",chrX,103343897,103401708
+ENSG00000183773,AIFM3,"apoptosis-inducing factor, mitochondrion-associated, 3",chr22,21319417,21335649
+ENSG00000008394,MGST1,microsomal glutathione S-transferase 1,chr12,16500075,16530123
+ENSG00000179869,ABCA13,"ATP-binding cassette, sub-family A (ABC1), member 13",chr7,48211056,48687091
+ENSG00000242114,MTFP1,mitochondrial fission process 1,chr22,30821610,30825041
+ENSG00000198211,TUBB3,"tubulin, beta 3 class III",chr16,89988416,90002505
+ENSG00000181924,COA4,cytochrome c oxidase assembly factor 4 homolog (S. cerevisiae),chr11,73583712,73587890
+ENSG00000196290,NIF3L1,NIF3 NGG1 interacting factor 3-like 1 (S. cerevisiae),chr2,201754049,201768655
+ENSG00000169972,PUSL1,pseudouridylate synthase-like 1,chr1,1243993,1247057
+ENSG00000139410,SDSL,serine dehydratase-like,chr12,113860215,113876081
+ENSG00000087088,BAX,BCL2-associated X protein,chr19,49458116,49465055
+ENSG00000088888,MAVS,mitochondrial antiviral signaling protein,chr20,3827445,3856770
+ENSG00000165792,METTL17,methyltransferase like 17,chr14,21457964,21465194
+ENSG00000076555,ACACB,acetyl-CoA carboxylase beta,chr12,109577201,109706030
+ENSG00000081181,ARG2,arginase 2,chr14,68086578,68118436
+ENSG00000107951,MTPAP,mitochondrial poly(A) polymerase,chr10,30598729,30638267
+ENSG00000164051,CCDC51,coiled-coil domain containing 51,chr3,48473579,48481529
+ENSG00000175600,SUGCT,succinylCoA:glutarate-CoA transferase,chr7,40174574,40900366
+ENSG00000087470,DNM1L,dynamin 1-like,chr12,32832133,32898584
+ENSG00000078618,NRD1,nardilysin (N-arginine dibasic convertase),chr1,52254865,52344609
+ENSG00000171204,TMEM126B,transmembrane protein 126B,chr11,85339616,85347583
+ENSG00000117481,NSUN4,"NOP2/Sun domain family, member 4",chr1,46805848,46830824
+ENSG00000111058,ACSS3,acyl-CoA synthetase short-chain family member 3,chr12,81471808,81649582
+ENSG00000124098,FAM210B,"family with sequence similarity 210, member B",chr20,54933982,54943718
+ENSG00000101546,RBFA,ribosome binding factor A (putative),chr18,77794345,77810652
+ENSG00000145354,CISD2,CDGSH iron sulfur domain 2,chr4,103790134,103813963
+ENSG00000172878,METAP1D,methionyl aminopeptidase type 1D (mitochondrial),chr2,172864803,172945587
+ENSG00000168710,AHCYL1,adenosylhomocysteinase-like 1,chr1,110527386,110566364
+ENSG00000136783,NIPSNAP3A,nipsnap homolog 3A (C. elegans),chr9,107509968,107522403
+ENSG00000186205,MARC1,mitochondrial amidoxime reducing component 1,chr1,220960038,220987741
+ENSG00000069509,FUNDC1,FUN14 domain containing 1,chrX,44382884,44402221
+ENSG00000151726,ACSL1,acyl-CoA synthetase long-chain family member 1,chr4,185676748,185747268
+ENSG00000203667,COX20,COX20 cytochrome C oxidase assembly factor,chr1,244998638,245008359
+ENSG00000103160,HSDL1,hydroxysteroid dehydrogenase like 1,chr16,84155743,84178800
+ENSG00000159231,CBR3,carbonyl reductase 3,chr21,37507262,37518860
+ENSG00000122085,MTERFD2,MTERF domain containing 2,chr2,242034980,242041747
+ENSG00000213965,NUDT19,nudix (nucleoside diphosphate linked moiety X)-type motif 19,chr19,33182866,33204702
+ENSG00000013583,HEBP1,heme binding protein 1,chr12,13127798,13153243
+ENSG00000110536,PTPMT1,"protein tyrosine phosphatase, mitochondrial 1",chr11,47586981,47595013
+ENSG00000247077,PGAM5,phosphoglycerate mutase family member 5,chr12,133287392,133299323
+ENSG00000168393,DTYMK,deoxythymidylate kinase (thymidylate kinase),chr2,242615156,242626383
+ENSG00000065427,KARS,lysyl-tRNA synthetase,chr16,75661621,75681585
+ENSG00000147465,STAR,steroidogenic acute regulatory protein,chr8,38000217,38008600
+ENSG00000205981,DNAJC19,"DnaJ (Hsp40) homolog, subfamily C, member 19",chr3,180701497,180707562
+ENSG00000256269,HMBS,hydroxymethylbilane synthase,chr11,118955586,118964259
+ENSG00000036473,OTC,ornithine carbamoyltransferase,chrX,38211735,38280703
+ENSG00000115944,COX7A2L,cytochrome c oxidase subunit VIIa polypeptide 2 like,chr2,42577644,42588356
+ENSG00000156469,MTERFD1,MTERF domain containing 1,chr8,97251625,97273841
+ENSG00000156398,SFXN2,sideroflexin 2,chr10,104474297,104498946
+ENSG00000169710,FASN,fatty acid synthase,chr17,80036213,80056106
+ENSG00000158828,PINK1,PTEN induced putative kinase 1,chr1,20959947,20978004
+ENSG00000144120,TMEM177,transmembrane protein 177,chr2,120436742,120439694
+ENSG00000198431,TXNRD1,thioredoxin reductase 1,chr12,104609556,104744085
+ENSG00000185875,THNSL1,threonine synthase-like 1 (S. cerevisiae),chr10,25305507,25315593
+ENSG00000137700,SLC37A4,"solute carrier family 37 (glucose-6-phosphate transporter), member 4",chr11,118895060,118901616
+ENSG00000160752,FDPS,farnesyl diphosphate synthase,chr1,155278538,155290457
+ENSG00000067064,IDI1,isopentenyl-diphosphate delta isomerase 1,chr10,1085963,1095061
+ENSG00000177302,TOP3A,topoisomerase (DNA) III alpha,chr17,18177234,18218321
+ENSG00000181867,FTMT,ferritin mitochondrial,chr5,121187649,121188523
+ENSG00000171989,LDHAL6B,lactate dehydrogenase A-like 6B,chr15,59499014,59500785
+ENSG00000204842,ATXN2,ataxin 2,chr12,111890017,112037480
+ENSG00000066855,MTFR1,mitochondrial fission regulator 1,chr8,66556887,66622798
+ENSG00000153904,DDAH1,dimethylarginine dimethylaminohydrolase 1,chr1,85784167,86044046
+ENSG00000099968,BCL2L13,BCL2-like 13 (apoptosis facilitator),chr22,18121349,18213621
+ENSG00000174173,TRMT10C,tRNA methyltransferase 10 homolog C (S. cerevisiae),chr3,101280679,101285290
+ENSG00000097021,ACOT7,acyl-CoA thioesterase 7,chr1,6324331,6453826
+ENSG00000029639,TFB1M,"transcription factor B1, mitochondrial",chr6,155577263,155635617
+ENSG00000004059,ARF5,ADP-ribosylation factor 5,chr7,127228405,127231759
+ENSG00000005059,CCDC109B,coiled-coil domain containing 109B,chr4,110481354,110608872
+ENSG00000107815,C10orf2,chromosome 10 open reading frame 2,chr10,102747292,102754158
+ENSG00000168288,MMADHC,"methylmalonic aciduria (cobalamin deficiency) cblD type, with homocystinuria",chr2,150426146,150444330
+ENSG00000166199,ALKBH3,"alkB, alkylation repair homolog 3 (E. coli)",chr11,43902356,43941825
+ENSG00000143811,PYCR2,"pyrroline-5-carboxylate reductase family, member 2",chr1,226107576,226112040
+ENSG00000096150,RPS18,ribosomal protein S18,chr6,33239851,33244281
+ENSG00000215845,TSTD1,thiosulfate sulfurtransferase (rhodanese)-like domain containing 1,chr1,161007421,161008774
+ENSG00000072042,RDH11,retinol dehydrogenase 11 (all-trans/9-cis/11-cis),chr14,68143518,68162510
+ENSG00000173641,HSPB7,"heat shock 27kDa protein family, member 7 (cardiovascular)",chr1,16340522,16345285
+ENSG00000102897,LYRM1,LYR motif containing 1,chr16,20911556,20936328
+ENSG00000141447,OSBPL1A,oxysterol binding protein-like 1A,chr18,21742010,21977833
+ENSG00000160957,RECQL4,RecQ protein-like 4,chr8,145736666,145743210
+ENSG00000229833,PET100,PET100 homolog (S. cerevisiae),chr19,7694670,7696510
+ENSG00000156515,HK1,hexokinase 1,chr10,71029755,71161637
+ENSG00000104381,GDAP1,ganglioside induced differentiation associated protein 1,chr8,75262617,75279335
+ENSG00000122033,MTIF3,mitochondrial translational initiation factor 3,chr13,28009775,28024739
+ENSG00000076248,UNG,uracil-DNA glycosylase,chr12,109535398,109548798
+ENSG00000149124,GLYAT,glycine-N-acyltransferase,chr11,58476229,58499447
+ENSG00000176974,SHMT1,serine hydroxymethyltransferase 1 (soluble),chr17,18231173,18266877
+ENSG00000063241,ISOC2,isochorismatase domain containing 2,chr19,55964345,55973049
+ENSG00000150787,PTS,6-pyruvoyltetrahydropterin synthase,chr11,112097087,112104695
+ENSG00000113593,PPWD1,peptidylprolyl isomerase domain and WD repeat containing 1,chr5,64859062,64883376
+ENSG00000159199,ATP5G1,"ATP synthase, H+ transporting, mitochondrial Fo complex, subunit C1 (subunit 9)",chr17,46970147,46973232
+ENSG00000174326,SLC16A11,"solute carrier family 16, member 11",chr17,6944948,6947242
+ENSG00000151552,QDPR,quinoid dihydropteridine reductase,chr4,17488015,17513857
+ENSG00000118596,SLC16A7,"solute carrier family 16 (monocarboxylate transporter), member 7",chr12,59989820,60183635
+ENSG00000150967,ABCB9,"ATP-binding cassette, sub-family B (MDR/TAP), member 9",chr12,123405497,123451056
+ENSG00000123815,ADCK4,aarF domain containing kinase 4,chr19,41197433,41222790
+ENSG00000105793,GTPBP10,GTP-binding protein 10 (putative),chr7,89975978,90020769
+ENSG00000113407,TARS,threonyl-tRNA synthetase,chr5,33440801,33468196
+ENSG00000100300,TSPO,translocator protein (18kDa),chr22,43547519,43559248
+ENSG00000167996,FTH1,"ferritin, heavy polypeptide 1",chr11,61731756,61735132
+ENSG00000104907,TRMT1,tRNA methyltransferase 1 homolog (S. cerevisiae),chr19,13215713,13227563
+ENSG00000100902,PSMA6,"proteasome (prosome, macropain) subunit, alpha type, 6",chr14,35747763,35786685
+ENSG00000133597,ADCK2,aarF domain containing kinase 2,chr7,140372952,140394908
+ENSG00000087008,ACOX3,"acyl-CoA oxidase 3, pristanoyl",chr4,8368008,8442452
+ENSG00000111737,RAB35,"RAB35, member RAS oncogene family",chr12,120532898,120554643
+,TSTD3,thiosulfate sulfurtransferase (rhodanese)-like domain containing 3,chr6,99968869,99981059
+ENSG00000134056,MRPS36,mitochondrial ribosomal protein S36,chr5,68513572,68525985
+ENSG00000172840,PDP2,pyruvate dehyrogenase phosphatase catalytic subunit 2,chr16,66914382,66925002
+ENSG00000155189,AGPAT5,1-acylglycerol-3-phosphate O-acyltransferase 5,chr8,6565877,6619021
+ENSG00000172366,FAM195A,"family with sequence similarity 195, member A",chr16,691848,698474
+ENSG00000175567,UCP2,"uncoupling protein 2 (mitochondrial, proton carrier)",chr11,73685715,73693889
+ENSG00000147454,SLC25A37,"solute carrier family 25 (mitochondrial iron transporter), member 37",chr8,23386362,23430063
+ENSG00000155287,SLC25A28,"solute carrier family 25 (mitochondrial iron transporter), member 28",chr10,101370274,101380221
+ENSG00000145832,SLC25A48,"solute carrier family 25, member 48",chr5,135170364,135224326
+ENSG00000077713,SLC25A43,"solute carrier family 25, member 43",chrX,118533257,118588437
+ENSG00000140107,SLC25A47,"solute carrier family 25, member 47",chr14,100789678,100796715
+ENSG00000181240,SLC25A41,"solute carrier family 25, member 41",chr19,6426047,6433790
+ENSG00000162461,SLC25A34,"solute carrier family 25, member 34",chr1,16062808,16067884
+ENSG00000100266,PACSIN2,protein kinase C and casein kinase substrate in neurons 2,chr22,43265771,43411184
+ENSG00000122729,ACO1,"aconitase 1, soluble",chr9,32384600,32450832
+ENSG00000076242,MLH1,mutL homolog 1,chr3,37034840,37092337
+ENSG00000100714,MTHFD1,"methylenetetrahydrofolate dehydrogenase (NADP+ dependent) 1, methenyltetrahydrofolate cyclohydrolase, formyltetrahydrofolate synthetase",chr14,64854758,64926725
+ENSG00000132394,EEFSEC,"eukaryotic elongation factor, selenocysteine-tRNA-specific",chr3,127872312,128127489
+ENSG00000120915,EPHX2,"epoxide hydrolase 2, cytoplasmic",chr8,27348518,27402439
+ENSG00000116133,DHCR24,24-dehydrocholesterol reductase,chr1,55315299,55352921
+ENSG00000165609,NUDT5,nudix (nucleoside diphosphate linked moiety X)-type motif 5,chr10,12209572,12238143
+ENSG00000107745,MICU1,mitochondrial calcium uptake 1,chr10,74127083,74385949
+ENSG00000142168,SOD1,"superoxide dismutase 1, soluble",chr21,33031934,33041243
+ENSG00000183569,SERHL2,serine hydrolase-like 2,chr22,42949867,42970388
+ENSG00000167716,WDR81,WD repeat domain 81,chr17,1619816,1641893
+ENSG00000178057,NDUFAF3,"NADH dehydrogenase (ubiquinone) complex I, assembly factor 3",chr3,49057907,49060926
+ENSG00000163170,BOLA3,bolA family member 3,chr2,74362527,74375039
+ENSG00000145247,OCIAD2,OCIA domain containing 2,chr4,48887396,48908845
+ENSG00000136444,RSAD1,radical S-adenosyl methionine domain containing 1,chr17,48556189,48563336
+ENSG00000144959,NCEH1,neutral cholesterol ester hydrolase 1,chr3,172348434,172429008
+ENSG00000159685,CHCHD6,coiled-coil-helix-coiled-coil-helix domain containing 6,chr3,126423062,126679263
+ENSG00000111669,TPI1,triosephosphate isomerase 1,chr12,6976583,6980110
+ENSG00000118246,FASTKD2,FAST kinase domains 2,chr2,207630111,207660911
+ENSG00000131779,PEX11B,peroxisomal biogenesis factor 11 beta,chr1,145516164,145523732
+ENSG00000184857,TMEM186,transmembrane protein 186,chr16,8889036,8891505
+ENSG00000154358,OBSCN,"obscurin, cytoskeletal calmodulin and titin-interacting RhoGEF",chr1,228395830,228566575
+ENSG00000166347,CYB5A,cytochrome b5 type A (microsomal),chr18,71920526,71959251
+ENSG00000140451,PIF1,PIF1 5'-to-3' DNA helicase,chr15,65107828,65117867
+ENSG00000163586,FABP1,"fatty acid binding protein 1, liver",chr2,88422507,88427650
+ENSG00000101986,ABCD1,"ATP-binding cassette, sub-family D (ALD), member 1",chrX,152990322,153010216
+ENSG00000111640,GAPDH,glyceraldehyde-3-phosphate dehydrogenase,chr12,6643570,6647541
+ENSG00000147471,PROSC,proline synthetase co-transcribed homolog (bacterial),chr8,37620100,37637286
+ENSG00000067221,STOML1,stomatin (EPB72)-like 1,chr15,74275558,74286963
+ENSG00000155368,DBI,"diazepam binding inhibitor (GABA receptor modulator, acyl-CoA binding protein)",chr2,120124499,120130127
+ENSG00000241973,PI4KA,"phosphatidylinositol 4-kinase, catalytic, alpha",chr22,21061978,21213100
+ENSG00000138035,PNPT1,polyribonucleotide nucleotidyltransferase 1,chr2,55861197,55921045
+ENSG00000155957,TMBIM4,transmembrane BAX inhibitor motif containing 4,chr12,66530715,66563852
+ENSG00000184428,TOP1MT,"topoisomerase (DNA) I, mitochondrial",chr8,144391496,144442147
+ENSG00000169609,C15orf40,chromosome 15 open reading frame 40,chr15,83657714,83680393
+ENSG00000171865,RNASEH1,ribonuclease H1,chr2,3592481,3605961
+ENSG00000154258,ABCA9,"ATP-binding cassette, sub-family A (ABC1), member 9",chr17,66970772,67057136
+ENSG00000116171,SCP2,sterol carrier protein 2,chr1,53392900,53517289
+ENSG00000111696,NT5DC3,5'-nucleotidase domain containing 3,chr12,104166080,104234975
+ENSG00000088179,PTPN4,"protein tyrosine phosphatase, non-receptor type 4 (megakaryocyte)",chr2,120517206,120742474
+ENSG00000182712,CMC4,C-x(9)-C motif containing 4,chrX,154289899,154299547
+ENSG00000161533,ACOX1,"acyl-CoA oxidase 1, palmitoyl",chr17,73937588,73975515
+ENSG00000111716,LDHB,lactate dehydrogenase B,chr12,21788274,21810789
+ENSG00000182362,YBEY,ybeY metallopeptidase (putative),chr21,47706266,47717665
+ENSG00000169567,HINT1,histidine triad nucleotide binding protein 1,chr5,130494975,130501041
+ENSG00000143627,PKLR,"pyruvate kinase, liver and RBC",chr1,155259083,155271225
+ENSG00000090432,MUL1,mitochondrial E3 ubiquitin protein ligase 1,chr1,20825940,20834674
+ENSG00000166548,TK2,"thymidine kinase 2, mitochondrial",chr16,66541905,66584315
+ENSG00000116771,AGMAT,agmatine ureohydrolase (agmatinase),chr1,15898193,15911605
+ENSG00000134326,CMPK2,"cytidine monophosphate (UMP-CMP) kinase 2, mitochondrial",chr2,6980683,7005950
+ENSG00000015475,BID,BH3 interacting domain death agonist,chr22,18216905,18257431
+ENSG00000213465,ARL2,ADP-ribosylation factor-like 2,chr11,64781584,64789657
+ENSG00000213463,SYNJ2BP,synaptojanin 2 binding protein,chr14,70833212,70883807
+ENSG00000168958,MFF,mitochondrial fission factor,chr2,228189866,228222552
+ENSG00000169738,DCXR,dicarbonyl/L-xylulose reductase,chr17,79993756,79995573
+ENSG00000170502,NUDT9,nudix (nucleoside diphosphate linked moiety X)-type motif 9,chr4,88343727,88380606
+ENSG00000242110,AMACR,alpha-methylacyl-CoA racemase,chr5,33987090,34008220
+ENSG00000170917,NUDT6,nudix (nucleoside diphosphate linked moiety X)-type motif 6,chr4,123813798,123844159
+ENSG00000105341,ATP5SL,ATP5S-like,chr19,41937222,41945843
+ENSG00000122687,FTSJ2,FtsJ RNA methyltransferase homolog 2 (E. coli),chr7,2273925,2281833
+ENSG00000030110,BAK1,BCL2-antagonist/killer 1,chr6,33540322,33548070
+ENSG00000102967,DHODH,dihydroorotate dehydrogenase (quinone),chr16,72042642,72059316
+ENSG00000069535,MAOB,monoamine oxidase B,chrX,43625856,43741721
+ENSG00000143198,MGST3,microsomal glutathione S-transferase 3,chr1,165600109,165625372
+ENSG00000162836,ACP6,"acid phosphatase 6, lysophosphatidic",chr1,147119167,147142634
+ENSG00000175581,MRPL48,mitochondrial ribosomal protein L48,chr11,73498916,73575656
+ENSG00000172482,AGXT,alanine-glyoxylate aminotransferase,chr2,241808161,241818536
+ENSG00000100243,CYB5R3,cytochrome b5 reductase 3,chr22,43013845,43045405
+ENSG00000182810,DDX28,DEAD (Asp-Glu-Ala-Asp) box polypeptide 28,chr16,68055176,68057770
+ENSG00000176171,BNIP3,BCL2/adenovirus E1B 19kDa interacting protein 3,chr10,133781203,133795435
+ENSG00000132781,MUTYH,mutY homolog,chr1,45794913,45806142
+ENSG00000178605,GTPBP6,GTP binding protein 6 (putative),chrX,221425,230887
+ENSG00000140459,CYP11A1,"cytochrome P450, family 11, subfamily A, polypeptide 1",chr15,74630102,74660081
+ENSG00000109180,OCIAD1,OCIA domain containing 1,chr4,48833059,48863834
+ENSG00000123600,METTL8,methyltransferase like 8,chr2,172173912,172291312
+ENSG00000165526,RPUSD4,RNA pseudouridylate synthase domain containing 4,chr11,126071988,126081587
+ENSG00000172113,NME6,NME/NM23 nucleoside diphosphate kinase 6,chr3,48335588,48342848
+ENSG00000105701,FKBP8,"FK506 binding protein 8, 38kDa",chr19,18642567,18654383
+ENSG00000160703,NLRX1,NLR family member X1,chr11,119039042,119054726
+ENSG00000110074,FOXRED1,FAD-dependent oxidoreductase domain containing 1,chr11,126138934,126148027
+ENSG00000162851,TFB2M,"transcription factor B2, mitochondrial",chr1,246703862,246729565
+ENSG00000163644,PPM1K,"protein phosphatase, Mg2+/Mn2+ dependent, 1K",chr4,89178760,89205983
+ENSG00000135390,ATP5G2,"ATP synthase, H+ transporting, mitochondrial Fo complex, subunit C2 (subunit 9)",chr12,54058943,54070512
+ENSG00000198888,ND1,"NADH dehydrogenase, subunit 1 (complex I)",chrM,3307,4262
+ENSG00000174099,MSRB3,methionine sulfoxide reductase B3,chr12,65672422,65860687
+ENSG00000165028,NIPSNAP3B,nipsnap homolog 3B (C. elegans),chr9,107526450,107536291
+ENSG00000065057,NTHL1,nth endonuclease III-like 1 (E. coli),chr16,2089815,2097867
+ENSG00000198060,MARCH5,membrane-associated ring finger (C3HC4) 5,chr10,94050919,94113721
+ENSG00000183605,SFXN4,sideroflexin 4,chr10,120900424,120925204
+ENSG00000169100,SLC25A6,"solute carrier family 25 (mitochondrial carrier; adenine nucleotide translocator), member 6",chrX,1505044,1511039
+ENSG00000114026,OGG1,8-oxoguanine DNA glycosylase,chr3,9791627,9808353
+ENSG00000213339,QTRT1,queuine tRNA-ribosyltransferase 1,chr19,10812111,10824043
+ENSG00000042286,AIFM2,"apoptosis-inducing factor, mitochondrion-associated, 2",chr10,71872022,71892690
+ENSG00000167815,PRDX2,peroxiredoxin 2,chr19,12907633,12912724
+ENSG00000112234,FBXL4,F-box and leucine-rich repeat protein 4,chr6,99321600,99395882
+ENSG00000119927,GPAM,"glycerol-3-phosphate acyltransferase, mitochondrial",chr10,113909621,113943537
+ENSG00000125375,ATP5S,"ATP synthase, H+ transporting, mitochondrial Fo complex, subunit s (factor B)",chr14,50779046,50792946
+ENSG00000137824,RMDN3,regulator of microtubule dynamics 3,chr15,41028085,41047458
+ENSG00000122378,FAM213A,"family with sequence similarity 213, member A",chr10,82167584,82192753
+ENSG00000173915,USMG5,up-regulated during skeletal muscle growth 5 homolog (mouse),chr10,105148808,105156270
+ENSG00000149474,PET117,PET117 homolog (S. cerevisiae),chr20,18118498,18123812
+ENSG00000189221,MAOA,monoamine oxidase A,chrX,43514154,43606071
+ENSG00000189227,C15orf61,chromosome 15 open reading frame 61,chr15,67813521,67819641
+ENSG00000165949,IFI27,"interferon, alpha-inducible protein 27",chr14,94577078,94583036
+ENSG00000132763,MMACHC,"methylmalonic aciduria (cobalamin deficiency) cblC type, with homocystinuria",chr1,45965855,45976739
+ENSG00000134419,RPS15A,ribosomal protein S15a,chr16,18794276,18801656
+ENSG00000116791,CRYZ,"crystallin, zeta (quinone reductase)",chr1,75171171,75199092
+ENSG00000183010,PYCR1,pyrroline-5-carboxylate reductase 1,chr17,79890261,79895204
+ENSG00000186081,KRT5,keratin 5,chr12,52908358,52914243
+ENSG00000198755,RPL10A,ribosomal protein L10a,chr6,35436177,35438558
+ENSG00000185973,TMLHE,"trimethyllysine hydroxylase, epsilon",chrX,154718672,154842622
+ENSG00000173726,TOMM20,translocase of outer mitochondrial membrane 20 homolog (yeast),chr1,235272657,235292256
+ENSG00000164587,RPS14,ribosomal protein S14,chr5,149823791,149829319
+ENSG00000162377,COA7,cytochrome c oxidase assembly factor 7 (putative),chr1,53152013,53164038
+ENSG00000100335,MIEF1,mitochondrial elongation factor 1,chr22,39898283,39914137
+ENSG00000143653,SCCPDH,saccharopine dehydrogenase (putative),chr1,246887377,246931440
+ENSG00000166920,C15orf48,chromosome 15 open reading frame 48,chr15,45722726,45725647
+ENSG00000104765,BNIP3L,BCL2/adenovirus E1B 19kDa interacting protein 3-like,chr8,26240522,26270644
+ENSG00000215251,FASTKD5,FAST kinase domains 5,chr20,3127164,3140532
+ENSG00000116288,PARK7,parkinson protein 7,chr1,8021713,8045342
+ENSG00000113643,RARS,arginyl-tRNA synthetase,chr5,167913462,167946309
+ENSG00000054523,KIF1B,kinesin family member 1B,chr1,10270763,10441661
+ENSG00000106603,COA1,cytochrome c oxidase assembly factor 1 homolog (S. cerevisiae),chr7,43678845,43769140
+ENSG00000212907,ND4L,"NADH dehydrogenase, subunit 4L (complex I)",chrM,10470,10766
+ENSG00000089163,SIRT4,sirtuin 4,chr12,120740123,120751045
+ENSG00000137288,UQCC2,ubiquinol-cytochrome c reductase complex assembly factor 2,chr6,33664537,33679528
+ENSG00000174840,PDE12,phosphodiesterase 12,chr3,57541980,57547768
+ENSG00000103024,NME3,NME/NM23 nucleoside diphosphate kinase 3,chr16,1820320,1821710
+ENSG00000132153,DHX30,DEAH (Asp-Glu-Ala-His) box helicase 30,chr3,47844398,47891686
+ENSG00000164896,FASTK,Fas-activated serine/threonine kinase,chr7,150773707,150777970
+ENSG00000169519,METTL15,methyltransferase like 15,chr11,28129797,28355054
+ENSG00000019186,CYP24A1,"cytochrome P450, family 24, subfamily A, polypeptide 1",chr20,52769987,52790516
+ENSG00000125779,PANK2,pantothenate kinase 2,chr20,3869485,3904502
+ENSG00000174990,CA5A,"carbonic anhydrase VA, mitochondrial",chr16,87921624,87970112
+ENSG00000168268,NT5DC2,5'-nucleotidase domain containing 2,chr3,52558384,52569093
+ENSG00000170634,ACYP2,"acylphosphatase 2, muscle type",chr2,54342409,54532435
+ENSG00000160072,ATAD3B,"ATPase family, AAA domain containing 3B",chr1,1407163,1431582
+ENSG00000167112,TRUB2,TruB pseudouridine (psi) synthase family member 2,chr9,131071395,131084697
+ENSG00000165644,COMTD1,catechol-O-methyltransferase domain containing 1,chr10,76993728,76995770
+ENSG00000169169,CPT1C,carnitine palmitoyltransferase 1C,chr19,50194364,50216988
+ENSG00000174928,C3orf33,chromosome 3 open reading frame 33,chr3,155480400,155524055
+ENSG00000197157,SND1,staphylococcal nuclease and tudor domain containing 1,chr7,127292201,127732659
+ENSG00000174606,ANGEL2,angel homolog 2 (Drosophila),chr1,213165523,213189168
+ENSG00000123131,PRDX4,peroxiredoxin 4,chrX,23685644,23704514
+ENSG00000135624,CCT7,"chaperonin containing TCP1, subunit 7 (eta)",chr2,73461363,73480150
+ENSG00000185624,P4HB,"prolyl 4-hydroxylase, beta polypeptide",chr17,79801033,79818544
+ENSG00000169188,APEX2,APEX nuclease (apurinic/apyrimidinic endonuclease) 2,chrX,55026755,55034306
+ENSG00000128050,PAICS,"phosphoribosylaminoimidazole carboxylase, phosphoribosylaminoimidazole succinocarboxamide synthetase",chr4,57301914,57327534
+ENSG00000137463,MGARP,mitochondria-localized glutamic acid-rich protein,chr4,140187316,140201492
+ENSG00000119431,HDHD3,haloacid dehalogenase-like hydrolase domain containing 3,chr9,116135697,116138341
+ENSG00000179988,PSTK,phosphoseryl-tRNA kinase,chr10,124739555,124749907
+ENSG00000179142,CYP11B2,"cytochrome P450, family 11, subfamily B, polypeptide 2",chr8,143991974,143999259
+ENSG00000138363,ATIC,5-aminoimidazole-4-carboxamide ribonucleotide formyltransferase/IMP cyclohydrolase,chr2,216176678,216214496
+ENSG00000174374,WBSCR16,Williams-Beuren syndrome chromosome region 16,chr7,74441223,74489717
+ENSG00000222011,FAM185A,"family with sequence similarity 185, member A",chr7,102389398,102449672
+ENSG00000141682,PMAIP1,phorbol-12-myristate-13-acetate-induced protein 1,chr18,57567191,57571538
+ENSG00000117862,TXNDC12,thioredoxin domain containing 12 (endoplasmic reticulum),chr1,52485803,52521843
+ENSG00000033050,ABCF2,"ATP-binding cassette, sub-family F (GCN20), member 2",chr7,150904922,150924460
+ENSG00000182134,TDRKH,tudor and KH domain containing,chr1,151744040,151763010
+ENSG00000111012,CYP27B1,"cytochrome P450, family 27, subfamily B, polypeptide 1",chr12,58156116,58160976
+ENSG00000256525,POLG2,"polymerase (DNA directed), gamma 2, accessory subunit",chr17,62473901,62493184
+ENSG00000152683,SLC30A6,"solute carrier family 30 (zinc transporter), member 6",chr2,32390909,32449181
+ENSG00000133878,DUSP26,dual specificity phosphatase 26 (putative),chr8,33448853,33457439
+ENSG00000127989,MTERF,mitochondrial transcription termination factor,chr7,91502020,91510016
+ENSG00000167468,GPX4,glutathione peroxidase 4,chr19,1103924,1106788
+ENSG00000197208,SLC22A4,"solute carrier family 22 (organic cation/zwitterion transporter), member 4",chr5,131630144,131679899
+ENSG00000093010,COMT,catechol-O-methyltransferase,chr22,19929262,19957498
+ENSG00000139637,C12orf10,chromosome 12 open reading frame 10,chr12,53693469,53700965
+ENSG00000006282,SPATA20,spermatogenesis associated 20,chr17,48624449,48633213
+ENSG00000174021,GNG5,"guanine nucleotide binding protein (G protein), gamma 5",chr1,84964005,84972262
+ENSG00000164366,CCDC127,coiled-coil domain containing 127,chr5,204874,218297
+ENSG00000008405,CRY1,cryptochrome circadian clock 1,chr12,107385142,107487635
+ENSG00000068366,ACSL4,acyl-CoA synthetase long-chain family member 4,chrX,108884563,108976621
+ENSG00000125871,MGME1,mitochondrial genome maintenance exonuclease 1,chr20,17949761,17971762
+ENSG00000108387,SEPT4,septin 4,chr17,56597610,56618179
+ENSG00000104412,EMC2,ER membrane protein complex subunit 2,chr8,109455852,109499136
+ENSG00000115468,EFHD1,"EF-hand domain family, member D1",chr2,233470766,233547491
+ENSG00000101084,C20orf24,chromosome 20 open reading frame 24,chr20,35234136,35240960
+ENSG00000100596,SPTLC2,"serine palmitoyltransferase, long chain base subunit 2",chr14,77972339,78083110
+ENSG00000106541,AGR2,anterior gradient 2,chr7,16832263,16844738
+ENSG00000125458,NT5C,"5', 3'-nucleotidase, cytosolic",chr17,73126319,73127890
+ENSG00000138293,NCOA4,nuclear receptor coactivator 4,chr10,51565107,51590734
+ENSG00000204099,NEU4,sialidase 4,chr2,242750159,242758739
+ENSG00000006530,AGK,acylglycerol kinase,chr7,141251077,141354209
+ENSG00000167264,DUS2,dihydrouridine synthase 2,chr16,68056846,68113226
+ENSG00000025772,TOMM34,translocase of outer mitochondrial membrane 34,chr20,43570770,43589114
+ENSG00000100890,KIAA0391,KIAA0391,chr14,35591526,35743284
+ENSG00000139437,TCHP,"trichoplein, keratin filament binding",chr12,110338078,110355874
+ENSG00000223572,CKMT1B,"creatine kinase, mitochondrial 1B",chr15,43885251,43891604
+ENSG00000183648,NDUFB1,"NADH dehydrogenase (ubiquinone) 1 beta subcomplex, 1, 7kDa",chr14,92582467,92588153
+ENSG00000106246,ATP5J2-PTCD1,ATP5J2-PTCD1 readthrough,chr7,99014361,99063824
+ENSG00000064012,CASP8,"caspase 8, apoptosis-related cysteine peptidase",chr2,202098165,202152434
+ENSG00000171552,BCL2L1,BCL2-like 1,chr20,30252260,30310656
+ENSG00000182899,RPL35A,ribosomal protein L35a,chr3,197677051,197682721
+ENSG00000170632,ARMC10,armadillo repeat containing 10,chr7,102715327,102740210
+ENSG00000158402,CDC25C,cell division cycle 25C,chr5,137620953,137674044
+ENSG00000118508,RAB32,"RAB32, member RAS oncogene family",chr6,146864827,146876086
+ENSG00000166394,CYB5R2,cytochrome b5 reductase 2,chr11,7686325,7694821
+ENSG00000135631,RAB11FIP5,RAB11 family interacting protein 5 (class I),chr2,73300509,73340146
+ENSG00000113272,THG1L,tRNA-histidine guanylyltransferase 1-like (S. cerevisiae),chr5,157158322,157166772
+ENSG00000113384,GOLPH3,golgi phosphoprotein 3 (coat-protein),chr5,32124823,32174425
+ENSG00000138078,PREPL,prolyl endopeptidase-like,chr2,44544747,44589001
+ENSG00000124279,FASTKD3,FAST kinase domains 3,chr5,7859271,7869150
+ENSG00000121289,CEP89,centrosomal protein 89kDa,chr19,33369903,33462869
+ENSG00000070081,NUCB2,nucleobindin 2,chr11,17298285,17353070
+ENSG00000110719,TCIRG1,"T-cell, immune regulator 1, ATPase, H+ transporting, lysosomal V0 subunit A3",chr11,67806461,67818366
+ENSG00000188554,NBR1,neighbor of BRCA1 gene 1,chr17,41322497,41363707
+ENSG00000117906,RCN2,"reticulocalbin 2, EF-hand calcium binding domain",chr15,77223961,77242601
+ENSG00000141756,FKBP10,"FK506 binding protein 10, 65 kDa",chr17,39968961,39979469
+ENSG00000155542,SETD9,SET domain containing 9,chr5,56205086,56221359
+ENSG00000153574,RPIA,ribose 5-phosphate isomerase A,chr2,88991175,89050452
+ENSG00000135862,LAMC1,"laminin, gamma 1 (formerly LAMB2)",chr1,182992594,183114727
+ENSG00000002330,BAD,BCL2-associated agonist of cell death,chr11,64037299,64052176
+ENSG00000171791,BCL2,B-cell CLL/lymphoma 2,chr18,60790578,60986613
+ENSG00000129473,BCL2L2,BCL2-like 2,chr14,23775970,23780968
+ENSG00000104936,DMPK,dystrophia myotonica-protein kinase,chr19,46272966,46285815
+ENSG00000138346,DNA2,DNA replication helicase/nuclease 2,chr10,70173820,70231730
+ENSG00000198695,ND6,"NADH dehydrogenase, subunit 6 (complex I)",chrM,14149,14673
+ENSG00000100601,ALKBH1,"alkB, alkylation repair homolog 1 (E. coli)",chr14,78138748,78174356
+ENSG00000100151,PICK1,protein interacting with PRKCA 1,chr22,38453261,38471708
+ENSG00000108599,AKAP10,A kinase (PRKA) anchor protein 10,chr17,19807764,19881169
+ENSG00000101349,PAK7,p21 protein (Cdc42/Rac)-activated kinase 7,chr20,9518036,9819687
+ENSG00000178694,NSUN3,"NOP2/Sun domain family, member 3",chr3,93781854,93845630
+ENSG00000174740,PABPC5,"poly(A) binding protein, cytoplasmic 5",chrX,90689596,90693583
+ENSG00000146250,PRSS35,"protease, serine, 35",chr6,84222193,84235421
+ENSG00000145246,ATP10D,"ATPase, class V, type 10D",chr4,47487409,47595503
+ENSG00000122335,SERAC1,serine active site containing 1,chr6,158530535,158589312
+ENSG00000136874,STX17,syntaxin 17,chr9,102668914,102736818
+ENSG00000171103,TRMT61B,tRNA methyltransferase 61 homolog B (S. cerevisiae),chr2,29072687,29093175
+ENSG00000107020,PLGRKT,"plasminogen receptor, C-terminal lysine transmembrane protein",chr9,5357966,5437937
+ENSG00000109475,RPL34,ribosomal protein L34,chr4,109541721,109551639
+ENSG00000187742,SECISBP2,SECIS binding protein 2,chr9,91933387,91974578
+ENSG00000214827,MTCP1,mature T-cell proliferation 1,chrX,154292308,154299547
+ENSG00000165507,C10orf10,chromosome 10 open reading frame 10,chr10,45471708,45474330
+ENSG00000178074,C2orf69,chromosome 2 open reading frame 69,chr2,200775978,200792996
+ENSG00000188611,ASAH2,N-acylsphingosine amidohydrolase (non-lysosomal ceramidase) 2,chr10,51946999,52008370
+ENSG00000169504,CLIC4,chloride intracellular channel 4,chr1,25071759,25170815
+ENSG00000099940,SNAP29,"synaptosomal-associated protein, 29kDa",chr22,21213291,21245501
+ENSG00000066651,TRMT11,tRNA methyltransferase 11 homolog (S. cerevisiae),chr6,126307575,126360420
+ENSG00000254636,ARMS2,age-related maculopathy susceptibility 2,chr10,124214178,124216868
+ENSG00000210127,TA,tRNA Alanine,chrM,5587,5655
+ENSG00000210140,TC,tRNA Cysteine,chrM,5761,5826
+ENSG00000210154,TD,tRNA Aspartic Acid,chrM,7518,7585
+ENSG00000210194,TE,tRNA Glutamic Acid,chrM,14674,14742
+ENSG00000210049,TF,tRNA Phenylalanine,chrM,577,647
+ENSG00000210164,TG,tRNA Glycine,chrM,9991,10058
+ENSG00000210176,TH,tRNA Histidine,chrM,12138,12206
+ENSG00000210100,TI,tRNA Isoleucine,chrM,4263,4331
+ENSG00000210156,TK,tRNA Lysine,chrM,8295,8364
+ENSG00000209082,TL1,tRNA Leucine 1,chrM,3230,3304
+ENSG00000210191,TL2,tRNA Leucine 2,chrM,12266,12336
+ENSG00000210112,TM,tRNA Methionine,chrM,4402,4469
+ENSG00000210135,TN,tRNA Asparagine,chrM,5657,5729
+ENSG00000210196,TP,tRNA Proline,chrM,15956,16023
+ENSG00000210107,TQ,tRNA Glutamine,chrM,4329,4400
+ENSG00000210174,TR,tRNA Arginine,chrM,10405,10469
+ENSG00000210151,TS1,tRNA Serine 1,chrM,7446,7514
+ENSG00000210184,TS2,tRNA Serine 2,chrM,12207,12265
+ENSG00000210195,TT,tRNA Threonine,chrM,15888,15953
+ENSG00000210077,TV,tRNA Valine,chrM,1602,1670
+ENSG00000210117,TW,tRNA Tryptophan,chrM,5512,5579
+ENSG00000210144,TY,tRNA Tyrosine,chrM,5826,5891
