@@ -16,7 +16,7 @@ parser.add_argument("-download", action="store_true", dest="only_download",
                     resources. Default: False.""")
 parser.add_argument("-tables", action="store_true", dest="only_tables",
                     help="""Only create the new tables from already downloaded 
-                    data available in data/raw/. Default: False.""")
+                    data available in app/update/data/raw/. Default: False.""")
 args = parser.parse_args()
 
 
@@ -33,7 +33,8 @@ def get_node_val(node):
 
 def download_source(url, out):
     """
-    Retrieve the given file from the web and save it with the given name in data/raw/.
+    Retrieve the given file from the web and save it with the given name
+    in app/update/data/raw/.
 
     :param url: URL of the file to download
 
@@ -42,13 +43,14 @@ def download_source(url, out):
     :return:
     """
     print("Downloading file from {} and saving it to {}...".format(url, out))
-    wget.download(url, "data/raw/{}".format(out))
+    wget.download(url, "app/update/data/raw/{}".format(out))
     print("\nComplete.\n")
 
 
 def process_mitocarta(in_file, out_file):
     """
-    Process the dataset downloaded from Mitocarta to produce the related database table.
+    Process the dataset downloaded from Mitocarta to produce the related
+    database table.
 
     :param in_file: file downloaded from Mitocarta
 
@@ -57,12 +59,14 @@ def process_mitocarta(in_file, out_file):
     :return:
     """
     print("Processing Mitocarta data...")
-    mitocarta = pd.read_excel("data/raw/{}".format(in_file), sheet_name=1)
+    mitocarta = pd.read_excel("app/update/data/raw/{}".format(in_file),
+                              sheet_name=1)
     mitocarta = mitocarta[["EnsemblGeneID", "Symbol", "Description", "hg19_Chromosome",
                            "hg19_Start", "hg19_Stop"]]
     mitocarta.rename({"EnsemblGeneID": "ensembl_id", "Symbol": "gene_symbol",
                       "Description": "description", "hg19_Chromosome": "hg_chr",
-                      "hg19_Start": "hg_start", "hg19_Stop": "hg_stop"}, axis=1, inplace=True)
+                      "hg19_Start": "hg_start", "hg19_Stop": "hg_stop"},
+                     axis=1, inplace=True)
 
     # Add mitochondrial tRNA genes to the list of Mitocarta genes
     mt_trnas = """ENSG00000210127,TA,tRNA Alanine,chrM,5587,5655
@@ -93,19 +97,19 @@ ENSG00000210144,TY,tRNA Tyrosine,chrM,5826,5891"""
     for el in mt_trna_list:
         row = el.split(",")
         new_row = pd.DataFrame({"ensembl_id": [row[0]], "gene_symbol": [row[1]],
-                                "description": [row[2]], "hg_chr": [row[3]], "hg_start": [row[4]],
-                                "hg_stop": [row[5]]})
+                                "description": [row[2]], "hg_chr": [row[3]],
+                                "hg_start": [row[4]], "hg_stop": [row[5]]})
         mitocarta = mitocarta.append(new_row, ignore_index=True)
 
     print("Saving processed Mitocarta data to {}...".format(out_file))
-    mitocarta.to_csv("data/tables/{}".format(out_file), index=False)
+    mitocarta.to_csv("app/update/data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
 
 
 def process_hpo_disgenphen(in_file, out_file, mitocarta_file):
     """
-    Process the disease-gene-phenotype association file downloaded from HPO to produce the related
-    database table.
+    Process the disease-gene-phenotype association file downloaded from
+    HPO to produce the related database table.
 
     :param in_file: file downloaded from HPO
 
@@ -116,20 +120,21 @@ def process_hpo_disgenphen(in_file, out_file, mitocarta_file):
     :return:
     """
     print("Processing HPO disease_gene_pheno data...")
-    hpo = pd.read_csv("data/raw/{}".format(in_file), sep="\t", skiprows=1,
-                      names=["disease_id", "gene_symbol", "entrez_gene_id", "hpo_id",
-                             "hpo_term_name"])
-    # mitocarta = pd.read_csv("data/tables/{}".format(mitocarta_file))
+    hpo = pd.read_csv("app/update/data/raw/{}".format(in_file), sep="\t",
+                      skiprows=1, names=["disease_id", "gene_symbol",
+                                         "entrez_gene_id", "hpo_id",
+                                         "hpo_term_name"])
+    # mitocarta = pd.read_csv("app/update/data/tables/{}".format(mitocarta_file))
     # hpo = hpo[hpo.gene_symbol.isin(mitocarta.gene_symbol)]
     print("Saving processed HPO disease_gene_pheno data to {}...".format(out_file))
-    hpo.to_csv("data/tables/{}".format(out_file), index=False)
+    hpo.to_csv("app/update/data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
 
 
 def process_hpo_genphen(in_file, out_file, mitocarta_file):
     """
-    Process the gene-phenotype association file downloaded from HPO to produce the related
-    database table.
+    Process the gene-phenotype association file downloaded from HPO to
+    produce the related database table.
 
     :param in_file: file downloaded from HPO
 
@@ -140,19 +145,20 @@ def process_hpo_genphen(in_file, out_file, mitocarta_file):
     :return:
     """
     print("Processing HPO gene_pheno data...")
-    hpo = pd.read_csv("data/raw/{}".format(in_file), sep="\t", skiprows=1,
-                      names=["entrez_gene_id", "gene_symbol", "hpo_term_name", "hpo_id"])
-    # mitocarta = pd.read_csv("data/tables/{}".format(mitocarta_file))
+    hpo = pd.read_csv("app/update/data/raw/{}".format(in_file), sep="\t",
+                      skiprows=1, names=["entrez_gene_id", "gene_symbol",
+                                         "hpo_term_name", "hpo_id"])
+    # mitocarta = pd.read_csv("app/update/data/tables/{}".format(mitocarta_file))
     # hpo = hpo[hpo.gene_symbol.isin(mitocarta.gene_symbol)]
     print("Saving processed HPO gene_pheno data to {}...".format(out_file))
-    hpo.to_csv("data/tables/{}".format(out_file), index=False)
+    hpo.to_csv("app/update/data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
 
 
 def process_hpo_phengen(in_file, out_file, mitocarta_file):
     """
-    Process the phenotype-gene association file downloaded from HPO to produce the related
-    database table.
+    Process the phenotype-gene association file downloaded from HPO to
+    produce the related database table.
 
     :param in_file: file downloaded from HPO
 
@@ -163,12 +169,12 @@ def process_hpo_phengen(in_file, out_file, mitocarta_file):
     :return:
     """
     print("Processing HPO pheno_gene data...")
-    hpo = pd.read_csv("data/raw/{}".format(in_file), sep="\t", skiprows=1,
+    hpo = pd.read_csv("app/update/data/raw/{}".format(in_file), sep="\t", skiprows=1,
                       names=["hpo_id", "hpo_term_name", "entrez_gene_id", "gene_symbol"])
-    # mitocarta = pd.read_csv("data/tables/{}".format(mitocarta_file))
+    # mitocarta = pd.read_csv("app/update/data/tables/{}".format(mitocarta_file))
     # hpo = hpo[hpo.gene_symbol.isin(mitocarta.gene_symbol)]
     print("Saving processed HPO pheno_gene data to {}...".format(out_file))
-    hpo.to_csv("data/tables/{}".format(out_file), index=False)
+    hpo.to_csv("app/update/data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
 
 
@@ -183,11 +189,11 @@ def process_omim(in_file, out_file):
     :return:
     """
     print("Processing OMIM data...")
-    omim = pd.read_csv("data/raw/{}".format(in_file), sep="\t", skiprows=3, comment="#",
+    omim = pd.read_csv("app/update/data/raw/{}".format(in_file), sep="\t", skiprows=3, comment="#",
                        names=["prefix", "mim_number", "mim_name", "alter_title", "includ_title"])
     omim = omim[["mim_number", "mim_name", "prefix"]]
     print("Saving processed OMIM data to {}...".format(out_file))
-    omim.to_csv("data/tables/{}".format(out_file), index=False)
+    omim.to_csv("app/update/data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
 
 
@@ -202,7 +208,7 @@ def process_orphanet(in_file, out_file):
     :return:
     """
     print("Processing Orphanet data...")
-    parsed_xml = et.parse("data/raw/{}".format(in_file))
+    parsed_xml = et.parse("app/update/data/raw/{}".format(in_file))
     orpha = pd.DataFrame(columns=["orpha_name", "orpha_num"])
     for node in parsed_xml.getroot():
         for el in node:
@@ -213,7 +219,7 @@ def process_orphanet(in_file, out_file):
                                                    "orpha_num": [get_node_val(orpha_num)]}),
                                      ignore_index=True)
     print("Saving processed Orphanet data to {}...".format(out_file))
-    orpha.to_csv("data/tables/{}".format(out_file), index=False)
+    orpha.to_csv("app/update/data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
 
 
@@ -231,7 +237,7 @@ def process_disgenet_gene(in_file, out_file, mitocarta_file):
     :return:
     """
     print("Processing Disgenet gene_disease data...")
-    disge = pd.read_csv("data/raw/{}".format(in_file), sep="\t")
+    disge = pd.read_csv("app/update/data/raw/{}".format(in_file), sep="\t")
     disge = disge[["geneId", "geneSymbol", "diseaseId", "diseaseName", "score"]]
     disge.rename({"geneId": "entrez_gene_id", "geneSymbol": "gene_symbol",
                   "diseaseId": "umls_disease_id", "diseaseName": "disease_name"}, axis=1,
@@ -239,7 +245,7 @@ def process_disgenet_gene(in_file, out_file, mitocarta_file):
     mitocarta = pd.read_csv("data/tables/{}".format(mitocarta_file))
     disge = disge[disge.gene_symbol.isin(mitocarta.gene_symbol)]
     print("Saving processed Disgenet gene_disease data to {}...".format(out_file))
-    disge.to_csv("data/tables/{}".format(out_file), index=False)
+    disge.to_csv("app/update/data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
 
 
@@ -255,13 +261,13 @@ def process_disgenet_vars(in_file, out_file):
     :return:
     """
     print("Processing Disgenet vars_disease data...")
-    disge = pd.read_csv("data/raw/{}".format(in_file), sep="\t")
+    disge = pd.read_csv("app/update/data/raw/{}".format(in_file), sep="\t")
     # disge = disge[disge.chromosome != "Y"]
     disge = disge[["snpId", "diseaseId", "diseaseName", "score"]]
     disge.rename({"snpId": "dbsnp_id", "diseaseId": "umls_disease_id",
                   "diseaseName": "disease_name"}, axis=1, inplace=True)
     print("Saving processed Disgenet vars_disease data to {}...".format(out_file))
-    disge.to_csv("data/tables/{}".format(out_file), index=False)
+    disge.to_csv("app/update/data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
 
 
@@ -277,11 +283,11 @@ def process_disgenet_maps(in_file, out_file):
     :return:
     """
     print("Processing Disgenet disease_mappings data...")
-    disge = pd.read_csv("data/raw/{}".format(in_file), sep="|", skiprows=1,
+    disge = pd.read_csv("app/update/data/raw/{}".format(in_file), sep="|", skiprows=1,
                         names=["umls_disease_id", "disease_name", "vocabulary", "disease_id",
                                "alt_disease_name"])
     print("Saving processed Disgenet disease_mappings data to {}...".format(out_file))
-    disge.to_csv("data/tables/{}".format(out_file), index=False)
+    disge.to_csv("app/update/data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
 
 
@@ -300,9 +306,9 @@ def create_diseases(hpo_file, omim_file, orpha_file, out_file):
     :return:
     """
     print("Creating Diseases table...")
-    hpo = pd.read_csv("data/tables/{}".format(hpo_file))
-    omim = pd.read_csv("data/tables/{}".format(omim_file))
-    orpha = pd.read_csv("data/tables/{}".format(orpha_file))
+    hpo = pd.read_csv("app/update/data/tables/{}".format(hpo_file))
+    omim = pd.read_csv("app/update/data/tables/{}".format(omim_file))
+    orpha = pd.read_csv("app/update/data/tables/{}".format(orpha_file))
 
     dis_ids = hpo["disease_id"].unique()
     diseases = pd.DataFrame(columns=["disease_id", "disease_name"])
@@ -322,7 +328,7 @@ def create_diseases(hpo_file, omim_file, orpha_file, out_file):
             continue
         diseases = diseases.append(pd.DataFrame({"disease_id": [el], "disease_name": [disease_name]}))
     print("Saving Diseases table to {}...".format(out_file))
-    diseases.to_csv("data/tables/{}".format(out_file), index=False)
+    diseases.to_csv("app/update/data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
 
 
@@ -337,11 +343,11 @@ def create_phenotypes(hpo_file, out_file):
     :return:
     """
     print("Creating Phenotypes table...")
-    hpo = pd.read_csv("data/tables/{}".format(hpo_file))
+    hpo = pd.read_csv("app/update/data/tables/{}".format(hpo_file))
     phenos = hpo[["hpo_id", "hpo_term_name"]]
     phenos.drop_duplicates(inplace=True)
     print("Saving Phenotypes table to {}...".format(out_file))
-    phenos.to_csv("data/tables/{}".format(out_file), index=False)
+    phenos.to_csv("app/update/data/tables/{}".format(out_file), index=False)
     print("Complete.\n")
 
 

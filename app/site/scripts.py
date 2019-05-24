@@ -189,6 +189,13 @@ async def get_json_request(url, headers=None):
             return await res.json()
 
 
+def get_json_sync_request(url, headers=None):
+    if headers is None:
+        headers = {"Content-Type": "application/json"}
+    res = requests.get(url, headers=headers)
+    return res.json()
+
+
 def pheno_name_to_id(pheno_name: str) -> List[str]:
     """
     Retrieve the related HP id from a given phenotype name.
@@ -196,8 +203,9 @@ def pheno_name_to_id(pheno_name: str) -> List[str]:
     :return: List[str] with the related id(s)
     """
     url = "https://hpo.jax.org/api/hpo/search?q={}".format(pheno_name)
-    loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(get_json_request(url))
+    # loop = asyncio.get_event_loop()
+    # res = loop.run_until_complete(get_json_request(url))
+    res = get_json_sync_request(url)
     ids = []
 
     if res["termsTotalCount"] == 0:
@@ -235,8 +243,9 @@ def pheno_id_to_term(pheno_id: str) -> str:
         efo_id = pheno_id.strip("EFO:")
         base_url = "https://www.ebi.ac.uk/ols/api/ontologies/efo/terms?"
         iri_url = "iri=http://www.ebi.ac.uk/efo/EFO_{}".format(efo_id)
-        loop = asyncio.get_event_loop()
-        res = loop.run_until_complete(get_json_request(base_url + iri_url))
+        # loop = asyncio.get_event_loop()
+        # res = loop.run_until_complete(get_json_request(base_url + iri_url))
+        res = get_json_sync_request(base_url + iri_url)
         pheno_name = res["_embedded"]["terms"][0]["label"]
 
     return pheno_name
@@ -327,13 +336,17 @@ def ensembl_gene_id_to_entrez(ens_gene_id: str) -> pd.DataFrame:
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name",
     "entrez_gene_id"])
     """
-    loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(
-        apy.aquery(attributes=["ensembl_gene_id", "external_gene_name",
-                               "entrezgene"],
-                   filters={"link_ensembl_gene_id": ens_gene_id},
-                   dataset="hsapiens_gene_ensembl")
-    )
+    # loop = asyncio.get_event_loop()
+    # res = loop.run_until_complete(
+    #     apy.aquery(attributes=["ensembl_gene_id", "external_gene_name",
+    #                            "entrezgene"],
+    #                filters={"link_ensembl_gene_id": ens_gene_id},
+    #                dataset="hsapiens_gene_ensembl")
+    # )
+    res = apy.query(attributes=["ensembl_gene_id", "external_gene_name",
+                                "entrezgene"],
+                    filters={"link_ensembl_gene_id": ens_gene_id},
+                    dataset="hsapiens_gene_ensembl")
     res.rename({"Gene stable ID": "ensembl_gene_id", "Gene name": "gene_name",
                 "NCBI gene ID": "entrez_gene_id"}, axis=1, inplace=True)
 
@@ -362,14 +375,19 @@ def get_dbsnp_from_variant(chrom: Union[int, str],
     else:
         var_end = str(var_end)
 
-    loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(
-        apy.aquery(attributes=["chr_name", "chrom_start",
-                               "consequence_allele_string", "refsnp_id"],
-                   filters={"chr_name": chrom, "start": var_start,
-                            "end": var_end},
-                   dataset="hsapiens_snp")
-    )
+    # loop = asyncio.get_event_loop()
+    # res = loop.run_until_complete(
+    #     apy.aquery(attributes=["chr_name", "chrom_start",
+    #                            "consequence_allele_string", "refsnp_id"],
+    #                filters={"chr_name": chrom, "start": var_start,
+    #                         "end": var_end},
+    #                dataset="hsapiens_snp")
+    # )
+    res = apy.query(attributes=["chr_name", "chrom_start",
+                                "consequence_allele_string", "refsnp_id"],
+                    filters={"chr_name": chrom, "start": var_start,
+                             "end": var_end},
+                    dataset="hsapiens_snp")
     res.rename({"Chromosome/scaffold name": "chromosome",
                 "Chromosome/scaffold position start (bp)": "start_pos",
                 "Consequence specific allele": "ref/alt allele",
@@ -681,8 +699,9 @@ def get_vars_from_gene(ens_gene_id: str) -> pd.DataFrame:
 
     server = "https://rest.ensembl.org"
     ext = "/overlap/id/{}?feature=variation".format(ens_gene_id)
-    loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(get_json_request(server + ext))
+    # loop = asyncio.get_event_loop()
+    # res = loop.run_until_complete(get_json_request(server + ext))
+    res = get_json_sync_request(server + ext)
 
     df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome",
                                "ref_allele", "start_pos", "alt_allele",
@@ -746,8 +765,9 @@ def get_diseases_from_gene(gene: str,
     ext = "/phenotype/gene/homo_sapiens/{}?include_associated={}".format(
         gene, int(with_vars)
     )
-    loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(get_json_request(server + ext))
+    # loop = asyncio.get_event_loop()
+    # res = loop.run_until_complete(get_json_request(server + ext))
+    res = get_json_sync_request(server + ext)
 
     if with_vars:
         df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "variation",
@@ -1073,15 +1093,21 @@ def get_vars_from_phenotype(phenotype: str) -> pd.DataFrame:
                                      "alt_allele", "phenotype_name",
                                      "phenotype_id"])
 
-    loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(
-        apy.aquery(attributes=["chr_name", "chrom_start",
-                               "consequence_allele_string",
-                               "ensembl_gene_stable_id", "associated_gene",
-                               "refsnp_id", "phenotype_description"],
-                   filters={"snp_filter": [el.dbsnp_id for el in vars_maps]},
-                   dataset="hsapiens_snp")
-    )
+    # loop = asyncio.get_event_loop()
+    # res = loop.run_until_complete(
+    #     apy.aquery(attributes=["chr_name", "chrom_start",
+    #                            "consequence_allele_string",
+    #                            "ensembl_gene_stable_id", "associated_gene",
+    #                            "refsnp_id", "phenotype_description"],
+    #                filters={"snp_filter": [el.dbsnp_id for el in vars_maps]},
+    #                dataset="hsapiens_snp")
+    # )
+    res = apy.query(attributes=["chr_name", "chrom_start",
+                                "consequence_allele_string",
+                                "ensembl_gene_stable_id", "associated_gene",
+                                "refsnp_id", "phenotype_description"],
+                    filters={"snp_filter": [el.dbsnp_id for el in vars_maps]},
+                    dataset="hsapiens_snp")
     res.rename({"Chromosome/scaffold name": "chromosome",
                 "Variant name": "dbsnp_id",
                 "Chromosome/scaffold position start (bp)": "start_pos",
@@ -1435,15 +1461,21 @@ def get_vars_from_disease_id(disease_id: str) -> pd.DataFrame:
                                      "dbsnp_id", "variant", "umls_disease_id",
                                      "disease_name", "disease_id"])
 
-    loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(
-        apy.aquery(attributes=["chr_name", "chrom_start",
-                               "consequence_allele_string",
-                               "ensembl_gene_stable_id", "associated_gene",
-                               "refsnp_id"],
-                   filters={"snp_filter": [el.dbsnp_id for el in ass_vars]},
-                   dataset="hsapiens_snp")
-    )
+    # loop = asyncio.get_event_loop()
+    # res = loop.run_until_complete(
+    #     apy.aquery(attributes=["chr_name", "chrom_start",
+    #                            "consequence_allele_string",
+    #                            "ensembl_gene_stable_id", "associated_gene",
+    #                            "refsnp_id"],
+    #                filters={"snp_filter": [el.dbsnp_id for el in ass_vars]},
+    #                dataset="hsapiens_snp")
+    # )
+    res = apy.query(attributes=["chr_name", "chrom_start",
+                                "consequence_allele_string",
+                                "ensembl_gene_stable_id", "associated_gene",
+                                "refsnp_id"],
+                    filters={"snp_filter": [el.dbsnp_id for el in ass_vars]},
+                    dataset="hsapiens_snp")
     res.rename({"Chromosome/scaffold name": "chromosome",
                 "Variant name": "dbsnp_id",
                 "Chromosome/scaffold position start (bp)": "start_pos",
