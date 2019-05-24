@@ -1,3 +1,1 @@
-#!/usr/bin/env python
-# -*- coding: UTF-8 -*-
-# Created by Roberto Preste
+latest_update = 'May 2019'
