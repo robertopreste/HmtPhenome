@@ -242,7 +242,7 @@ def process_disgenet_gene(in_file, out_file, mitocarta_file):
     disge.rename({"geneId": "entrez_gene_id", "geneSymbol": "gene_symbol",
                   "diseaseId": "umls_disease_id", "diseaseName": "disease_name"}, axis=1,
                  inplace=True)
-    mitocarta = pd.read_csv("data/tables/{}".format(mitocarta_file))
+    mitocarta = pd.read_csv("app/update/data/tables/{}".format(mitocarta_file))
     disge = disge[disge.gene_symbol.isin(mitocarta.gene_symbol)]
     print("Saving processed Disgenet gene_disease data to {}...".format(out_file))
     disge.to_csv("app/update/data/tables/{}".format(out_file), index=False)
