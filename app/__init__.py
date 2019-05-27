@@ -88,8 +88,10 @@ def update_db():
     for el in sources:
         click.echo("\tUpdating {} table... ".format(el), nl=False)
         df = pd.read_csv("app/update/data/tables/{}.csv".format(el))
-        df.reset_index(drop=True, inplace=True)
-        df.to_sql(name=el, con=db.engine, index=False, if_exists="replace")
+        df.reset_index(inplace=True)
+        df.rename(columns={"index": "id"}, inplace=True)
+        df.to_sql(name=el, con=db.engine, index=False, if_exists="replace",
+                  index_label="id")
         click.echo("Complete.")
     click.echo("Database correctly updated. Please migrate it before use.")
 
