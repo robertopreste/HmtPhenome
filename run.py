@@ -7,4 +7,4 @@ import nest_asyncio
 
 if __name__ == '__main__':
     nest_asyncio.apply()
-    app.run(debug=True)  # remove this in production
+    app.run(debug=True, port=8080)  # remove this in production
