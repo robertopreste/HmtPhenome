@@ -121,9 +121,12 @@ async def results():
     return await render_template("results.html",
                                  title="Results",
                                  json_data=pprint.pformat(json_data),
-                                 nodes=networks["nodes"], edges=networks["edges"],
-                                 variants=networks["variants"], genes=networks["genes"],
-                                 diseases=networks["diseases"], phenotypes=networks["phenotypes"])
+                                 nodes=networks["nodes"],
+                                 edges=networks["edges"],
+                                 variants=networks["variants"],
+                                 genes=networks["genes"],
+                                 diseases=networks["diseases"],
+                                 phenotypes=networks["phenotypes"])
 
 
 @www.errorhandler(404)
