@@ -597,7 +597,8 @@ def network_from_variant_json(final_json: dict) -> dict:
     variants = set(variants)
 
     genes = []
-    genes.extend([el["gene_name"] for el in var_json])
+    genes.extend([el["gene_name"] for el in var_json
+                  if el["gene_name"] != "none"])
     genes = set(genes)
 
     diseases = []
@@ -643,12 +644,13 @@ def network_from_variant_json(final_json: dict) -> dict:
 
     for el in var_json:
         # variant to gene
-        edges.append({"from": id_dict[el["variant"]],
-                      "to": id_dict[el["gene_name"]]})
-        connected_nodes.add(id_dict[el["variant"]])
-        vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
-        connected_nodes.add(id_dict[el["gene_name"]])
-        gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
+        if genes:  # avoid "none" genes
+            edges.append({"from": id_dict[el["variant"]],
+                          "to": id_dict[el["gene_name"]]})
+            connected_nodes.add(id_dict[el["variant"]])
+            vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
+            connected_nodes.add(id_dict[el["gene_name"]])
+            gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
         # variant to diseases
         edges.append({"from": id_dict[el["variant"]],
                       "to": id_dict[el["disease_name"]]})
@@ -1013,6 +1015,15 @@ def network_from_gene_json(final_json: dict) -> dict:
                 phen_set.add((pheno, el["phenotype_ids"][n]))
 
     # delete orphan nodes
+    # conns = []
+    # for el in edges:
+    #     conns.extend(list(el.values()))
+    # conns = set(conns)
+    # candidates = [n for n, el in enumerate(nodes, start=1)]
+    # for n in candidates:
+    #     if n not in conns:
+    #         del nodes[n]
+
     candidates = [n for n, el in enumerate(nodes, start=1)]
     for n in candidates:
         if n not in connected_nodes:
