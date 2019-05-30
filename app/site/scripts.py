@@ -595,19 +595,23 @@ def network_from_variant_json(final_json: dict) -> dict:
     variants = []
     variants.extend([el["variant"] for el in var_json])
     variants = set(variants)
+    variants.discard("")
 
     genes = []
     genes.extend([el["gene_name"] for el in var_json
                   if el["gene_name"] != "none"])
     genes = set(genes)
+    genes.discard("")
 
     diseases = []
     diseases.extend([el["disease_name"] for el in var_json])
     diseases = set(diseases)
+    diseases.discard("")
 
     phenotypes = []
     phenotypes.extend([el["phenotype_name"] for el in var_json])
     phenotypes = set(phenotypes)
+    phenotypes.discard("")
 
     nodes = []
     edges = []
@@ -624,10 +628,11 @@ def network_from_variant_json(final_json: dict) -> dict:
                                                         "border": "#5F826B"}})
         id_dict[el] = ids
     for el in diseases:
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
-                                                        "border": "#B06A57"}})
-        id_dict[el] = ids
+        if el != "":
+            ids += 1
+            nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
+                                                            "border": "#B06A57"}})
+            id_dict[el] = ids
     for el in phenotypes:
         if el != "":
             ids += 1
@@ -652,12 +657,13 @@ def network_from_variant_json(final_json: dict) -> dict:
             connected_nodes.add(id_dict[el["gene_name"]])
             gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
         # variant to diseases
-        edges.append({"from": id_dict[el["variant"]],
-                      "to": id_dict[el["disease_name"]]})
-        connected_nodes.add(id_dict[el["variant"]])
-        vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
-        connected_nodes.add(id_dict[el["disease_name"]])
-        dise_set.add((el["disease_name"], el["umls_disease_id"]))
+        if diseases:
+            edges.append({"from": id_dict[el["variant"]],
+                          "to": id_dict[el["disease_name"]]})
+            connected_nodes.add(id_dict[el["variant"]])
+            vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
+            connected_nodes.add(id_dict[el["disease_name"]])
+            dise_set.add((el["disease_name"], el["umls_disease_id"]))
         # disease to phenotypes
         if el["phenotype_name"] != "" \
                 and id_dict[el["disease_name"]] != id_dict[el["phenotype_name"]]:
@@ -924,24 +930,29 @@ def network_from_gene_json(final_json: dict) -> dict:
     v_variants = []
     v_variants.extend([el["variant"] for el in var_json])
     v_variants = set(v_variants)
+    v_variants.discard("")
 
     genes = []
     genes.extend([el["gene_name"] for el in var_json])
     genes = set(genes)
+    genes.discard("")
 
     v_diseases = []
     v_diseases.extend([el["disease_name"]
                        for el in var_json if el["disease_name"] != ""])
     v_diseases = set(v_diseases)
+    v_diseases.discard("")
 
     d_diseases = []
     d_diseases.extend([el["disease_name"] for el in dis_json])
     d_diseases = set(d_diseases)
+    d_diseases.discard("")
 
     d_phenotypes = []
     for el in dis_json:
         d_phenotypes.extend(el["phenotype_names"])
     d_phenotypes = set(d_phenotypes)
+    d_phenotypes.discard("")
     d_phenotypes.difference_update(d_diseases)
 
     nodes = []
@@ -1260,18 +1271,22 @@ def network_from_phenotype_json(final_json: dict) -> dict:
     variants = []
     variants.extend([el["variant"] for el in var_json])
     variants = set(variants)
+    variants.discard("")
 
     v_genes = []
     v_genes.extend([el["gene_name"] for el in var_json])
     v_genes = set(v_genes)
+    v_genes.discard("")
 
     genes = []
     genes.extend([el["gene_name"] for el in gen_json])
     genes = set(genes)
+    genes.discard("")
 
     diseases = []
     diseases.extend([el["disease_name"] for el in dis_json])
     diseases = set(diseases)
+    diseases.discard("")
 
     nodes = []
     edges = []
@@ -1622,18 +1637,22 @@ def network_from_disease_json(final_json: dict) -> dict:
     variants = []
     variants.extend([el["variant"] for el in var_json])
     variants = set(variants)
+    variants.discard("")
 
     v_genes = []
     v_genes.extend([el["gene_name"] for el in var_json])
     v_genes = set(v_genes)
+    v_genes.discard("")
 
     genes = []
     genes.extend([el["gene_name"] for el in gen_json])
     genes = set(genes)
+    genes.discard("")
 
     phenos = []
     phenos.extend([el["phenotype_name"] for el in phen_json])
     phenos = set(phenos)
+    phenos.discard("")
 
     nodes = []
     edges = []
