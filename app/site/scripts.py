@@ -6,11 +6,9 @@ from app.site.models import Mitocarta, Phenotypes, Diseases, Omim, Orphanet, \
 import pandas as pd
 import numpy as np
 import requests
-# from pybiomart import Server
 import apybiomart as apy
 from fuzzywuzzy import fuzz
 import json
-import math
 from typing import List, Union, Optional
 import asyncio
 import aiohttp

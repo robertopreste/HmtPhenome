@@ -13,31 +13,3 @@ class Node:
         self.nid = nid  # node ID (1, 2, 3, etc)
         self.label = label
         self.uid = hash(self.entity + self.label)
-        self._background = None
-        self._border = None
-        self._connected = None
-
-    @property
-    def background(self):
-        if self.entity == "v":
-            self._background = "#F9CF45"
-        elif self.entity == "g":
-            self._background = "#739E82"
-        elif self.entity == "d":
-            self._background = "#D7816A"
-        elif self.entity == "p":
-            self._background = "#93B5C6"
-        return self._background
-
-    @property
-    def border(self):
-        if self.entity == "v":
-            self._border = "#F9CF45"
-        elif self.entity == "g":
-            self._border = "#739E82"
-        elif self.entity == "d":
-            self._border = "#D7816A"
-        elif self.entity == "p":
-            self._border = "#93B5C6"
-        return self._border
-

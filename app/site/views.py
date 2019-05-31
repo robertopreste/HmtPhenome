@@ -1,23 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
-# import requests
-# import json
 import pprint
-from quart import Blueprint, render_template, request, redirect, url_for, jsonify, flash, escape
+from quart import Blueprint, render_template, request, redirect, url_for, flash
 from app.static import dbdata
-from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, QueryDiseasesForm
-from app.site.scripts import json_from_variant, network_from_variant_json, json_from_gene, network_from_gene_json, json_from_phenotype, network_from_phenotype_json, json_from_disease, network_from_disease_json
-# from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g, jsonify, send_file
-# from werkzeug.urls import url_parse
+from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, \
+    QueryDiseasesForm
+from app.site.scripts import json_from_variant, network_from_variant_json, \
+    json_from_gene, network_from_gene_json, json_from_phenotype, \
+    network_from_phenotype_json, json_from_disease, network_from_disease_json
 
 www = Blueprint("site", __name__)
-
-# from sqlalchemy import or_, and_
-# from app import app, db
-# from config import ADMINS
-# from .forms import LoginForm, RegistrationForm
-# from .models import User
 
 
 # Home Page
@@ -58,7 +51,6 @@ async def query():
                                 variant_chr=form_var.variant_chr.data,
                                 variant_input=form_var.variant_input.data,
                                 variant_submit=form_var.variant_submit.data,
-                                # gene_chr=form_gene.gene_chr.data,
                                 gene_input=form_gene.gene_input.data,
                                 gene_submit=form_gene.gene_submit.data,
                                 pheno_input=form_phen.pheno_input.data,
@@ -73,7 +65,6 @@ async def results():
     variant_chr = request.args.get("variant_chr", "", type=str)
     variant_input = request.args.get("variant_input", "", type=str)
     variant_submit = request.args.get("variant_submit")
-    # gene_chr = request.args.get("gene_chr", "", type=str)
     gene_input = request.args.get("gene_input", "", type=str)
     gene_submit = request.args.get("gene_submit")
     pheno_input = request.args.get("pheno_input", "", type=str)
@@ -90,7 +81,8 @@ async def results():
         json_data = json_from_variant(variant_chr, variant_start, variant_end)
         networks = network_from_variant_json(json_data)
         if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
-                and len(json_data["diseases"]) == 0 and len(json_data["phenotypes"]) == 0:
+                and len(json_data["diseases"]) == 0 \
+                and len(json_data["phenotypes"]) == 0:
             json_data = "{}"
             await flash("No results found!")
 
@@ -98,7 +90,8 @@ async def results():
         json_data = json_from_gene(gene_input)
         networks = network_from_gene_json(json_data)
         if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
-                and len(json_data["diseases"]) == 0 and len(json_data["phenotypes"]) == 0:
+                and len(json_data["diseases"]) == 0 \
+                and len(json_data["phenotypes"]) == 0:
             json_data = "{}"
             await flash("No results found!")
 
@@ -106,7 +99,8 @@ async def results():
         json_data = json_from_phenotype(pheno_input)
         networks = network_from_phenotype_json(json_data)
         if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
-                and len(json_data["diseases"]) == 0 and len(json_data["phenotype"]) == 0:
+                and len(json_data["diseases"]) == 0 \
+                and len(json_data["phenotype"]) == 0:
             json_data = "{}"
             await flash("No results found!")
 
@@ -114,7 +108,8 @@ async def results():
         json_data = json_from_disease(disease_input)
         networks = network_from_disease_json(json_data)
         if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
-                and len(json_data["diseases"]) == 0 and len(json_data["phenotype"]) == 0:
+                and len(json_data["diseases"]) == 0 \
+                and len(json_data["phenotype"]) == 0:
             json_data = "{}"
             await flash("No results found!")
 
