@@ -6,14 +6,13 @@ from app.site.models import Mitocarta, Phenotypes, Diseases, Omim, Orphanet, \
 import pandas as pd
 import numpy as np
 import requests
-# from pybiomart import Server
 import apybiomart as apy
 from fuzzywuzzy import fuzz
 import json
-import math
 from typing import List, Union, Optional
 import asyncio
 import aiohttp
+from app.site.classes import Node
 
 
 def get_genes() -> dict:
@@ -189,6 +188,13 @@ async def get_json_request(url, headers=None):
             return await res.json()
 
 
+def get_json_sync_request(url, headers=None):
+    if headers is None:
+        headers = {"Content-Type": "application/json"}
+    res = requests.get(url, headers=headers)
+    return res.json()
+
+
 def pheno_name_to_id(pheno_name: str) -> List[str]:
     """
     Retrieve the related HP id from a given phenotype name.
@@ -196,8 +202,9 @@ def pheno_name_to_id(pheno_name: str) -> List[str]:
     :return: List[str] with the related id(s)
     """
     url = "https://hpo.jax.org/api/hpo/search?q={}".format(pheno_name)
-    loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(get_json_request(url))
+    # loop = asyncio.get_event_loop()
+    # res = loop.run_until_complete(get_json_request(url))
+    res = get_json_sync_request(url)
     ids = []
 
     if res["termsTotalCount"] == 0:
@@ -235,8 +242,9 @@ def pheno_id_to_term(pheno_id: str) -> str:
         efo_id = pheno_id.strip("EFO:")
         base_url = "https://www.ebi.ac.uk/ols/api/ontologies/efo/terms?"
         iri_url = "iri=http://www.ebi.ac.uk/efo/EFO_{}".format(efo_id)
-        loop = asyncio.get_event_loop()
-        res = loop.run_until_complete(get_json_request(base_url + iri_url))
+        # loop = asyncio.get_event_loop()
+        # res = loop.run_until_complete(get_json_request(base_url + iri_url))
+        res = get_json_sync_request(base_url + iri_url)
         pheno_name = res["_embedded"]["terms"][0]["label"]
 
     return pheno_name
@@ -327,13 +335,17 @@ def ensembl_gene_id_to_entrez(ens_gene_id: str) -> pd.DataFrame:
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name",
     "entrez_gene_id"])
     """
-    loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(
-        apy.aquery(attributes=["ensembl_gene_id", "external_gene_name",
-                               "entrezgene"],
-                   filters={"link_ensembl_gene_id": ens_gene_id},
-                   dataset="hsapiens_gene_ensembl")
-    )
+    # loop = asyncio.get_event_loop()
+    # res = loop.run_until_complete(
+    #     apy.aquery(attributes=["ensembl_gene_id", "external_gene_name",
+    #                            "entrezgene"],
+    #                filters={"link_ensembl_gene_id": ens_gene_id},
+    #                dataset="hsapiens_gene_ensembl")
+    # )
+    res = apy.query(attributes=["ensembl_gene_id", "external_gene_name",
+                                "entrezgene"],
+                    filters={"link_ensembl_gene_id": ens_gene_id},
+                    dataset="hsapiens_gene_ensembl")
     res.rename({"Gene stable ID": "ensembl_gene_id", "Gene name": "gene_name",
                 "NCBI gene ID": "entrez_gene_id"}, axis=1, inplace=True)
 
@@ -362,14 +374,19 @@ def get_dbsnp_from_variant(chrom: Union[int, str],
     else:
         var_end = str(var_end)
 
-    loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(
-        apy.aquery(attributes=["chr_name", "chrom_start",
-                               "consequence_allele_string", "refsnp_id"],
-                   filters={"chr_name": chrom, "start": var_start,
-                            "end": var_end},
-                   dataset="hsapiens_snp")
-    )
+    # loop = asyncio.get_event_loop()
+    # res = loop.run_until_complete(
+    #     apy.aquery(attributes=["chr_name", "chrom_start",
+    #                            "consequence_allele_string", "refsnp_id"],
+    #                filters={"chr_name": chrom, "start": var_start,
+    #                         "end": var_end},
+    #                dataset="hsapiens_snp")
+    # )
+    res = apy.query(attributes=["chr_name", "chrom_start",
+                                "consequence_allele_string", "refsnp_id"],
+                    filters={"chr_name": chrom, "start": var_start,
+                             "end": var_end},
+                    dataset="hsapiens_snp")
     res.rename({"Chromosome/scaffold name": "chromosome",
                 "Chromosome/scaffold position start (bp)": "start_pos",
                 "Consequence specific allele": "ref/alt allele",
@@ -577,18 +594,23 @@ def network_from_variant_json(final_json: dict) -> dict:
     variants = []
     variants.extend([el["variant"] for el in var_json])
     variants = set(variants)
+    variants.discard("")
 
     genes = []
-    genes.extend([el["gene_name"] for el in var_json])
+    genes.extend([el["gene_name"] for el in var_json
+                  if el["gene_name"] != "none"])
     genes = set(genes)
+    genes.discard("")
 
     diseases = []
     diseases.extend([el["disease_name"] for el in var_json])
     diseases = set(diseases)
+    diseases.discard("")
 
     phenotypes = []
     phenotypes.extend([el["phenotype_name"] for el in var_json])
     phenotypes = set(phenotypes)
+    phenotypes.discard("")
 
     nodes = []
     edges = []
@@ -596,26 +618,39 @@ def network_from_variant_json(final_json: dict) -> dict:
     id_dict = {}
     for el in variants:
         ids += 1
+        node = Node("v", ids, el)
+        # nodes.append(node)
+        id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
                                                         "border": "#CCAA39"}})
-        id_dict[el] = ids
+        # id_dict[el] = ids
     for el in genes:
         ids += 1
+        node = Node("g", ids, el)
+        # nodes.append(node)
+        id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
                                                         "border": "#5F826B"}})
-        id_dict[el] = ids
+        # id_dict[el] = ids
     for el in diseases:
-        ids += 1
-        nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
-                                                        "border": "#B06A57"}})
-        id_dict[el] = ids
+        if el != "":
+            ids += 1
+            node = Node("d", ids, el)
+            # nodes.append(node)
+            id_dict[node.uid] = ids
+            nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
+                                                            "border": "#B06A57"}})
+            # id_dict[el] = ids
     for el in phenotypes:
         if el != "":
             ids += 1
+            node = Node("p", ids, el)
+            # nodes.append(node)
+            id_dict[node.uid] = ids
             nodes.append({"id": ids, "label": el,
                           "color": {"background": "#93B5C6",
                                     "border": "#7995A3"}})
-            id_dict[el] = ids
+            # id_dict[el] = ids
 
     connected_nodes = set()
     vars_set = set()  # (variant, dbsnp_id, gene_name)
@@ -625,36 +660,48 @@ def network_from_variant_json(final_json: dict) -> dict:
 
     for el in var_json:
         # variant to gene
-        edges.append({"from": id_dict[el["variant"]],
-                      "to": id_dict[el["gene_name"]]})
-        connected_nodes.add(id_dict[el["variant"]])
-        vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
-        connected_nodes.add(id_dict[el["gene_name"]])
-        gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
+        if genes:  # avoid "none" genes
+            edges.append({
+                "from": id_dict[hash("v" + el["variant"])],
+                "to": id_dict[hash("g" + el["gene_name"])]
+            })
+            connected_nodes.add(id_dict[hash("v" + el["variant"])])
+            vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
+            connected_nodes.add(id_dict[hash("g" + el["gene_name"])])
+            gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
         # variant to diseases
-        edges.append({"from": id_dict[el["variant"]],
-                      "to": id_dict[el["disease_name"]]})
-        connected_nodes.add(id_dict[el["variant"]])
-        vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
-        connected_nodes.add(id_dict[el["disease_name"]])
-        dise_set.add((el["disease_name"], el["umls_disease_id"]))
+        if diseases:
+            edges.append({
+                "from": id_dict[hash("v" + el["variant"])],
+                "to": id_dict[hash("d" + el["disease_name"])]
+            })
+            connected_nodes.add(id_dict[hash("v" + el["variant"])])
+            vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
+            connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
+            dise_set.add((el["disease_name"], el["umls_disease_id"]))
         # disease to phenotypes
         if el["phenotype_name"] != "" \
-                and id_dict[el["disease_name"]] != id_dict[el["phenotype_name"]]:
-            edges.append({"from": id_dict[el["disease_name"]],
-                          "to": id_dict[el["phenotype_name"]]})
-            connected_nodes.add(id_dict[el["disease_name"]])
+                and id_dict[hash("d" + el["disease_name"])] != id_dict[hash("p" + el["phenotype_name"])]:
+            edges.append({
+                "from": id_dict[hash("d" + el["disease_name"])],
+                "to": id_dict[hash("p" + el["phenotype_name"])]
+            })
+            connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
             dise_set.add((el["disease_name"], el["umls_disease_id"]))
-            connected_nodes.add(id_dict[el["phenotype_name"]])
+            connected_nodes.add(id_dict[hash("p" + el["phenotype_name"])])
             phen_set.add((el["phenotype_name"], el["phenotype_id"]))
 
     # delete orphan nodes
-    candidates = [n for n, el in enumerate(nodes, start=1)]
-    for n in candidates:
-        if n not in connected_nodes:
-            del nodes[n]
+    true_nodes = [el for el in nodes if el["id"] in connected_nodes]
 
-    return {"nodes": nodes, "edges": edges, "variants": vars_set,
+    # candidates = [n for n, el in enumerate(nodes, start=1)]
+
+    # candidates = [el["id"] for el in nodes]
+    # for n in candidates:
+    #     if n not in connected_nodes:
+    #         del nodes[n]
+
+    return {"nodes": true_nodes, "edges": edges, "variants": vars_set,
             "genes": gene_set, "diseases": dise_set, "phenotypes": phen_set}
 
 
@@ -681,8 +728,9 @@ def get_vars_from_gene(ens_gene_id: str) -> pd.DataFrame:
 
     server = "https://rest.ensembl.org"
     ext = "/overlap/id/{}?feature=variation".format(ens_gene_id)
-    loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(get_json_request(server + ext))
+    # loop = asyncio.get_event_loop()
+    # res = loop.run_until_complete(get_json_request(server + ext))
+    res = get_json_sync_request(server + ext)
 
     df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome",
                                "ref_allele", "start_pos", "alt_allele",
@@ -746,8 +794,9 @@ def get_diseases_from_gene(gene: str,
     ext = "/phenotype/gene/homo_sapiens/{}?include_associated={}".format(
         gene, int(with_vars)
     )
-    loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(get_json_request(server + ext))
+    # loop = asyncio.get_event_loop()
+    # res = loop.run_until_complete(get_json_request(server + ext))
+    res = get_json_sync_request(server + ext)
 
     if with_vars:
         df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "variation",
@@ -902,24 +951,29 @@ def network_from_gene_json(final_json: dict) -> dict:
     v_variants = []
     v_variants.extend([el["variant"] for el in var_json])
     v_variants = set(v_variants)
+    v_variants.discard("")
 
     genes = []
     genes.extend([el["gene_name"] for el in var_json])
     genes = set(genes)
+    genes.discard("")
 
     v_diseases = []
     v_diseases.extend([el["disease_name"]
                        for el in var_json if el["disease_name"] != ""])
     v_diseases = set(v_diseases)
+    v_diseases.discard("")
 
     d_diseases = []
     d_diseases.extend([el["disease_name"] for el in dis_json])
     d_diseases = set(d_diseases)
+    d_diseases.discard("")
 
     d_phenotypes = []
     for el in dis_json:
         d_phenotypes.extend(el["phenotype_names"])
     d_phenotypes = set(d_phenotypes)
+    d_phenotypes.discard("")
     d_phenotypes.difference_update(d_diseases)
 
     nodes = []
@@ -928,29 +982,39 @@ def network_from_gene_json(final_json: dict) -> dict:
     id_dict = {}
     for el in genes:
         ids += 1
+        node = Node("g", ids, el)
+        id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
                                                         "border": "#5F826B"}})
-        id_dict[el] = ids
+        # id_dict[el] = ids
     for el in v_variants:
         ids += 1
+        node = Node("v", ids, el)
+        id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
                                                         "border": "#CCAA39"}})
-        id_dict[el] = ids
+        # id_dict[el] = ids
     for el in v_diseases:
         ids += 1
+        node = Node("d", ids, el)
+        id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
                                                         "border": "#B06A57"}})
-        id_dict[el] = ids
+        # id_dict[el] = ids
     for el in d_diseases:
         ids += 1
+        node = Node("d", ids, el)
+        id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
                                                         "border": "#B06A57"}})
-        id_dict[el] = ids
+        # id_dict[el] = ids
     for el in d_phenotypes:
         ids += 1
+        node = Node("p", ids, el)
+        id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
                                                         "border": "#7995A3"}})
-        id_dict[el] = ids
+        # id_dict[el] = ids
 
     connected_nodes = set()
     vars_set = set()  # (variant, dbsnp_id, gene_name)
@@ -960,45 +1024,58 @@ def network_from_gene_json(final_json: dict) -> dict:
 
     for el in var_json:
         # gene to variants
-        edges.append({"from": id_dict[el["gene_name"]],
-                      "to": id_dict[el["variant"]]})
-        connected_nodes.add(id_dict[el["gene_name"]])
+        edges.append({
+            "from": id_dict[hash("g" + el["gene_name"])],
+            "to": id_dict[hash("v" + el["variant"])]
+        })
+        connected_nodes.add(id_dict[hash("g" + el["gene_name"])])
         gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
-        connected_nodes.add(id_dict[el["variant"]])
+        connected_nodes.add(id_dict[hash("v" + el["variant"])])
         vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
         # variant to diseases
         if el["disease_name"] != "":
-            edges.append({"from": id_dict[el["variant"]],
-                          "to": id_dict[el["disease_name"]]})
-            connected_nodes.add(id_dict[el["variant"]])
+            edges.append({
+                "from": id_dict[hash("v" + el["variant"])],
+                "to": id_dict[hash("d" + el["disease_name"])]
+            })
+            connected_nodes.add(id_dict[hash("v" + el["variant"])])
             vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
-            connected_nodes.add(id_dict[el["disease_name"]])
+            connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
             dise_set.add((el["disease_name"], el["umls_disease_id"]))
     for el in dis_json:
         # gene to diseases
-        edges.append({"from": id_dict[el["gene_name"]],
-                      "to": id_dict[el["disease_name"]]})
-        connected_nodes.add(id_dict[el["gene_name"]])
+        edges.append({
+            "from": id_dict[hash("g" + el["gene_name"])],
+            "to": id_dict[hash("d" + el["disease_name"])]
+        })
+        connected_nodes.add(id_dict[hash("g" + el["gene_name"])])
         gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
-        connected_nodes.add(id_dict[el["disease_name"]])
+        connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
         dise_set.add((el["disease_name"], el["umls_disease_id"]))
         # disease to phenotypes
         for n, pheno in enumerate(el["phenotype_names"]):
-            if id_dict[el["disease_name"]] != id_dict[pheno]:
-                edges.append({"from": id_dict[el["disease_name"]],
-                              "to": id_dict[pheno]})
-                connected_nodes.add(id_dict[el["disease_name"]])
-                dise_set.add((el["disease_name"], el["umls_disease_id"]))
-                connected_nodes.add(id_dict[pheno])
-                phen_set.add((pheno, el["phenotype_ids"][n]))
+            try:
+                if id_dict[hash("d" + el["disease_name"])] != id_dict[hash("p" + pheno)]:
+                    edges.append({
+                        "from": id_dict[hash("d" + el["disease_name"])],
+                        "to": id_dict[hash("p" + pheno)]
+                    })
+                    connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
+                    dise_set.add((el["disease_name"], el["umls_disease_id"]))
+                    connected_nodes.add(id_dict[hash("p" + pheno)])
+                    phen_set.add((pheno, el["phenotype_ids"][n]))
+            except KeyError:
+                pass
 
     # delete orphan nodes
-    candidates = [n for n, el in enumerate(nodes, start=1)]
-    for n in candidates:
-        if n not in connected_nodes:
-            del nodes[n]
+    true_nodes = [el for el in nodes if el["id"] in connected_nodes]
 
-    return {"nodes": nodes, "edges": edges, "variants": vars_set,
+    # candidates = [n for n, el in enumerate(nodes, start=1)]
+    # for n in candidates:
+    #     if n not in connected_nodes:
+    #         del nodes[n]
+
+    return {"nodes": true_nodes, "edges": edges, "variants": vars_set,
             "genes": gene_set, "diseases": dise_set, "phenotypes": phen_set}
 
 
@@ -1073,15 +1150,21 @@ def get_vars_from_phenotype(phenotype: str) -> pd.DataFrame:
                                      "alt_allele", "phenotype_name",
                                      "phenotype_id"])
 
-    loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(
-        apy.aquery(attributes=["chr_name", "chrom_start",
-                               "consequence_allele_string",
-                               "ensembl_gene_stable_id", "associated_gene",
-                               "refsnp_id", "phenotype_description"],
-                   filters={"snp_filter": [el.dbsnp_id for el in vars_maps]},
-                   dataset="hsapiens_snp")
-    )
+    # loop = asyncio.get_event_loop()
+    # res = loop.run_until_complete(
+    #     apy.aquery(attributes=["chr_name", "chrom_start",
+    #                            "consequence_allele_string",
+    #                            "ensembl_gene_stable_id", "associated_gene",
+    #                            "refsnp_id", "phenotype_description"],
+    #                filters={"snp_filter": [el.dbsnp_id for el in vars_maps]},
+    #                dataset="hsapiens_snp")
+    # )
+    res = apy.query(attributes=["chr_name", "chrom_start",
+                                "consequence_allele_string",
+                                "ensembl_gene_stable_id", "associated_gene",
+                                "refsnp_id", "phenotype_description"],
+                    filters={"snp_filter": [el.dbsnp_id for el in vars_maps]},
+                    dataset="hsapiens_snp")
     res.rename({"Chromosome/scaffold name": "chromosome",
                 "Variant name": "dbsnp_id",
                 "Chromosome/scaffold position start (bp)": "start_pos",
@@ -1223,18 +1306,22 @@ def network_from_phenotype_json(final_json: dict) -> dict:
     variants = []
     variants.extend([el["variant"] for el in var_json])
     variants = set(variants)
+    variants.discard("")
 
     v_genes = []
     v_genes.extend([el["gene_name"] for el in var_json])
     v_genes = set(v_genes)
+    v_genes.discard("")
 
     genes = []
     genes.extend([el["gene_name"] for el in gen_json])
     genes = set(genes)
+    genes.discard("")
 
     diseases = []
     diseases.extend([el["disease_name"] for el in dis_json])
     diseases = set(diseases)
+    diseases.discard("")
 
     nodes = []
     edges = []
@@ -1242,32 +1329,42 @@ def network_from_phenotype_json(final_json: dict) -> dict:
     id_dict = {}
 
     ids += 1
+    node = Node("p", ids, phenotype)
+    id_dict[node.uid] = ids
     nodes.append({"id": ids, "label": phenotype,
                   "color": {"background": "#93B5C6", "border": "#7995A3"}})
-    id_dict[phenotype] = ids
+    # id_dict[phenotype] = ids
 
     for el in variants:
         ids += 1
+        node = Node("v", ids, el)
+        id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el,
                       "color": {"background": "#F9CF45", "border": "#CCAA39"}})
-        id_dict[el] = ids
+        # id_dict[el] = ids
     for el in v_genes:
         ids += 1
         # if el.startswith("MT-"):
         #     el = el.split("-")[1]
+        node = Node("g", ids, el)
+        id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el,
                       "color": {"background": "#739E82", "border": "#5F826B"}})
-        id_dict[el] = ids
+        # id_dict[el] = ids
     for el in genes:
         ids += 1
+        node = Node("g", ids, el)
+        id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el,
                       "color": {"background": "#739E82", "border": "#5F826B"}})
-        id_dict[el] = ids
+        # id_dict[el] = ids
     for el in diseases:
         ids += 1
+        node = Node("d", ids, el)
+        id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el,
                       "color": {"background": "#D7816A", "border": "#B06A57"}})
-        id_dict[el] = ids
+        # id_dict[el] = ids
 
     connected_nodes = set()
     vars_set = set()  # (variant, dbsnp_id, gene_name)
@@ -1277,44 +1374,53 @@ def network_from_phenotype_json(final_json: dict) -> dict:
 
     for el in var_json:
         # phenotype to variants
-        edges.append({"from": id_dict[el["phenotype_name"]],
-                      "to": id_dict[el["variant"]]})
-        connected_nodes.add(id_dict[el["phenotype_name"]])
+        edges.append({
+            "from": id_dict[hash("p" + el["phenotype_name"])],
+            "to": id_dict[hash("v" + el["variant"])]
+        })
+        connected_nodes.add(id_dict[hash("p" + el["phenotype_name"])])
         phen_set.add((el["phenotype_name"], el["phenotype_id"]))
-        connected_nodes.add(id_dict[el["variant"]])
+        connected_nodes.add(id_dict[hash("v" + el["variant"])])
         vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
         # variant to gene
-        edges.append({"from": id_dict[el["variant"]],
-                      "to": id_dict[el["gene_name"]]})
-        connected_nodes.add(id_dict[el["variant"]])
+        edges.append({
+            "from": id_dict[hash("v" + el["variant"])],
+            "to": id_dict[hash("g" + el["gene_name"])]
+        })
+        connected_nodes.add(id_dict[hash("v" + el["variant"])])
         vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
-        connected_nodes.add(id_dict[el["gene_name"]])
+        connected_nodes.add(id_dict[hash("g" + el["gene_name"])])
         gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
     for el in gen_json:
         # phenotype to genes
-        edges.append({"from": id_dict[el["phenotype_name"]],
-                      "to": id_dict[el["gene_name"]]})
-        connected_nodes.add(id_dict[el["phenotype_name"]])
+        edges.append({
+            "from": id_dict[hash("p" + el["phenotype_name"])],
+            "to": id_dict[hash("g" + el["gene_name"])]
+        })
+        connected_nodes.add(id_dict[hash("p" + el["phenotype_name"])])
         phen_set.add((el["phenotype_name"], el["phenotype_id"]))
-        connected_nodes.add(id_dict[el["gene_name"]])
+        connected_nodes.add(id_dict[hash("g" + el["gene_name"])])
         gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
     for el in dis_json:
         # phenotype to diseases
-        edges.append({"from": id_dict[el["phenotype_name"]],
-                      "to": id_dict[el["disease_name"]]})
-        connected_nodes.add(id_dict[el["phenotype_name"]])
+        edges.append({
+            "from": id_dict[hash("p" + el["phenotype_name"])],
+            "to": id_dict[hash("d" + el["disease_name"])]
+        })
+        connected_nodes.add(id_dict[hash("p" + el["phenotype_name"])])
         phen_set.add((el["phenotype_name"], el["phenotype_id"]))
-        connected_nodes.add(id_dict[el["disease_name"]])
+        connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
         dise_set.add((el["disease_name"], el["umls_disease_id"]))
 
-    # TODO: this orphan nodes deletion does not work every time?!
     # delete orphan nodes
-    candidates = [n for n, el in enumerate(nodes, start=1)]
-    for n in candidates:
-        if n not in connected_nodes and n in nodes:
-            del nodes[n]
+    true_nodes = [el for el in nodes if el["id"] in connected_nodes]
 
-    return {"nodes": nodes, "edges": edges, "variants": vars_set,
+    # candidates = [n for n, el in enumerate(nodes, start=1)]
+    # for n in candidates:
+    #     if n not in connected_nodes and n in nodes:
+    #         del nodes[n]
+
+    return {"nodes": true_nodes, "edges": edges, "variants": vars_set,
             "genes": gene_set, "diseases": dise_set, "phenotypes": phen_set}
 
 
@@ -1435,15 +1541,21 @@ def get_vars_from_disease_id(disease_id: str) -> pd.DataFrame:
                                      "dbsnp_id", "variant", "umls_disease_id",
                                      "disease_name", "disease_id"])
 
-    loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(
-        apy.aquery(attributes=["chr_name", "chrom_start",
-                               "consequence_allele_string",
-                               "ensembl_gene_stable_id", "associated_gene",
-                               "refsnp_id"],
-                   filters={"snp_filter": [el.dbsnp_id for el in ass_vars]},
-                   dataset="hsapiens_snp")
-    )
+    # loop = asyncio.get_event_loop()
+    # res = loop.run_until_complete(
+    #     apy.aquery(attributes=["chr_name", "chrom_start",
+    #                            "consequence_allele_string",
+    #                            "ensembl_gene_stable_id", "associated_gene",
+    #                            "refsnp_id"],
+    #                filters={"snp_filter": [el.dbsnp_id for el in ass_vars]},
+    #                dataset="hsapiens_snp")
+    # )
+    res = apy.query(attributes=["chr_name", "chrom_start",
+                                "consequence_allele_string",
+                                "ensembl_gene_stable_id", "associated_gene",
+                                "refsnp_id"],
+                    filters={"snp_filter": [el.dbsnp_id for el in ass_vars]},
+                    dataset="hsapiens_snp")
     res.rename({"Chromosome/scaffold name": "chromosome",
                 "Variant name": "dbsnp_id",
                 "Chromosome/scaffold position start (bp)": "start_pos",
@@ -1579,18 +1691,22 @@ def network_from_disease_json(final_json: dict) -> dict:
     variants = []
     variants.extend([el["variant"] for el in var_json])
     variants = set(variants)
+    variants.discard("")
 
     v_genes = []
     v_genes.extend([el["gene_name"] for el in var_json])
     v_genes = set(v_genes)
+    v_genes.discard("")
 
     genes = []
     genes.extend([el["gene_name"] for el in gen_json])
     genes = set(genes)
+    genes.discard("")
 
     phenos = []
     phenos.extend([el["phenotype_name"] for el in phen_json])
     phenos = set(phenos)
+    phenos.discard("")
 
     nodes = []
     edges = []
@@ -1598,32 +1714,43 @@ def network_from_disease_json(final_json: dict) -> dict:
     id_dict = {}
 
     ids += 1
+    node = Node("d", ids, disease)
+    id_dict[node.uid] = ids
     nodes.append({"id": ids, "label": disease,
                   "color": {"background": "#D7816A", "border": "#B06A57"}})
-    id_dict[disease] = ids
+    # id_dict[disease] = ids
 
     for el in variants:
         ids += 1
+        node = Node("v", ids, el)
+        id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el,
                       "color": {"background": "#F9CF45", "border": "#CCAA39"}})
-        id_dict[el] = ids
+        # id_dict[el] = ids
     for el in v_genes:
         ids += 1
-        nodes.append({"id": ids, "label": el,
-                      "color": {"background": "#739E82", "border": "#5F826B"}})
-        id_dict[el] = ids
+        if el is not None:
+            node = Node("g", ids, el)
+            id_dict[node.uid] = ids
+            nodes.append({"id": ids, "label": el,
+                          "color": {"background": "#739E82", "border": "#5F826B"}})
+            # id_dict[el] = ids
     for el in genes:
         ids += 1
+        node = Node("g", ids, el)
+        id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el,
                       "color": {"background": "#739E82", "border": "#5F826B"}})
-        id_dict[el] = ids
+        # id_dict[el] = ids
     for el in phenos:
         if el != disease:
             ids += 1
+            node = Node("p", ids, el)
+            id_dict[node.uid] = ids
             nodes.append({"id": ids, "label": el,
                           "color": {"background": "#93B5C6",
                                     "border": "#7995A3"}})
-            id_dict[el] = ids
+            # id_dict[el] = ids
 
     connected_nodes = set()
     vars_set = set()  # (variant, dbsnp_id, gene_name)
@@ -1633,45 +1760,58 @@ def network_from_disease_json(final_json: dict) -> dict:
 
     for el in var_json:
         # disease to variants
-        edges.append({"from": id_dict[el["disease_name"]],
-                      "to": id_dict[el["variant"]]})
-        connected_nodes.add(id_dict[el["disease_name"]])
+        edges.append({
+            "from": id_dict[hash("d" + el["disease_name"])],
+            "to": id_dict[hash("v" + el["variant"])]
+        })
+        connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
         dise_set.add((el["disease_name"], el["umls_disease_id"]))
-        connected_nodes.add(id_dict[el["variant"]])
+        connected_nodes.add(id_dict[hash("v" + el["variant"])])
         vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
         # variants to genes
-        edges.append({"from": id_dict[el["variant"]],
-                      "to": id_dict[el["gene_name"]]})
-        connected_nodes.add(id_dict[el["variant"]])
-        vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
-        connected_nodes.add(id_dict[el["gene_name"]])
-        gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
+        try:
+            edges.append({
+                "from": id_dict[hash("v" + el["variant"])],
+                "to": id_dict[hash("g" + el["gene_name"])]
+            })
+            connected_nodes.add(id_dict[hash("v" + el["variant"])])
+            vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
+            connected_nodes.add(id_dict[hash("g" + el["gene_name"])])
+            gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
+        except TypeError:
+            pass
     for el in gen_json:
         # disease to genes
-        edges.append({"from": id_dict[el["disease_name"]],
-                      "to": id_dict[el["gene_name"]]})
-        connected_nodes.add(id_dict[el["disease_name"]])
+        edges.append({
+            "from": id_dict[hash("d" + el["disease_name"])],
+            "to": id_dict[hash("g" + el["gene_name"])]
+        })
+        connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
         dise_set.add((el["disease_name"], el["umls_disease_id"]))
-        connected_nodes.add(id_dict[el["gene_name"]])
+        connected_nodes.add(id_dict[hash("g" + el["gene_name"])])
         gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
     for el in phen_json:
         # disease to phenotypes
-        if id_dict[el["phenotype_name"]] != "" \
-                and id_dict[el["disease_name"]] != "":
-            if id_dict[el["phenotype_name"]] != id_dict[el["disease_name"]]:
-                edges.append({"from": id_dict[el["disease_name"]],
-                              "to": id_dict[el["phenotype_name"]]})
-                connected_nodes.add(id_dict[el["disease_name"]])
+        if id_dict[hash("p" + el["phenotype_name"])] != "" \
+                and id_dict[hash("d" + el["disease_name"])] != "":
+            if id_dict[hash("p" + el["phenotype_name"])] != id_dict[hash("d" + el["disease_name"])]:
+                edges.append({
+                    "from": id_dict[hash("d" + el["disease_name"])],
+                    "to": id_dict[hash("p" + el["phenotype_name"])]
+                })
+                connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
                 dise_set.add((el["disease_name"], el["umls_disease_id"]))
-                connected_nodes.add(id_dict[el["phenotype_name"]])
+                connected_nodes.add(id_dict[hash("p" + el["phenotype_name"])])
                 phen_set.add((el["phenotype_name"], el["phenotype_id"]))
 
     # delete orphan nodes
-    candidates = [n for n, el in enumerate(nodes, start=1)]
-    for n in candidates:
-        if n not in connected_nodes and n in nodes:
-            del nodes[n]
+    true_nodes = [el for el in nodes if el["id"] in connected_nodes]
 
-    return {"nodes": nodes, "edges": edges, "variants": vars_set,
+    # candidates = [n for n, el in enumerate(nodes, start=1)]
+    # for n in candidates:
+    #     if n not in connected_nodes and n in nodes:
+    #         del nodes[n]
+
+    return {"nodes": true_nodes, "edges": edges, "variants": vars_set,
             "genes": gene_set, "diseases": dise_set, "phenotypes": phen_set}
 

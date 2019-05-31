@@ -231,6 +231,7 @@ network_genes.ipynb
 network_phenos.ipynb
 network_variants.ipynb
 .pybiomart.sqlite
+logs/
 
 # SSH keys
 hmtphenome

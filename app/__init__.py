@@ -50,37 +50,17 @@ from app.site.models import Mitocarta, Phenotypes
 
 @app.cli.command()
 def create_db():
-    click.echo("Creating new database...")
+    click.echo("Creating new database... ", nl=False)
+    db.drop_all()
     db.create_all()
-    # db.session.commit()
-    if not os.path.exists(SQLALCHEMY_MIGRATE_REPO):
-        api.create(SQLALCHEMY_MIGRATE_REPO, "database repository")
-        api.version_control(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
-    else:
-        api.version_control(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO,
-                            api.version(SQLALCHEMY_MIGRATE_REPO))
     click.echo("Done.")
-
-
-from app.site.scripts import populate_genes, populate_phenos, populate_diseases, populate_genes_autocomplete
 
 
 @app.cli.command()
 def migrate_db():
-    click.echo("Migrating database to new version...")
-    v = api.db_version(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
-    migration = SQLALCHEMY_MIGRATE_REPO + ("/versions/%03d_migration.py" % (v + 1))
-    tmp_module = imp.new_module("old_model")
-    old_model = api.create_model(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
-
-    exec(old_model, tmp_module.__dict__)
-
-    script = api.make_update_script_for_model(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO,
-                                              tmp_module.meta, db.metadata)
-    open(migration, "wt").write(script)
-    api.upgrade(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
-
-    v = api.db_version(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
+    from app.site.scripts import populate_genes, populate_phenos, \
+        populate_diseases, populate_genes_autocomplete
+    click.echo("Migrating database to new version... ", nl=False)
 
     with open("app/static/js/script.js", "w") as f:
         # f.write(populate_genes())
@@ -96,20 +76,22 @@ def migrate_db():
                                        str(datetime.date.today().year))
         f.write("latest_update = " + repr(latest_update) + "\n")
 
-    click.echo("New migration saved as {}".format(migration))
-    click.echo("Current database version: {}".format(v))
+    click.echo("Done.")
 
 
 @app.cli.command()
 def update_db():
-    click.echo("Updating database...")
-    sources = ("Mitocarta", "HpoDisGenePhen", "HpoGenePhen", "HpoPhenGene", "Omim", "Orphanet",
-               "GeneDiseaseAss", "VarDiseaseAss", "DiseaseMappings", "Phenotypes", "Diseases")
+    click.echo("Updating database tables...")
+    sources = ("Mitocarta", "HpoDisGenePhen", "HpoGenePhen", "HpoPhenGene",
+               "Omim", "Orphanet", "GeneDiseaseAss", "VarDiseaseAss",
+               "DiseaseMappings", "Phenotypes", "Diseases")
     for el in sources:
-        click.echo("Updating {} table...".format(el))
+        click.echo("\tUpdating {} table... ".format(el), nl=False)
         df = pd.read_csv("app/update/data/tables/{}.csv".format(el))
-        df.reset_index(drop=True, inplace=True)
-        df.to_sql(name=el, con=db.engine, index=False, if_exists="append")
+        df.reset_index(inplace=True)
+        df.rename(columns={"index": "id"}, inplace=True)
+        df.to_sql(name=el, con=db.engine, index=False, if_exists="replace",
+                  index_label="id")
         click.echo("Complete.")
     click.echo("Database correctly updated. Please migrate it before use.")
 

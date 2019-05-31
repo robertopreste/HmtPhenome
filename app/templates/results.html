@@ -117,10 +117,12 @@
                     {% if genes|length > 0 %}
                         {% for el in genes %}
                             <tr>
+                            {% if el[1] != None %}
                             {% if el[1].startswith("LRG") %}
                                 <td><a href="http://ftp.ebi.ac.uk/pub/databases/lrgex/{{ el[1] }}.xml" title="Gene" target="_blank">{{ el[0] }}</a></td>
                             {% else %}
                                 <td><a href="https://www.ensembl.org/id/{{ el[1] }}" title="Gene" target="_blank">{{ el[0] }}</a></td>
+                            {% endif %}
                             {% endif %}
                             </tr>
                         {% endfor %}
