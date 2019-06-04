@@ -6,6 +6,7 @@ from app.site.models import Mitocarta, Phenotypes, Diseases, Omim, Orphanet, \
 import pandas as pd
 import numpy as np
 import requests
+import re
 import apybiomart as apy
 from fuzzywuzzy import fuzz
 import json
@@ -326,6 +327,18 @@ def create_variant_string(chrom: Union[int, str],
         change = "_>_"
 
     return base_str.format(chrom, nt_start, change)
+
+
+def parse_variant_string(variant) -> set:
+    """Parse the variant string created by create_variant_string().
+
+    The input variant string should be in the format chr:posA>T.
+
+    :param str variant: input variant string
+    :return: list(var_chr, var_pos, var_ref, var_alt)
+    """
+    rgx = re.compile(r"(chr.+):(\d+)(\w)>(\w)")
+    return rgx.findall(variant)[0]
 
 
 def ensembl_gene_id_to_entrez(ens_gene_id: str) -> pd.DataFrame:
