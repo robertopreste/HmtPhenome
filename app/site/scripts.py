@@ -180,6 +180,15 @@ function populateGenes(s1, s2) {
 
 
 async def get_json_request(url, headers=None):
+    """Asynchronous request to a generic url, returning a JSON dictionary.
+
+    :param url: url to request
+
+    :param headers: dict of headers
+        (default: {"Content-Type": "application/json"})
+
+    :return:
+    """
     if headers is None:
         headers = {"Content-Type": "application/json"}
     async with aiohttp.ClientSession() as session:
@@ -190,22 +199,33 @@ async def get_json_request(url, headers=None):
 
 
 def get_json_sync_request(url, headers=None):
+    """Synchronous request to a generic url, returning a JSON dictionary.
+
+    :param url: url to request
+
+    :param headers: dict of headers
+        (default: {"Content-Type": "application/json"})
+
+    :return:
+    """
     if headers is None:
         headers = {"Content-Type": "application/json"}
     res = requests.get(url, headers=headers)
     return res.json()
 
 
-def pheno_name_to_id(pheno_name: str) -> List[str]:
-    """
-    Retrieve the related HP id from a given phenotype name.
+async def pheno_name_to_id(pheno_name: str) -> List[str]:
+    """Retrieve the related HP id from a given phenotype name.
+
     :param str pheno_name: phenotype name
+
     :return: List[str] with the related id(s)
     """
     url = "https://hpo.jax.org/api/hpo/search?q={}".format(pheno_name)
     # loop = asyncio.get_event_loop()
     # res = loop.run_until_complete(get_json_request(url))
-    res = get_json_sync_request(url)
+    # res = get_json_sync_request(url)
+    res = await get_json_request(url)
     ids = []
 
     if res["termsTotalCount"] == 0:
@@ -218,7 +238,7 @@ def pheno_name_to_id(pheno_name: str) -> List[str]:
     return ids
 
 
-def pheno_id_to_term(pheno_id: str) -> str:
+async def pheno_id_to_term(pheno_id: str) -> str:
     """
     Retrieve the common phenotype name from a given ID. It can retrieve
     the data either from the local database (for HP IDs) or from the web
@@ -245,7 +265,8 @@ def pheno_id_to_term(pheno_id: str) -> str:
         iri_url = "iri=http://www.ebi.ac.uk/efo/EFO_{}".format(efo_id)
         # loop = asyncio.get_event_loop()
         # res = loop.run_until_complete(get_json_request(base_url + iri_url))
-        res = get_json_sync_request(base_url + iri_url)
+        # res = get_json_sync_request(base_url + iri_url)
+        res = await get_json_request(base_url + iri_url)
         pheno_name = res["_embedded"]["terms"][0]["label"]
 
     return pheno_name
@@ -337,11 +358,11 @@ def parse_variant_string(variant) -> set:
     :param str variant: input variant string
     :return: list(var_chr, var_pos, var_ref, var_alt)
     """
-    rgx = re.compile(r"(chr.+):(\d+)(\w)>(\w)")
+    rgx = re.compile(r"(chr.+):(\d+)(\w+)")
     return rgx.findall(variant)[0]
 
 
-def ensembl_gene_id_to_entrez(ens_gene_id: str) -> pd.DataFrame:
+async def ensembl_gene_id_to_entrez(ens_gene_id: str) -> pd.DataFrame:
     """
     Convert an Ensembl gene ID to its related Entrez gene ID, using Biomart.
     :param str ens_gene_id: query Ensembl gene ID
@@ -355,10 +376,14 @@ def ensembl_gene_id_to_entrez(ens_gene_id: str) -> pd.DataFrame:
     #                filters={"link_ensembl_gene_id": ens_gene_id},
     #                dataset="hsapiens_gene_ensembl")
     # )
-    res = apy.query(attributes=["ensembl_gene_id", "external_gene_name",
-                                "entrezgene"],
-                    filters={"link_ensembl_gene_id": ens_gene_id},
-                    dataset="hsapiens_gene_ensembl")
+    # res = apy.query(attributes=["ensembl_gene_id", "external_gene_name",
+    #                             "entrezgene"],
+    #                 filters={"link_ensembl_gene_id": ens_gene_id},
+    #                 dataset="hsapiens_gene_ensembl")
+    res = await apy.aquery(attributes=["ensembl_gene_id", "external_gene_name",
+                                       "entrezgene"],
+                           filters={"link_ensembl_gene_id": ens_gene_id},
+                           dataset="hsapiens_gene_ensembl")
     res.rename({"Gene stable ID": "ensembl_gene_id", "Gene name": "gene_name",
                 "NCBI gene ID": "entrez_gene_id"}, axis=1, inplace=True)
 
@@ -368,7 +393,7 @@ def ensembl_gene_id_to_entrez(ens_gene_id: str) -> pd.DataFrame:
 # FROM VARIANT POSITION #
 
 
-def get_dbsnp_from_variant(chrom: Union[int, str],
+async def get_dbsnp_from_variant(chrom: Union[int, str],
                            var_start: Union[int, str],
                            var_end: Optional[Union[int, str]] = None) -> pd.DataFrame:
     """
@@ -395,11 +420,16 @@ def get_dbsnp_from_variant(chrom: Union[int, str],
     #                         "end": var_end},
     #                dataset="hsapiens_snp")
     # )
-    res = apy.query(attributes=["chr_name", "chrom_start",
-                                "consequence_allele_string", "refsnp_id"],
-                    filters={"chr_name": chrom, "start": var_start,
-                             "end": var_end},
-                    dataset="hsapiens_snp")
+    # res = apy.query(attributes=["chr_name", "chrom_start",
+    #                             "consequence_allele_string", "refsnp_id"],
+    #                 filters={"chr_name": chrom, "start": var_start,
+    #                          "end": var_end},
+    #                 dataset="hsapiens_snp")
+    res = await apy.aquery(attributes=["chr_name", "chrom_start",
+                                       "consequence_allele_string", "refsnp_id"],
+                           filters={"chr_name": chrom, "start": var_start,
+                                    "end": var_end},
+                           dataset="hsapiens_snp")
     res.rename({"Chromosome/scaffold name": "chromosome",
                 "Chromosome/scaffold position start (bp)": "start_pos",
                 "Consequence specific allele": "ref/alt allele",
@@ -507,7 +537,7 @@ def get_phenos_from_umls(umls_id: str) -> pd.DataFrame:
     return df
 
 
-def json_from_variant(variant_chr: Union[int, str],
+async def json_from_variant(variant_chr: Union[int, str],
                       variant_start: Union[int, str],
                       variant_end: Optional[Union[int, str]] = None) -> dict:
     """
@@ -518,7 +548,7 @@ def json_from_variant(variant_chr: Union[int, str],
     :return: dict json("variants": [variants list])
     """
     gene = get_gene_from_variant(variant_chr, variant_start, variant_end)
-    dbsnps = get_dbsnp_from_variant(variant_chr, variant_start, variant_end)
+    dbsnps = await get_dbsnp_from_variant(variant_chr, variant_start, variant_end)
     disease_df = pd.DataFrame(columns=["dbsnp_id", "umls_disease_id",
                                        "disease_name", "ass_score"])
     phenos_df = pd.DataFrame(columns=["umls_disease_id", "disease_name",
@@ -721,7 +751,7 @@ def network_from_variant_json(final_json: dict) -> dict:
 # FROM GENE #
 
 
-def get_vars_from_gene(ens_gene_id: str) -> pd.DataFrame:
+async def get_vars_from_gene(ens_gene_id: str) -> pd.DataFrame:
     """
     Retrieve all variants associated with a specific Ensembl gene ID,
     using Ensembl REST.
@@ -743,7 +773,8 @@ def get_vars_from_gene(ens_gene_id: str) -> pd.DataFrame:
     ext = "/overlap/id/{}?feature=variation".format(ens_gene_id)
     # loop = asyncio.get_event_loop()
     # res = loop.run_until_complete(get_json_request(server + ext))
-    res = get_json_sync_request(server + ext)
+    # res = get_json_sync_request(server + ext)
+    res = await get_json_request(server + ext)
 
     df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome",
                                "ref_allele", "start_pos", "alt_allele",
@@ -789,7 +820,7 @@ def get_vars_from_gene(ens_gene_id: str) -> pd.DataFrame:
     return df
 
 
-def get_diseases_from_gene(gene: str,
+async def get_diseases_from_gene(gene: str,
                            with_vars: bool = False) -> pd.DataFrame:
     """Retrieve diseases associated to a specific gene, using Ensembl.
     :param str gene: query gene Ensembl ID or common name
@@ -809,7 +840,8 @@ def get_diseases_from_gene(gene: str,
     )
     # loop = asyncio.get_event_loop()
     # res = loop.run_until_complete(get_json_request(server + ext))
-    res = get_json_sync_request(server + ext)
+    # res = get_json_sync_request(server + ext)
+    res = await get_json_request(server + ext)
 
     if with_vars:
         df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "variation",
@@ -867,7 +899,7 @@ def get_diseases_from_gene(gene: str,
     return df
 
 
-def json_from_gene(gene_input: str) -> dict:
+async def json_from_gene(gene_input: str) -> dict:
     """
     Create the final json structure from gene data.
     :param str gene_input: Ensemble gene ID to use for the queries
@@ -880,7 +912,7 @@ def json_from_gene(gene_input: str) -> dict:
     gene_df = pd.DataFrame({"ensembl_gene_id": [gene_input],
                             "gene_name": [gene_name]})
     gene_json = json.loads(gene_df.to_json(orient="records"))
-    vars_df = get_vars_from_gene(gene_input)  # we might want to add phenotypes --> get_diseases_from_dbsnp()
+    vars_df = await get_vars_from_gene(gene_input)  # we might want to add phenotypes --> get_diseases_from_dbsnp()
     vars_df["disease_name"] = ""
     vars_df["umls_disease_id"] = ""
 
@@ -898,8 +930,9 @@ def json_from_gene(gene_input: str) -> dict:
                  inplace=True)
     vars_json = json.loads(vars_df.to_json(orient="records"))
 
-    disease_df = get_diseases_from_gene(gene_input)
-    entrez_gene_id = ensembl_gene_id_to_entrez(gene_input).entrez_gene_id.values[0]
+    disease_df = await get_diseases_from_gene(gene_input)
+    entrez_gene = await ensembl_gene_id_to_entrez(gene_input)
+    entrez_gene_id = entrez_gene.entrez_gene_id.values[0]
     gene_to_disease = GeneDiseaseAss.query.filter(
         GeneDiseaseAss.gene_symbol == entrez_gene_id
     ).all()
@@ -933,7 +966,7 @@ def json_from_gene(gene_input: str) -> dict:
     for el in disease_json:
         el["phenotype_names"] = []
         for pheno in el["phenotype_ids"]:
-            pheno_name = pheno_id_to_term(pheno)
+            pheno_name = await pheno_id_to_term(pheno)
             el["phenotype_names"].append(pheno_name)
             phenos_df = phenos_df.append(pd.DataFrame(
                 {"phenotype_id": [pheno], "phenotype_name": [pheno_name]}
@@ -1134,7 +1167,7 @@ def get_genes_from_phenotype(phenotype: str) -> pd.DataFrame:
     return df
 
 
-def get_vars_from_phenotype(phenotype: str) -> pd.DataFrame:
+async def get_vars_from_phenotype(phenotype: str) -> pd.DataFrame:
     """
     Retrieve variants related to a phenotype, exploiting the
     get_genes_from_phenotype() and get_vars_from_gene_name() functions.
@@ -1172,12 +1205,19 @@ def get_vars_from_phenotype(phenotype: str) -> pd.DataFrame:
     #                filters={"snp_filter": [el.dbsnp_id for el in vars_maps]},
     #                dataset="hsapiens_snp")
     # )
-    res = apy.query(attributes=["chr_name", "chrom_start",
-                                "consequence_allele_string",
-                                "ensembl_gene_stable_id", "associated_gene",
-                                "refsnp_id", "phenotype_description"],
-                    filters={"snp_filter": [el.dbsnp_id for el in vars_maps]},
-                    dataset="hsapiens_snp")
+    # res = apy.query(attributes=["chr_name", "chrom_start",
+    #                             "consequence_allele_string",
+    #                             "ensembl_gene_stable_id", "associated_gene",
+    #                             "refsnp_id", "phenotype_description"],
+    #                 filters={"snp_filter": [el.dbsnp_id for el in vars_maps]},
+    #                 dataset="hsapiens_snp")
+    res = await apy.aquery(attributes=["chr_name", "chrom_start",
+                                       "consequence_allele_string",
+                                       "ensembl_gene_stable_id",
+                                       "associated_gene", "refsnp_id",
+                                       "phenotype_description"],
+                           filters={"snp_filter": [el.dbsnp_id for el in vars_maps]},
+                           dataset="hsapiens_snp")
     res.rename({"Chromosome/scaffold name": "chromosome",
                 "Variant name": "dbsnp_id",
                 "Chromosome/scaffold position start (bp)": "start_pos",
@@ -1221,7 +1261,8 @@ def get_vars_from_phenotype(phenotype: str) -> pd.DataFrame:
             gene_name = ""
             if type(el) == str:
                 try:
-                    gene_name = ensembl_gene_id_to_entrez(el).gene_name.values[0]
+                    gene_name_entr = await ensembl_gene_id_to_entrez(el)
+                    gene_name = gene_name_entr.gene_name.values[0]
                 except IndexError:
                     if el.startswith("LRG"):
                         gene_name = el
@@ -1271,7 +1312,7 @@ def get_diseases_from_phenotype(phenotype: str) -> pd.DataFrame:
     return df
 
 
-def json_from_phenotype(pheno_input: str) -> dict:
+async def json_from_phenotype(pheno_input: str) -> dict:
     """
     Create the final json structure from phenotype data.
     :param str pheno_input: phenotype ID to use for the queries
@@ -1279,7 +1320,7 @@ def json_from_phenotype(pheno_input: str) -> dict:
     "variants": [variants list], "genes": [genes list],
     "diseases": [diseases list])
     """
-    vars_df = get_vars_from_phenotype(pheno_input)
+    vars_df = await get_vars_from_phenotype(pheno_input)
     gene_df = get_genes_from_phenotype(pheno_input)
     disease_df = get_diseases_from_phenotype(pheno_input)
 
@@ -1529,7 +1570,7 @@ def get_genes_from_disease_id(disease_id: str) -> pd.DataFrame:
     return df
 
 
-def get_vars_from_disease_id(disease_id: str) -> pd.DataFrame:
+async def get_vars_from_disease_id(disease_id: str) -> pd.DataFrame:
     """
     Retrieve variants associated to a specific disease, getting their
     dbSNP ID and then the actual variant string exploiting Ensembl API.
@@ -1563,12 +1604,18 @@ def get_vars_from_disease_id(disease_id: str) -> pd.DataFrame:
     #                filters={"snp_filter": [el.dbsnp_id for el in ass_vars]},
     #                dataset="hsapiens_snp")
     # )
-    res = apy.query(attributes=["chr_name", "chrom_start",
-                                "consequence_allele_string",
-                                "ensembl_gene_stable_id", "associated_gene",
-                                "refsnp_id"],
-                    filters={"snp_filter": [el.dbsnp_id for el in ass_vars]},
-                    dataset="hsapiens_snp")
+    # res = apy.query(attributes=["chr_name", "chrom_start",
+    #                             "consequence_allele_string",
+    #                             "ensembl_gene_stable_id", "associated_gene",
+    #                             "refsnp_id"],
+    #                 filters={"snp_filter": [el.dbsnp_id for el in ass_vars]},
+    #                 dataset="hsapiens_snp")
+    res = await apy.aquery(attributes=["chr_name", "chrom_start",
+                                       "consequence_allele_string",
+                                       "ensembl_gene_stable_id",
+                                       "associated_gene", "refsnp_id"],
+                           filters={"snp_filter": [el.dbsnp_id for el in ass_vars]},
+                           dataset="hsapiens_snp")
     res.rename({"Chromosome/scaffold name": "chromosome",
                 "Variant name": "dbsnp_id",
                 "Chromosome/scaffold position start (bp)": "start_pos",
@@ -1650,7 +1697,7 @@ def get_phenos_from_disease_id(disease_id: str) -> pd.DataFrame:
     return df
 
 
-def json_from_disease(disease_input: str) -> dict:
+async def json_from_disease(disease_input: str) -> dict:
     """
     Create the final json structure from disease data.
     :param str disease_input: disease ID to use for the queries
@@ -1658,7 +1705,7 @@ def json_from_disease(disease_input: str) -> dict:
     "phenotype": [phenotypes list], "variants": [variants list],
     "genes": [genes list])
     """
-    vars_df = get_vars_from_disease_id(disease_input)
+    vars_df = await get_vars_from_disease_id(disease_input)
     gene_df = get_genes_from_disease_id(disease_input)
     pheno_df = get_phenos_from_disease_id(disease_input)
 

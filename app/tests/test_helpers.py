@@ -42,19 +42,20 @@ def test_mt_ins_variant():
     assert result == expect
 
 
-def test_pheno_name_to_id():
-    pheno_name = "Myopia"
-    expect = ["HP:0000545", "HP:0031624", "HP:0025573", "HP:0500066",
-              "HP:0011003", "HP:0031730"]
-    result = pheno_name_to_id(pheno_name)
+@pytest.mark.asyncio
+async def test_pheno_name_to_id():
+    pheno_name = "Nausea"
+    expect = ["HP:0002017", "HP:0002018"]
+    result = await pheno_name_to_id(pheno_name)
 
     assert result == expect
 
 
-def test_pheno_id_to_term_HP():
+@pytest.mark.asyncio
+async def test_pheno_id_to_term_HP():
     pheno_id = "HP:0000545"
     expect = "Myopia"
-    result = pheno_id_to_term(pheno_id)
+    result = await pheno_id_to_term(pheno_id)
 
     assert result == expect
 
@@ -95,13 +96,14 @@ def test_disease_name_to_id_Orpha():
     assert result == expect
 
 
-def test_ensembl_gene_id_to_entrez():
+@pytest.mark.asyncio
+async def test_ensembl_gene_id_to_entrez():
     expect = pd.DataFrame({
         "ensembl_gene_id": ["ENSG00000198888"],
         "gene_name": ["MT-ND1"],
         "entrez_gene_id": [4535]
     })
-    result = ensembl_gene_id_to_entrez("ENSG00000198888")
+    result = await ensembl_gene_id_to_entrez("ENSG00000198888")
 
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))

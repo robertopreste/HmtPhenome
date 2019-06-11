@@ -8,7 +8,8 @@ from app.site.scripts import get_vars_from_gene, get_diseases_from_gene, \
     json_from_gene
 
 
-def test_get_vars_from_gene():
+@pytest.mark.asyncio
+async def test_get_vars_from_gene():
     expect = pd.DataFrame({
         "ensembl_gene_id": ["ENSG00000210154" for _ in range(4)],
         "gene_name": ["TD" for _ in range(4)],
@@ -22,21 +23,23 @@ def test_get_vars_from_gene():
                      "rs879076142", "rs201582552"]
     })
     expect.start_pos = expect.start_pos.astype("object")
-    result = get_vars_from_gene("ENSG00000210154")
+    result = await get_vars_from_gene("ENSG00000210154")
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 
 
-def test_get_vars_from_gene_empty():
+@pytest.mark.asyncio
+async def test_get_vars_from_gene_empty():
     expect = pd.DataFrame(columns=["ensembl_gene_id", "gene_name",
                                    "chromosome", "ref_allele", "start_pos",
                                    "alt_allele", "variant", "dbsnp_id"])
-    result = get_vars_from_gene("ENSG6666666")
+    result = await get_vars_from_gene("ENSG6666666")
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 
 
-def test_get_diseases_from_gene():
+@pytest.mark.asyncio
+async def test_get_diseases_from_gene():
     expect = pd.DataFrame({
         "ensembl_gene_id": ["ENSG00000210196"],
         "gene_name": ["TP"],
@@ -47,20 +50,22 @@ def test_get_diseases_from_gene():
                            "HP:0003198", "HP:0003200", "HP:0003542",
                            "Orphanet:551"]]
     })
-    result = get_diseases_from_gene("ENSG00000210196")
+    result = await get_diseases_from_gene("ENSG00000210196")
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 
 
-def test_get_diseases_from_gene_empty():
+@pytest.mark.asyncio
+async def test_get_diseases_from_gene_empty():
     expect = pd.DataFrame(columns=["ensembl_gene_id", "gene_name",
                                    "disease_name", "phenotype_ids"])
-    result = get_diseases_from_gene("ENSG66666666")
+    result = await get_diseases_from_gene("ENSG66666666")
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 
 
-def test_json_from_gene():
+@pytest.mark.asyncio
+async def test_json_from_gene():
     expect = {'diseases': [{'disease_id': 'ORPHA:551', 'disease_name': 'MERRF',
                             'ensembl_gene_id': 'ENSG00000210196',
                             'gene_name': 'TP',
@@ -144,5 +149,5 @@ def test_json_from_gene():
                             'ensembl_gene_id': 'ENSG00000210196',
                             'gene_name': 'TP', 'umls_disease_id': '',
                             'variant': 'chrMT:16023G>A'}]}
-    result = json_from_gene("ENSG00000210196")
+    result = await json_from_gene("ENSG00000210196")
     assert result == expect

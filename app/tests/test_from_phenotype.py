@@ -37,7 +37,8 @@ def test_get_genes_from_phenotype_empty():
                        expect.reset_index(drop=True))
 
 
-def test_get_vars_from_phenotype():
+@pytest.mark.asyncio
+async def test_get_vars_from_phenotype():
     expect = pd.DataFrame({
         "chromosome": [19, 19, 19, 7, 7, 12, 12],
         "start_pos": [8373832, 8373832, 8376973, 100823256, 100823256,
@@ -59,17 +60,18 @@ def test_get_vars_from_phenotype():
                     "chr12:6019472C>T"],
         "phenotype_id": ["HP:0002170" for _ in range(7)]
     })
-    result = get_vars_from_phenotype("HP:0002170")
+    result = await get_vars_from_phenotype("HP:0002170")
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 
 
-def test_get_vars_from_phenotype_empty():
+@pytest.mark.asyncio
+async def test_get_vars_from_phenotype_empty():
     expect = pd.DataFrame(columns=["ensembl_gene_id", "gene_name",
                                    "chromosome", "ref_allele", "start_pos",
                                    "alt_allele", "phenotype_name",
                                    "phenotype_id"])
-    result = get_vars_from_phenotype("HP:66666666")
+    result = await get_vars_from_phenotype("HP:66666666")
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 
@@ -103,7 +105,8 @@ def test_get_diseases_from_phenotype_empty():
                        expect.reset_index(drop=True))
 
 
-def test_json_from_phenotype(): 
+@pytest.mark.asyncio
+async def test_json_from_phenotype():
     expect = {"diseases": [{"disease_id": "OMIM:300166", 
                             "disease_name": "MICROPHTHALMIA, SYNDROMIC 2; MCOPS2", 
                             "phenotype_id": "HP:0000456",
@@ -137,5 +140,5 @@ def test_json_from_phenotype():
               "genes": [],
               "phenotype": "Notched nasal tip",
               "variants": []}
-    result = json_from_phenotype("HP:0000456")
+    result = await json_from_phenotype("HP:0000456")
     assert result == expect

@@ -79,7 +79,7 @@ async def results():
         else:
             variant_end = variant_start = variant_input
 
-        json_data = json_from_variant(variant_chr, variant_start, variant_end)
+        json_data = await json_from_variant(variant_chr, variant_start, variant_end)
         networks = network_from_variant_json(json_data)
         if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
                 and len(json_data["diseases"]) == 0 \
@@ -88,7 +88,7 @@ async def results():
             await flash("No results found!")
 
     elif gene_submit == "True":
-        json_data = json_from_gene(gene_input)
+        json_data = await json_from_gene(gene_input)
         networks = network_from_gene_json(json_data)
         if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
                 and len(json_data["diseases"]) == 0 \
@@ -97,7 +97,7 @@ async def results():
             await flash("No results found!")
 
     elif pheno_submit == "True":
-        json_data = json_from_phenotype(pheno_input)
+        json_data = await json_from_phenotype(pheno_input)
         networks = network_from_phenotype_json(json_data)
         if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
                 and len(json_data["diseases"]) == 0 \
@@ -106,7 +106,7 @@ async def results():
             await flash("No results found!")
 
     elif disease_submit == "True":
-        json_data = json_from_disease(disease_input)
+        json_data = await json_from_disease(disease_input)
         networks = network_from_disease_json(json_data)
         if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
                 and len(json_data["diseases"]) == 0 \
