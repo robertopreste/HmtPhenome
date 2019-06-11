@@ -2,6 +2,9 @@
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
 import argparse
+import asyncio
+import aiofiles
+import aiohttp
 import os
 import pandas as pd
 import wget
@@ -29,6 +32,42 @@ def get_node_val(node):
     :return:
     """
     return node.text if node is not None else None
+
+
+async def download_source_async(session, url, out):
+    """Retrieve the given file from the web and save it with the given
+    name in app/update/data/raw/ asynchronously.
+
+    :param session: aiohttp.ClientSession() to use
+
+    :param url: URL of the file to download
+
+    :param out: name of the output file
+
+    :return:
+    """
+    print("Downloading file from {} and saving it to {}...".format(url, out))
+    async with session.get(url, ssl=False) as res:
+        filename = "app/update/data/raw/{}".format(out)
+        async with aiofiles.open(filename, "w") as f:
+            while True:
+                chunk = await res.content.read(1024)
+                if not chunk:
+                    break
+                await f.write(chunk)
+        print("Download of {} complete.".format(out))
+        return await res.release()
+
+
+async def downloader(source):
+    """Main async wrapper function to download each source dataset.
+
+    :param source: source to download as a tuple
+
+    :return:
+    """
+    async with aiohttp.ClientSession() as session:
+        await download_source_async(session, source[0], source[1])
 
 
 def download_source(url, out):
@@ -351,6 +390,26 @@ def create_phenotypes(hpo_file, out_file):
     print("Complete.\n")
 
 
+def perform_download_data_async(sources):
+    """Download the needed data from the web and save them to
+    app/update/data/raw/ asynchronously.
+
+    :param sources: dictionary with elements to download
+
+    :return:
+    """
+    if not os.path.isdir(os.path.join(os.getcwd(), "app/update/data/raw/")):
+        os.makedirs(os.path.join(os.getcwd(), "app/update/data/raw/"))
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(
+        asyncio.gather(
+            *(downloader(sources[el])
+              for el in sources if el not in ["omim", "mitocarta"])
+        )
+    )
+
+
 def perform_download_data(sources):
     """
     Download the needed data from the web and save them to data/raw/.
@@ -359,8 +418,8 @@ def perform_download_data(sources):
 
     :return:
     """
-    if not os.path.isdir(os.path.join(os.getcwd(), "data/raw/")):
-        os.makedirs(os.path.join(os.getcwd(), "data/raw/"))
+    if not os.path.isdir(os.path.join(os.getcwd(), "app/update/data/raw/")):
+        os.makedirs(os.path.join(os.getcwd(), "app/update/data/raw/"))
 
     for el in sources:
         if el != "omim" and el != "mitocarta":  # TODO: temporary fix
@@ -376,8 +435,8 @@ def perform_create_tables(sources):
 
     :return:
     """
-    if not os.path.isdir(os.path.join(os.getcwd(), "data/tables/")):
-        os.makedirs(os.path.join(os.getcwd(), "data/tables/"))
+    if not os.path.isdir(os.path.join(os.getcwd(), "app/update/data/tables/")):
+        os.makedirs(os.path.join(os.getcwd(), "app/update/data/tables/"))
 
     process_mitocarta(sources["mitocarta"][1], sources["mitocarta"][2])
     process_hpo_disgenphen(sources["hpo_1"][1], sources["hpo_1"][2], sources["mitocarta"][2])
@@ -424,6 +483,7 @@ if __name__ == '__main__':
 
     if args.only_download:
         perform_download_data(sources)
+        # perform_download_data_async(sources)
     elif args.only_tables:
         perform_create_tables(sources)
     else:
