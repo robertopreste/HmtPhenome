@@ -23,4 +23,3 @@ apybiomart
 nest_asyncio
 python-dotenv
 hypercorn
-modin
