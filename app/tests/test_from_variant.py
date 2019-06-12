@@ -25,19 +25,21 @@ def test_get_gene_from_variant_empty():
                        expect.reset_index(drop=True))
 
 
-def test_get_dbsnp_from_variant():
+@pytest.mark.asyncio
+async def test_get_dbsnp_from_variant():
     expect = pd.DataFrame({
         "dbsnp_id": ["rs28358582", "rs28358582", "rs28358582"],
         "variant": ["chrMT:3308T>A", "chrMT:3308T>C", "chrMT:3308T>G"]
     })
-    result = get_dbsnp_from_variant("M", 3308)
+    result = await get_dbsnp_from_variant("M", 3308)
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 
 
-def test_get_dbsnp_from_variant_empty():
+@pytest.mark.asyncio
+async def test_get_dbsnp_from_variant_empty():
     expect = pd.DataFrame(columns=["dbsnp_id", "variant"])
-    result = get_dbsnp_from_variant("M", 170000)
+    result = await get_dbsnp_from_variant("M", 170000)
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 
@@ -91,7 +93,8 @@ def test_get_phenos_from_umls_empty():
                        expect.reset_index(drop=True))
 
 
-def test_json_from_variant():
+@pytest.mark.asyncio
+async def test_json_from_variant():
     expect = {'diseases': [{'ass_score': 0.7,
                             'dbsnp_id': 'rs28358582',
                             'disease_name': 'Sudden infant death syndrome',
@@ -123,5 +126,5 @@ def test_json_from_variant():
                             'phenotype_name': '',
                             'umls_disease_id': 'C0038644',
                             'variant': 'chrMT:3308T>G'}]}
-    result = json_from_variant("M", 3308)
+    result = await json_from_variant("M", 3308)
     assert result == expect

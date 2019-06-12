@@ -55,7 +55,8 @@ def test_get_genes_from_disease_id_empty():
                        expect.reset_index(drop=True))
 
 
-def test_get_vars_from_disease_id():
+@pytest.mark.asyncio
+async def test_get_vars_from_disease_id():
     expect = pd.DataFrame({
         "ensembl_gene_id": ["ENSG00000122691" for _ in range(3)],
         "gene_name": ["TWIST1" for _ in range(3)],
@@ -66,16 +67,17 @@ def test_get_vars_from_disease_id():
                          for _ in range(3)],
         "disease_id": ["OMIM:101400" for _ in range(3)]
     })
-    result = get_vars_from_disease_id("OMIM:101400")
+    result = await get_vars_from_disease_id("OMIM:101400")
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 
 
-def test_get_vars_from_disease_id_empty():
+@pytest.mark.asyncio
+async def test_get_vars_from_disease_id_empty():
     expect = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "dbsnp_id",
                                    "variant", "umls_disease_id",
                                    "disease_name", "disease_id"])
-    result = get_vars_from_disease_id("OMIM:66666666")
+    result = await get_vars_from_disease_id("OMIM:66666666")
     assert_frame_equal(result.reset_index(drop=True),
                        expect.reset_index(drop=True))
 
