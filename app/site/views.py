@@ -74,6 +74,8 @@ async def results():
     disease_submit = request.args.get("disease_submit")
 
     if variant_submit == "True":
+        res_type = "position"
+        res_el = ":".join([variant_chr, variant_input])
         if "-" in variant_input:
             variant_start, variant_end = variant_input.split("-")
         else:
@@ -88,6 +90,8 @@ async def results():
             await flash("No results found!")
 
     elif gene_submit == "True":
+        res_type = "gene"
+        res_el = gene_input
         json_data = await json_from_gene(gene_input)
         networks = network_from_gene_json(json_data)
         if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
@@ -97,6 +101,8 @@ async def results():
             await flash("No results found!")
 
     elif pheno_submit == "True":
+        res_type = "phenotype"
+        res_el = pheno_input
         json_data = await json_from_phenotype(pheno_input)
         networks = network_from_phenotype_json(json_data)
         if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
@@ -106,6 +112,8 @@ async def results():
             await flash("No results found!")
 
     elif disease_submit == "True":
+        res_type = "disease"
+        res_el = disease_input
         json_data = await json_from_disease(disease_input)
         networks = network_from_disease_json(json_data)
         if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
@@ -116,6 +124,8 @@ async def results():
 
     return await render_template("results.html",
                                  title="Results",
+                                 res_type=res_type,
+                                 res_el=res_el,
                                  json_data=pprint.pformat(json_data),
                                  nodes=networks["nodes"],
                                  edges=networks["edges"],
