@@ -220,9 +220,6 @@ async def pheno_name_to_id(pheno_name: str) -> List[str]:
     :return: List[str] with the related id(s)
     """
     url = "https://hpo.jax.org/api/hpo/search?q={}".format(pheno_name)
-    # loop = asyncio.get_event_loop()
-    # res = loop.run_until_complete(get_json_request(url))
-    # res = get_json_sync_request(url)
     res = await get_json_request(url)
     ids = []
 
@@ -262,9 +259,6 @@ async def pheno_id_to_term(pheno_id: str) -> str:
         efo_id = pheno_id.strip("EFO:")
         base_url = "https://www.ebi.ac.uk/ols/api/ontologies/efo/terms?"
         iri_url = "iri=http://www.ebi.ac.uk/efo/EFO_{}".format(efo_id)
-        # loop = asyncio.get_event_loop()
-        # res = loop.run_until_complete(get_json_request(base_url + iri_url))
-        # res = get_json_sync_request(base_url + iri_url)
         res = await get_json_request(base_url + iri_url)
         pheno_name = res["_embedded"]["terms"][0]["label"]
 
@@ -375,17 +369,6 @@ async def ensembl_gene_id_to_entrez(ens_gene_id: str) -> pd.DataFrame:
     :return: pd.DataFrame(columns=["ensembl_gene_id", "gene_name",
         "entrez_gene_id"])
     """
-    # loop = asyncio.get_event_loop()
-    # res = loop.run_until_complete(
-    #     apy.aquery(attributes=["ensembl_gene_id", "external_gene_name",
-    #                            "entrezgene"],
-    #                filters={"link_ensembl_gene_id": ens_gene_id},
-    #                dataset="hsapiens_gene_ensembl")
-    # )
-    # res = apy.query(attributes=["ensembl_gene_id", "external_gene_name",
-    #                             "entrezgene"],
-    #                 filters={"link_ensembl_gene_id": ens_gene_id},
-    #                 dataset="hsapiens_gene_ensembl")
     res = await apy.aquery(attributes=["ensembl_gene_id", "external_gene_name",
                                        "entrezgene"],
                            filters={"link_ensembl_gene_id": ens_gene_id},
@@ -421,19 +404,6 @@ async def get_dbsnp_from_variant(chrom: Union[int, str],
     else:
         var_end = str(var_end)
 
-    # loop = asyncio.get_event_loop()
-    # res = loop.run_until_complete(
-    #     apy.aquery(attributes=["chr_name", "chrom_start",
-    #                            "consequence_allele_string", "refsnp_id"],
-    #                filters={"chr_name": chrom, "start": var_start,
-    #                         "end": var_end},
-    #                dataset="hsapiens_snp")
-    # )
-    # res = apy.query(attributes=["chr_name", "chrom_start",
-    #                             "consequence_allele_string", "refsnp_id"],
-    #                 filters={"chr_name": chrom, "start": var_start,
-    #                          "end": var_end},
-    #                 dataset="hsapiens_snp")
     res = await apy.aquery(attributes=["chr_name", "chrom_start",
                                        "consequence_allele_string", "refsnp_id"],
                            filters={"chr_name": chrom, "start": var_start,
@@ -682,38 +652,30 @@ def network_from_variant_json(final_json: dict) -> dict:
     for el in variants:
         ids += 1
         node = Node("v", ids, el)
-        # nodes.append(node)
         id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
                                                         "border": "#CCAA39"}})
-        # id_dict[el] = ids
     for el in genes:
         ids += 1
         node = Node("g", ids, el)
-        # nodes.append(node)
         id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
                                                         "border": "#5F826B"}})
-        # id_dict[el] = ids
     for el in diseases:
         if el != "":
             ids += 1
             node = Node("d", ids, el)
-            # nodes.append(node)
             id_dict[node.uid] = ids
             nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
                                                             "border": "#B06A57"}})
-            # id_dict[el] = ids
     for el in phenotypes:
         if el != "":
             ids += 1
             node = Node("p", ids, el)
-            # nodes.append(node)
             id_dict[node.uid] = ids
             nodes.append({"id": ids, "label": el,
                           "color": {"background": "#93B5C6",
                                     "border": "#7995A3"}})
-            # id_dict[el] = ids
 
     connected_nodes = set()
     vars_set = set()  # (variant, dbsnp_id, gene_name)
@@ -757,13 +719,6 @@ def network_from_variant_json(final_json: dict) -> dict:
     # delete orphan nodes
     true_nodes = [el for el in nodes if el["id"] in connected_nodes]
 
-    # candidates = [n for n, el in enumerate(nodes, start=1)]
-
-    # candidates = [el["id"] for el in nodes]
-    # for n in candidates:
-    #     if n not in connected_nodes:
-    #         del nodes[n]
-
     return {"nodes": true_nodes, "edges": edges, "variants": vars_set,
             "genes": gene_set, "diseases": dise_set, "phenotypes": phen_set}
 
@@ -792,9 +747,6 @@ async def get_vars_from_gene(ens_gene_id: str) -> pd.DataFrame:
 
     server = "https://rest.ensembl.org"
     ext = "/overlap/id/{}?feature=variation".format(ens_gene_id)
-    # loop = asyncio.get_event_loop()
-    # res = loop.run_until_complete(get_json_request(server + ext))
-    # res = get_json_sync_request(server + ext)
     res = await get_json_request(server + ext)
 
     df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name", "chromosome",
@@ -862,9 +814,6 @@ async def get_diseases_from_gene(gene: str,
     ext = "/phenotype/gene/homo_sapiens/{}?include_associated={}".format(
         gene, int(with_vars)
     )
-    # loop = asyncio.get_event_loop()
-    # res = loop.run_until_complete(get_json_request(server + ext))
-    # res = get_json_sync_request(server + ext)
     res = await get_json_request(server + ext)
 
     if with_vars:
@@ -1058,35 +1007,30 @@ def network_from_gene_json(final_json: dict) -> dict:
         id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el, "color": {"background": "#739E82",
                                                         "border": "#5F826B"}})
-        # id_dict[el] = ids
     for el in v_variants:
         ids += 1
         node = Node("v", ids, el)
         id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el, "color": {"background": "#F9CF45",
                                                         "border": "#CCAA39"}})
-        # id_dict[el] = ids
     for el in v_diseases:
         ids += 1
         node = Node("d", ids, el)
         id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
                                                         "border": "#B06A57"}})
-        # id_dict[el] = ids
     for el in d_diseases:
         ids += 1
         node = Node("d", ids, el)
         id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el, "color": {"background": "#D7816A",
                                                         "border": "#B06A57"}})
-        # id_dict[el] = ids
     for el in d_phenotypes:
         ids += 1
         node = Node("p", ids, el)
         id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el, "color": {"background": "#93B5C6",
                                                         "border": "#7995A3"}})
-        # id_dict[el] = ids
 
     connected_nodes = set()
     vars_set = set()  # (variant, dbsnp_id, gene_name)
@@ -1141,11 +1085,6 @@ def network_from_gene_json(final_json: dict) -> dict:
 
     # delete orphan nodes
     true_nodes = [el for el in nodes if el["id"] in connected_nodes]
-
-    # candidates = [n for n, el in enumerate(nodes, start=1)]
-    # for n in candidates:
-    #     if n not in connected_nodes:
-    #         del nodes[n]
 
     return {"nodes": true_nodes, "edges": edges, "variants": vars_set,
             "genes": gene_set, "diseases": dise_set, "phenotypes": phen_set}
@@ -1224,21 +1163,6 @@ async def get_vars_from_phenotype(phenotype: str) -> pd.DataFrame:
                                      "alt_allele", "phenotype_name",
                                      "phenotype_id"])
 
-    # loop = asyncio.get_event_loop()
-    # res = loop.run_until_complete(
-    #     apy.aquery(attributes=["chr_name", "chrom_start",
-    #                            "consequence_allele_string",
-    #                            "ensembl_gene_stable_id", "associated_gene",
-    #                            "refsnp_id", "phenotype_description"],
-    #                filters={"snp_filter": [el.dbsnp_id for el in vars_maps]},
-    #                dataset="hsapiens_snp")
-    # )
-    # res = apy.query(attributes=["chr_name", "chrom_start",
-    #                             "consequence_allele_string",
-    #                             "ensembl_gene_stable_id", "associated_gene",
-    #                             "refsnp_id", "phenotype_description"],
-    #                 filters={"snp_filter": [el.dbsnp_id for el in vars_maps]},
-    #                 dataset="hsapiens_snp")
     res = await apy.aquery(attributes=["chr_name", "chrom_start",
                                        "consequence_allele_string",
                                        "ensembl_gene_stable_id",
@@ -1263,10 +1187,7 @@ async def get_vars_from_phenotype(phenotype: str) -> pd.DataFrame:
                                                   "12", "13", "14", "15", "16",
                                                   "17", "18", "19", "20", "21",
                                                   "22", "X", "Y", "M", "MT"])]
-    # variants = []
-    # for el in res.itertuples():
-    #     variants.append(create_variant_string(el.chromosome, el.start_pos,
-    #                                           el.ref_allele, el.alt_allele))
+
     variants = [create_variant_string(el.chromosome, el.start_pos,
                                       el.ref_allele, el.alt_allele)
                 for el in res.itertuples()]
@@ -1421,7 +1342,6 @@ def network_from_phenotype_json(final_json: dict) -> dict:
     id_dict[node.uid] = ids
     nodes.append({"id": ids, "label": phenotype,
                   "color": {"background": "#93B5C6", "border": "#7995A3"}})
-    # id_dict[phenotype] = ids
 
     for el in variants:
         ids += 1
@@ -1429,30 +1349,24 @@ def network_from_phenotype_json(final_json: dict) -> dict:
         id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el,
                       "color": {"background": "#F9CF45", "border": "#CCAA39"}})
-        # id_dict[el] = ids
     for el in v_genes:
         ids += 1
-        # if el.startswith("MT-"):
-        #     el = el.split("-")[1]
         node = Node("g", ids, el)
         id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el,
                       "color": {"background": "#739E82", "border": "#5F826B"}})
-        # id_dict[el] = ids
     for el in genes:
         ids += 1
         node = Node("g", ids, el)
         id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el,
                       "color": {"background": "#739E82", "border": "#5F826B"}})
-        # id_dict[el] = ids
     for el in diseases:
         ids += 1
         node = Node("d", ids, el)
         id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el,
                       "color": {"background": "#D7816A", "border": "#B06A57"}})
-        # id_dict[el] = ids
 
     connected_nodes = set()
     vars_set = set()  # (variant, dbsnp_id, gene_name)
@@ -1502,11 +1416,6 @@ def network_from_phenotype_json(final_json: dict) -> dict:
 
     # delete orphan nodes
     true_nodes = [el for el in nodes if el["id"] in connected_nodes]
-
-    # candidates = [n for n, el in enumerate(nodes, start=1)]
-    # for n in candidates:
-    #     if n not in connected_nodes and n in nodes:
-    #         del nodes[n]
 
     return {"nodes": true_nodes, "edges": edges, "variants": vars_set,
             "genes": gene_set, "diseases": dise_set, "phenotypes": phen_set}
@@ -1599,10 +1508,8 @@ def get_genes_from_disease_id(disease_id: str) -> pd.DataFrame:
                                 "ensembl_gene_id": [ens_gene_id],
                                 "ass_score": [0.0]})
             df = df.append(row, ignore_index=True)
-        # return df
 
     df.drop_duplicates(inplace=True)
-    # df.sort_values(by="ass_score", ascending=False, inplace=True)
 
     return df
 
@@ -1620,8 +1527,6 @@ async def get_vars_from_disease_id(disease_id: str) -> pd.DataFrame:
     ass_vars = VarDiseaseAss.query.filter(
         VarDiseaseAss.umls_disease_id == dis_umls
     ).all()
-    # df = pd.DataFrame(columns=["disease_id", "disease_umls", "disease_name", "dbsnp_id",
-    #                            "ass_score"])
     dis_maps = DiseaseMappings.query.filter(
         DiseaseMappings.umls_disease_id == dis_umls
     ).first()
@@ -1633,21 +1538,6 @@ async def get_vars_from_disease_id(disease_id: str) -> pd.DataFrame:
                                      "dbsnp_id", "variant", "umls_disease_id",
                                      "disease_name", "disease_id"])
 
-    # loop = asyncio.get_event_loop()
-    # res = loop.run_until_complete(
-    #     apy.aquery(attributes=["chr_name", "chrom_start",
-    #                            "consequence_allele_string",
-    #                            "ensembl_gene_stable_id", "associated_gene",
-    #                            "refsnp_id"],
-    #                filters={"snp_filter": [el.dbsnp_id for el in ass_vars]},
-    #                dataset="hsapiens_snp")
-    # )
-    # res = apy.query(attributes=["chr_name", "chrom_start",
-    #                             "consequence_allele_string",
-    #                             "ensembl_gene_stable_id", "associated_gene",
-    #                             "refsnp_id"],
-    #                 filters={"snp_filter": [el.dbsnp_id for el in ass_vars]},
-    #                 dataset="hsapiens_snp")
     res = await apy.aquery(attributes=["chr_name", "chrom_start",
                                        "consequence_allele_string",
                                        "ensembl_gene_stable_id",
@@ -1750,7 +1640,6 @@ async def json_from_disease(disease_input: str) -> dict:
     pheno_df = get_phenos_from_disease_id(disease_input)
 
     # Variants
-    # vars_df.drop(["ass_score"], axis=1, inplace=True)  # do not need this one for now
     vars_json = json.loads(vars_df.to_json(orient="records"))
     # Genes
     gene_df.drop(["entrez_gene_id", "ass_score"], axis=1, inplace=True)  # do not need these for now
@@ -1819,7 +1708,6 @@ def network_from_disease_json(final_json: dict) -> dict:
     id_dict[node.uid] = ids
     nodes.append({"id": ids, "label": disease,
                   "color": {"background": "#D7816A", "border": "#B06A57"}})
-    # id_dict[disease] = ids
 
     for el in variants:
         ids += 1
@@ -1827,7 +1715,6 @@ def network_from_disease_json(final_json: dict) -> dict:
         id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el,
                       "color": {"background": "#F9CF45", "border": "#CCAA39"}})
-        # id_dict[el] = ids
     for el in v_genes:
         ids += 1
         if el is not None:
@@ -1835,14 +1722,12 @@ def network_from_disease_json(final_json: dict) -> dict:
             id_dict[node.uid] = ids
             nodes.append({"id": ids, "label": el,
                           "color": {"background": "#739E82", "border": "#5F826B"}})
-            # id_dict[el] = ids
     for el in genes:
         ids += 1
         node = Node("g", ids, el)
         id_dict[node.uid] = ids
         nodes.append({"id": ids, "label": el,
                       "color": {"background": "#739E82", "border": "#5F826B"}})
-        # id_dict[el] = ids
     for el in phenos:
         if el != disease:
             ids += 1
@@ -1851,7 +1736,6 @@ def network_from_disease_json(final_json: dict) -> dict:
             nodes.append({"id": ids, "label": el,
                           "color": {"background": "#93B5C6",
                                     "border": "#7995A3"}})
-            # id_dict[el] = ids
 
     connected_nodes = set()
     vars_set = set()  # (variant, dbsnp_id, gene_name)
@@ -1907,11 +1791,6 @@ def network_from_disease_json(final_json: dict) -> dict:
 
     # delete orphan nodes
     true_nodes = [el for el in nodes if el["id"] in connected_nodes]
-
-    # candidates = [n for n, el in enumerate(nodes, start=1)]
-    # for n in candidates:
-    #     if n not in connected_nodes and n in nodes:
-    #         del nodes[n]
 
     return {"nodes": true_nodes, "edges": edges, "variants": vars_set,
             "genes": gene_set, "diseases": dise_set, "phenotypes": phen_set}
