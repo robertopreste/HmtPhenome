@@ -370,7 +370,7 @@ async def ensembl_gene_id_to_entrez(ens_gene_id: str) -> pd.DataFrame:
         "entrez_gene_id"])
     """
     res = await apy.aquery(attributes=["ensembl_gene_id", "external_gene_name",
-                                       "entrezgene"],
+                                       "entrezgene_id"],
                            filters={"link_ensembl_gene_id": ens_gene_id},
                            dataset="hsapiens_gene_ensembl")
     res.rename({"Gene stable ID": "ensembl_gene_id", "Gene name": "gene_name",
