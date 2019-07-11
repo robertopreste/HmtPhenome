@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
 import pprint
+import async_timeout
 from quart import Blueprint, render_template, request, redirect, url_for, flash
 from app.static import dbdata
 from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, \
@@ -9,7 +10,7 @@ from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, \
 from app.site.scripts import json_from_variant, network_from_variant_json, \
     json_from_gene, network_from_gene_json, json_from_phenotype, \
     network_from_phenotype_json, json_from_disease, network_from_disease_json, \
-    parse_variant_string
+    parse_variant_string, fallback_variant
 
 www = Blueprint("site", __name__)
 
@@ -81,46 +82,62 @@ async def results():
         else:
             variant_end = variant_start = variant_input
 
-        json_data = await json_from_variant(variant_chr, variant_start, variant_end)
-        networks = network_from_variant_json(json_data)
-        if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
-                and len(json_data["diseases"]) == 0 \
-                and len(json_data["phenotypes"]) == 0:
+        try:
+            async with async_timeout.timeout(60) as cm:
+                json_data = await json_from_variant(variant_chr, variant_start, variant_end)
+                # networks = network_from_variant_json(json_data)
+                if cm.expired or len(json_data["variant"]) == 0:
+                    json_data = "{}"
+                    await flash("No results found!")
+        except:
             json_data = "{}"
             await flash("No results found!")
+        networks = network_from_variant_json(json_data)
 
     elif gene_submit == "True":
         res_type = "gene"
         res_el = gene_input
-        json_data = await json_from_gene(gene_input)
-        networks = network_from_gene_json(json_data)
-        if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
-                and len(json_data["diseases"]) == 0 \
-                and len(json_data["phenotypes"]) == 0:
+        try:
+            async with async_timeout.timeout(60) as cm:
+                json_data = await json_from_gene(gene_input)
+                # networks = network_from_gene_json(json_data)
+                if cm.expired or len(json_data["genes"]) == 0:
+                    json_data = "{}"
+                    await flash("No results found!")
+        except:
             json_data = "{}"
             await flash("No results found!")
+        networks = network_from_gene_json(json_data)
 
     elif pheno_submit == "True":
         res_type = "phenotype"
         res_el = pheno_input
-        json_data = await json_from_phenotype(pheno_input)
-        networks = network_from_phenotype_json(json_data)
-        if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
-                and len(json_data["diseases"]) == 0 \
-                and len(json_data["phenotype"]) == 0:
+        try:
+            async with async_timeout.timeout(60) as cm:
+                json_data = await json_from_phenotype(pheno_input)
+                # networks = network_from_phenotype_json(json_data)
+                if cm.expired or len(json_data["phenotypes"]) == 0:
+                    json_data = "{}"
+                    await flash("No results found!")
+        except:
             json_data = "{}"
             await flash("No results found!")
+        networks = network_from_phenotype_json(json_data)
 
     elif disease_submit == "True":
         res_type = "disease"
         res_el = disease_input
-        json_data = await json_from_disease(disease_input)
-        networks = network_from_disease_json(json_data)
-        if len(json_data["variants"]) == 0 and len(json_data["genes"]) == 0 \
-                and len(json_data["diseases"]) == 0 \
-                and len(json_data["phenotype"]) == 0:
+        try:
+            async with async_timeout.timeout(60) as cm:
+                json_data = await json_from_disease(disease_input)
+                # networks = network_from_disease_json(json_data)
+                if cm.expired or len(json_data["diseases"]) == 0:
+                    json_data = "{}"
+                    await flash("No results found!")
+        except:
             json_data = "{}"
             await flash("No results found!")
+        networks = network_from_disease_json(json_data)
 
     return await render_template("results.html",
                                  title="Results",
