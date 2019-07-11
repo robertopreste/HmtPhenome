@@ -87,10 +87,12 @@ async def results():
                 json_data = await json_from_variant(variant_chr, variant_start, variant_end)
                 # networks = network_from_variant_json(json_data)
                 if cm.expired or len(json_data["variant"]) == 0:
-                    json_data = "{}"
+                    json_data = {"variants": {}, "genes": {},
+                                 "diseases": {}, "phenotypes": {}}
                     await flash("No results found!")
         except:
-            json_data = "{}"
+            json_data = {"variants": {}, "genes": {},
+                         "diseases": {}, "phenotypes": {}}
             await flash("No results found!")
         networks = network_from_variant_json(json_data)
 
@@ -102,10 +104,12 @@ async def results():
                 json_data = await json_from_gene(gene_input)
                 # networks = network_from_gene_json(json_data)
                 if cm.expired or len(json_data["genes"]) == 0:
-                    json_data = "{}"
+                    json_data = {"variants": {}, "genes": {},
+                                 "diseases": {}, "phenotypes": {}}
                     await flash("No results found!")
         except:
-            json_data = "{}"
+            json_data = {"variants": {}, "genes": {},
+                         "diseases": {}, "phenotypes": {}}
             await flash("No results found!")
         networks = network_from_gene_json(json_data)
 
@@ -117,10 +121,12 @@ async def results():
                 json_data = await json_from_phenotype(pheno_input)
                 # networks = network_from_phenotype_json(json_data)
                 if cm.expired or len(json_data["phenotypes"]) == 0:
-                    json_data = "{}"
+                    json_data = {"variants": [], "genes": [],
+                                 "diseases": [], "phenotype": []}
                     await flash("No results found!")
         except:
-            json_data = "{}"
+            json_data = {"variants": [], "genes": [],
+                         "diseases": [], "phenotype": []}
             await flash("No results found!")
         networks = network_from_phenotype_json(json_data)
 
@@ -132,10 +138,12 @@ async def results():
                 json_data = await json_from_disease(disease_input)
                 # networks = network_from_disease_json(json_data)
                 if cm.expired or len(json_data["diseases"]) == 0:
-                    json_data = "{}"
+                    json_data = {"variants": [], "genes": [],
+                                 "diseases": [], "phenotype": []}
                     await flash("No results found!")
         except:
-            json_data = "{}"
+            json_data = {"variants": [], "genes": [],
+                         "diseases": [], "phenotype": []}
             await flash("No results found!")
         networks = network_from_disease_json(json_data)
 

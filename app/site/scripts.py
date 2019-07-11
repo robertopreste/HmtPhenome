@@ -1374,11 +1374,14 @@ def network_from_phenotype_json(final_json: dict) -> dict:
     ids = 0
     id_dict = {}
 
-    ids += 1
-    node = Node("p", ids, phenotype)
-    id_dict[node.uid] = ids
-    nodes.append({"id": ids, "label": phenotype,
-                  "color": {"background": "#93B5C6", "border": "#7995A3"}})
+    try:
+        ids += 1
+        node = Node("p", ids, phenotype)
+        id_dict[node.uid] = ids
+        nodes.append({"id": ids, "label": phenotype,
+                      "color": {"background": "#93B5C6", "border": "#7995A3"}})
+    except:
+        pass
 
     for el in variants:
         ids += 1
@@ -1749,11 +1752,14 @@ def network_from_disease_json(final_json: dict) -> dict:
     ids = 0
     id_dict = {}
 
-    ids += 1
-    node = Node("d", ids, disease)
-    id_dict[node.uid] = ids
-    nodes.append({"id": ids, "label": disease,
-                  "color": {"background": "#D7816A", "border": "#B06A57"}})
+    try:
+        ids += 1
+        node = Node("d", ids, disease)
+        id_dict[node.uid] = ids
+        nodes.append({"id": ids, "label": disease,
+                      "color": {"background": "#D7816A", "border": "#B06A57"}})
+    except:
+        pass
 
     for el in variants:
         ids += 1
