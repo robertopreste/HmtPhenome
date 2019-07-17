@@ -120,7 +120,7 @@ async def results():
             async with async_timeout.timeout(60) as cm:
                 json_data = await json_from_phenotype(pheno_input)
                 # networks = network_from_phenotype_json(json_data)
-                if cm.expired or len(json_data["phenotypes"]) == 0:
+                if cm.expired or len(json_data["phenotype"]) == 0:
                     json_data = {"variants": [], "genes": [],
                                  "diseases": [], "phenotype": []}
                     await flash("No results found!")
