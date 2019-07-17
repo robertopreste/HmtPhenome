@@ -86,7 +86,7 @@ async def results():
             async with async_timeout.timeout(60) as cm:
                 json_data = await json_from_variant(variant_chr, variant_start, variant_end)
                 # networks = network_from_variant_json(json_data)
-                if cm.expired or len(json_data["variant"]) == 0:
+                if cm.expired or len(json_data["variants"]) == 0:
                     json_data = {"variants": {}, "genes": {},
                                  "diseases": {}, "phenotypes": {}}
                     await flash("No results found!")
