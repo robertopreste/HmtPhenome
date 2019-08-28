@@ -317,6 +317,47 @@ def disease_name_to_id(disease_name: str) -> str:
                 return ""
 
 
+def umls_to_disease_id(umls_id: str) -> str:
+    """Retrieve the disease ID associated to the given UMLS ID.
+
+    Priority is given to OMIM IDs, then to others.
+
+    :param str umls_id: input UMLS ID
+
+    :return: str the related disease ID
+    """
+    q = DiseaseMappings.query.filter(
+        DiseaseMappings.umls_disease_id == umls_id).all()
+    # first try with Omim
+    omims = list(filter(lambda x: x.vocabulary == "OMIM", q))
+    if len(omims) > 0:
+        for el in omims:
+            dis_q = Omim.query.filter(Omim.mim_number == el.disease_id,
+                                      Omim.prefix == "Number Sign").first()
+            if dis_q:
+                return "OMIM:{}".format(dis_q.mim_number)
+    # second try with Orphanet
+    orphas = list(filter(lambda x: x.vocabulary == "ORDO", q))
+    if len(orphas) > 0:
+        for el in orphas:
+            dis_q = Orphanet.query.filter(Orphanet.orpha_num == el.disease_id).first()
+            if dis_q:
+                return "ORPHA:{}".format(dis_q.orpha_num)
+    # third try with DO
+    dos = list(filter(lambda x: x.vocabulary == "DO", q))
+    if len(dos) > 0:
+        return "DO:{}".format(dos[0].disease_id)
+    # last try with Mondo
+    mondos = list(filter(lambda x: x.vocabulary == "MONDO", q))
+    if len(mondos) > 0:
+        return list(mondos)[0].disease_id
+
+    if q:
+        return q[0].vocabulary + ":" + q[0].disease_id
+    else:
+        return ""
+
+
 def create_variant_string(chrom: Union[int, str],
                           nt_start: Union[int, str],
                           ref_all: str,
@@ -469,15 +510,16 @@ def get_diseases_from_dbsnp(dbsnp_id: str) -> pd.DataFrame:
     :param str dbsnp_id: query dbSNP ID
 
     :return: pd.DataFrame(columns=["dbsnp_id", "umls_disease_id",
-        "disease_name", "ass_score"])
+        "disease_id" "disease_name", "ass_score"])
     """
     q = VarDiseaseAss.query.filter(VarDiseaseAss.dbsnp_id == dbsnp_id).all()
-    df = pd.DataFrame(columns=["dbsnp_id", "umls_disease_id", "disease_name",
-                               "ass_score"])
+    df = pd.DataFrame(columns=["dbsnp_id", "umls_disease_id", "disease_id",
+                               "disease_name", "ass_score"])
     if q:
         for el in q:
             new_row = pd.DataFrame({"dbsnp_id": [el.dbsnp_id],
                                     "umls_disease_id": [el.umls_disease_id],
+                                    "disease_id": [umls_to_disease_id(el.umls_disease_id)],
                                     "disease_name": [el.disease_name],
                                     "ass_score": [el.score]})
             df = df.append(new_row, ignore_index=True)
@@ -538,7 +580,7 @@ async def json_from_variant(variant_chr: Union[int, str],
     gene = get_gene_from_variant(variant_chr, variant_start, variant_end)
     dbsnps = await get_dbsnp_from_variant(variant_chr, variant_start, variant_end)
     disease_df = pd.DataFrame(columns=["dbsnp_id", "umls_disease_id",
-                                       "disease_name", "ass_score"])
+                                       "disease_id", "disease_name", "ass_score"])
     phenos_df = pd.DataFrame(columns=["umls_disease_id", "disease_name",
                                       "disease_id", "phenotype_id",
                                       "phenotype_name"])
@@ -563,6 +605,7 @@ async def json_from_variant(variant_chr: Union[int, str],
 
     df = pd.DataFrame(columns=["variant", "dbsnp_id", "gene_name",
                                "ensembl_gene_id", "umls_disease_id",
+                               "disease_id",
                                "disease_name", "phenotype_id",
                                "phenotype_name"])
     for var in dbsnps.itertuples():
@@ -582,6 +625,7 @@ async def json_from_variant(variant_chr: Union[int, str],
                                  0, "none"
                              )],
                              "umls_disease_id": [dis.umls_disease_id],
+                             "disease_id": [dis.disease_id],
                              "disease_name": [dis.disease_name],
                              "phenotype_id": [phen.phenotype_id],
                              "phenotype_name": [phen.phenotype_name]})
@@ -593,6 +637,7 @@ async def json_from_variant(variant_chr: Union[int, str],
                          "ensembl_gene_id": [gene.ensembl_gene_id.get(0,
                                                                       "none")],
                          "umls_disease_id": [dis.umls_disease_id],
+                         "disease_id": [dis.disease_id],
                          "disease_name": [dis.disease_name],
                          "phenotype_id": [""], "phenotype_name": [""]})
                     df = df.append(new_row, ignore_index=True)
@@ -601,7 +646,7 @@ async def json_from_variant(variant_chr: Union[int, str],
                 {"variant": [var.variant], "dbsnp_id": [var.dbsnp_id],
                  "gene_name": [gene.gene_name.get(0, "none")],
                  "ensembl_gene_id": [gene.ensembl_gene_id.get(0, "none")],
-                 "umls_disease_id": [""], "disease_name": [""],
+                 "umls_disease_id": [""], "disease_id": [""], "disease_name": [""],
                  "phenotype_id": [""], "phenotype_name": [""]})
             df = df.append(new_row, ignore_index=True)
 
@@ -729,7 +774,7 @@ def network_from_variant_json(final_json: dict) -> dict:
                 connected_nodes.add(id_dict[hash("v" + el["variant"])])
                 vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
                 connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
-                dise_set.add((el["disease_name"], el["umls_disease_id"]))
+                dise_set.add((el["disease_name"], el["disease_id"]))
         except:
             pass
         # disease to phenotypes
@@ -741,7 +786,7 @@ def network_from_variant_json(final_json: dict) -> dict:
                     "to": id_dict[hash("p" + el["phenotype_name"])]
                 })
                 connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
-                dise_set.add((el["disease_name"], el["umls_disease_id"]))
+                dise_set.add((el["disease_name"], el["disease_id"]))
                 connected_nodes.add(id_dict[hash("p" + el["phenotype_name"])])
                 phen_set.add((el["phenotype_name"], el["phenotype_id"]))
         except:
@@ -920,6 +965,7 @@ async def json_from_gene(gene_input: str) -> dict:
     vars_df = await get_vars_from_gene(gene_input)  # we might want to add phenotypes --> get_diseases_from_dbsnp()
     vars_df["disease_name"] = ""
     vars_df["umls_disease_id"] = ""
+    vars_df["disease_id"] = ""
 
     # add disease name and UMLS ID to variants where available
     var_to_disease = VarDiseaseAss.query.filter(
@@ -930,6 +976,7 @@ async def json_from_gene(gene_input: str) -> dict:
             if vars_df.at[idx, "dbsnp_id"] == item.dbsnp_id:
                 vars_df.at[idx, "disease_name"] = item.disease_name
                 vars_df.at[idx, "umls_disease_id"] = item.umls_disease_id
+                vars_df.at[idx, "disease_id"] = umls_to_disease_id(item.umls_disease_id)
 
     vars_df.drop(["ref_allele", "start_pos", "alt_allele"], axis=1,
                  inplace=True)
@@ -944,11 +991,13 @@ async def json_from_gene(gene_input: str) -> dict:
 
     if disease_df.shape[0] == 0 and len(gene_to_disease) > 0:
         disease_df = pd.DataFrame(columns=["ensembl_gene_id", "gene_name",
-                                           "disease_name", "umls_disease_id"])
+                                           "disease_id", "disease_name",
+                                           "umls_disease_id"])
         for el in gene_to_disease:
             disease_df = disease_df.append(pd.DataFrame(
                 {"ensembl_gene_id": [gene_input],
                  "gene_name": [el.gene_symbol],
+                 "disease_id": [umls_to_disease_id(el.umls_disease_id)],
                  "disease_name": [el.disease_name],
                  "umls_disease_id": [el.umls_disease_id]}),
                 ignore_index=True)
@@ -956,6 +1005,7 @@ async def json_from_gene(gene_input: str) -> dict:
         disease_df.drop_duplicates(subset="disease_name", inplace=True)
     else:
         disease_df["umls_disease_id"] = ""
+        disease_df["disease_id"] = ""
         for idx in disease_df.index:
             for item in gene_to_disease:
                 if fuzz.token_sort_ratio(
@@ -964,6 +1014,7 @@ async def json_from_gene(gene_input: str) -> dict:
                 ) >= 90:
                     disease_df.at[idx, "disease_name"] = item.disease_name
                     disease_df.at[idx, "umls_disease_id"] = item.umls_disease_id
+                    disease_df.at[idx, "disease_id"] = umls_to_disease_id(item.umls_disease_id)
                     break
 
     disease_json = json.loads(disease_df.to_json(orient="records"))
@@ -1089,7 +1140,7 @@ def network_from_gene_json(final_json: dict) -> dict:
                 connected_nodes.add(id_dict[hash("v" + el["variant"])])
                 vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
                 connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
-                dise_set.add((el["disease_name"], el["umls_disease_id"]))
+                dise_set.add((el["disease_name"], el["disease_id"]))
         except:
             pass
     for el in dis_json:
@@ -1102,7 +1153,7 @@ def network_from_gene_json(final_json: dict) -> dict:
             connected_nodes.add(id_dict[hash("g" + el["gene_name"])])
             gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
             connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
-            dise_set.add((el["disease_name"], el["umls_disease_id"]))
+            dise_set.add((el["disease_name"], el["disease_id"]))
         except:
             pass
         # disease to phenotypes
@@ -1114,7 +1165,7 @@ def network_from_gene_json(final_json: dict) -> dict:
                         "to": id_dict[hash("p" + pheno)]
                     })
                     connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
-                    dise_set.add((el["disease_name"], el["umls_disease_id"]))
+                    dise_set.add((el["disease_name"], el["disease_id"]))
                     connected_nodes.add(id_dict[hash("p" + pheno)])
                     phen_set.add((pheno, el["phenotype_ids"][n]))
             except KeyError:
@@ -1459,7 +1510,7 @@ def network_from_phenotype_json(final_json: dict) -> dict:
             connected_nodes.add(id_dict[hash("p" + el["phenotype_name"])])
             phen_set.add((el["phenotype_name"], el["phenotype_id"]))
             connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
-            dise_set.add((el["disease_name"], el["umls_disease_id"]))
+            dise_set.add((el["disease_name"], el["disease_id"]))
         except:
             pass
 
@@ -1803,7 +1854,7 @@ def network_from_disease_json(final_json: dict) -> dict:
                 "to": id_dict[hash("v" + el["variant"])]
             })
             connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
-            dise_set.add((el["disease_name"], el["umls_disease_id"]))
+            dise_set.add((el["disease_name"], el["disease_id"]))
             connected_nodes.add(id_dict[hash("v" + el["variant"])])
             vars_set.add((el["variant"], el["dbsnp_id"], el["gene_name"]))
         except:
@@ -1828,7 +1879,7 @@ def network_from_disease_json(final_json: dict) -> dict:
                 "to": id_dict[hash("g" + el["gene_name"])]
             })
             connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
-            dise_set.add((el["disease_name"], el["umls_disease_id"]))
+            dise_set.add((el["disease_name"], el["disease_id"]))
             connected_nodes.add(id_dict[hash("g" + el["gene_name"])])
             gene_set.add((el["gene_name"], el["ensembl_gene_id"]))
         except:
@@ -1844,7 +1895,7 @@ def network_from_disease_json(final_json: dict) -> dict:
                         "to": id_dict[hash("p" + el["phenotype_name"])]
                     })
                     connected_nodes.add(id_dict[hash("d" + el["disease_name"])])
-                    dise_set.add((el["disease_name"], el["umls_disease_id"]))
+                    dise_set.add((el["disease_name"], el["disease_id"]))
                     connected_nodes.add(id_dict[hash("p" + el["phenotype_name"])])
                     phen_set.add((el["phenotype_name"], el["phenotype_id"]))
         except:

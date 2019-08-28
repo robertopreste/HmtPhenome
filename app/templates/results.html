@@ -154,7 +154,18 @@
                     {% if diseases|length > 0 %}
                         {% for el in diseases %}
                             <tr>
-                                <td><a href="http://linkedlifedata.com/resource/umls/id/{{ el[1] }}" title="UMLS" target="_blank">{{ el[0] }}</a></td>
+                                {% if el[1].startswith("OMIM:") %}
+                                <td><a href="https://www.omim.org/entry/{{ el[1].lstrip('OMIM:') }}" title="OMIM" target="_blank">{{ el[0] }}</a></td>
+{#                                <td><a href="http://linkedlifedata.com/resource/umls/id/{{ el[1] }}" title="UMLS" target="_blank">{{ el[0] }}</a></td>#}
+                                {% elif el[1].startswith("ORPHA:") %}
+                                <td><a href="http://www.orpha.net/ORDO/Orphanet_{{ el[1].lstrip('ORPHA:') }}" title="Orphanet" target="_blank">{{ el[0] }}</a></td>
+                                {% elif el[1].startswith("DO:") %}
+                                <td><a href="http://purl.obolibrary.org/obo/DOID_{{ el[1].lstrip('DO:') }}" title="DO", target="_blank">{{ el[0] }}</a></td>
+                                {% elif el[1].startswith("MONDO:") %}
+                                <td><a href="http://purl.obolibrary.org/obo/{{ el[1].replace(':', '_') }}" title="MONDO" target="_blank">{{ el[0] }}</a></td>
+                                {% else %}
+                                <td>{{ el[0] }}</td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     {% endif %}

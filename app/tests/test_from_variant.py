@@ -48,6 +48,7 @@ def test_get_diseases_from_dbsnp():
     expect = pd.DataFrame({
         "dbsnp_id": ["rs28358582"],
         "umls_disease_id": ["C0038644"],
+        "disease_id": ["OMIM:272120"],
         "disease_name": ["Sudden infant death syndrome"],
         "ass_score": [0.7]
     })
@@ -57,7 +58,7 @@ def test_get_diseases_from_dbsnp():
 
 
 def test_get_diseases_from_dbsnp_empty():
-    expect = pd.DataFrame(columns=["dbsnp_id", "umls_disease_id",
+    expect = pd.DataFrame(columns=["dbsnp_id", "umls_disease_id", "disease_id",
                                    "disease_name", "ass_score"])
     result = get_diseases_from_dbsnp("rs6666666")
     assert_frame_equal(result.reset_index(drop=True),
@@ -97,12 +98,13 @@ def test_get_phenos_from_umls_empty():
 async def test_json_from_variant():
     expect = {'diseases': [{'ass_score': 0.7,
                             'dbsnp_id': 'rs28358582',
+                            'disease_id': 'OMIM:272120',
                             'disease_name': 'Sudden infant death syndrome',
                             'umls_disease_id': 'C0038644'}],
               'genes': [{'ensembl_gene_id': 'ENSG00000198888',
                          'gene_name': 'ND1'}],
               'phenotypes': [],
-              'variants': [{'dbsnp_id': 'rs28358582',
+              'variants': [{'dbsnp_id': 'rs28358582', 'disease_id': 'OMIM:272120',
                             'disease_name': 'Sudden infant death syndrome',
                             'ensembl_gene_id': 'ENSG00000198888',
                             'gene_name': 'ND1',
@@ -110,7 +112,7 @@ async def test_json_from_variant():
                             'phenotype_name': '',
                             'umls_disease_id': 'C0038644',
                             'variant': 'chrMT:3308T>A'},
-                           {'dbsnp_id': 'rs28358582',
+                           {'dbsnp_id': 'rs28358582', 'disease_id': 'OMIM:272120',
                             'disease_name': 'Sudden infant death syndrome',
                             'ensembl_gene_id': 'ENSG00000198888',
                             'gene_name': 'ND1',
@@ -118,7 +120,7 @@ async def test_json_from_variant():
                             'phenotype_name': '',
                             'umls_disease_id': 'C0038644',
                             'variant': 'chrMT:3308T>C'},
-                           {'dbsnp_id': 'rs28358582',
+                           {'dbsnp_id': 'rs28358582', 'disease_id': 'OMIM:272120',
                             'disease_name': 'Sudden infant death syndrome',
                             'ensembl_gene_id': 'ENSG00000198888',
                             'gene_name': 'ND1',
