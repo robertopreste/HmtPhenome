@@ -3,7 +3,7 @@
 # Created by Roberto Preste
 import pprint
 import async_timeout
-from quart import Blueprint, render_template, request, redirect, url_for, flash
+from quart import Blueprint, render_template, request, redirect, url_for, flash, session
 from app.static import dbdata
 from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, \
     QueryDiseasesForm
@@ -61,7 +61,7 @@ async def query():
                                 disease_submit=form_dis.disease_submit.data))
 
 
-@www.route("/results", methods=["GET"])
+@www.route("/results", methods=["GET", "POST"])
 async def results():
 
     variant_chr = request.args.get("variant_chr", "", type=str)
@@ -147,6 +147,11 @@ async def results():
             await flash("No results found!")
         networks = network_from_disease_json(json_data)
 
+    session["res_type"] = res_type
+    session["res_el"] = res_el
+    session["nodes"] = networks["nodes"]
+    session["edges"] = networks["edges"]
+
     return await render_template("results.html",
                                  title="Results",
                                  res_type=res_type,
@@ -160,6 +165,24 @@ async def results():
                                  phenotypes=networks["phenotypes"],
                                  # parse_variant_string=parse_variant_string)
                                  parse_variant_string=parse_variant_HGVS)
+
+    # elif request.method == "POST":
+    #     return redirect(url_for("site.network"))
+
+
+@www.route("/network", methods=["GET"])
+async def network():
+    res_type = session.get("res_type")
+    res_el = session.get("res_el")
+    nodes = session.get("nodes")
+    edges = session.get("edges")
+
+    return await render_template("network.html",
+                                 title="Network View",
+                                 res_type=res_type,
+                                 res_el=res_el,
+                                 nodes=nodes,
+                                 edges=edges)
 
 
 @www.errorhandler(404)

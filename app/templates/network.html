@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="container">
+
+        <div class="container-fluid text-center page-header">
+            <h1>Network View</h1>
+            <p class="lead">Network for your query ({{ res_type }} = {{ res_el }})</p>
+        </div>
+
+        {# Messages #}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            <div class="alert alert-danger alert-dismissable">
+                                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                <ul class="flashes"></ul>
+                                {% for message in messages %}
+                                    <li>{{ message }}</li>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12 alert alert-warning alert-dismissable">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <p>Creating large networks may require a few seconds or minutes, please be patient while the network is being built.</p>
+            </div>
+
+            <br><br><br>
+
+            <div id="networkview"></div>
+        </div>
+        </div>
+
+        <br>
+
+        {# Legend #}
+        <div class="container-fluid">
+        <div class="row">
+
+            <div class="col-sm-2">&nbsp;</div>
+
+            <div class="col-sm-2 text-center" style="background-color: #F9CF45; border: 2px solid #CCAA39;">
+                <strong>Variants</strong>
+            </div>
+
+            <div class="col-sm-2 text-center" style="background-color: #739E82; border: 2px solid #5F826B;">
+                <strong>Genes</strong>
+            </div>
+
+            <div class="col-sm-2 text-center" style="background-color: #D7816A; border: 2px solid #B06A57;">
+                <strong>Diseases</strong>
+            </div>
+
+            <div class="col-sm-2 text-center" style="background-color: #93B5C6; border: 2px solid #7995A3;">
+                <strong>Phenotypes</strong>
+            </div>
+
+            <div class="col-sm-2">&nbsp;</div>
+
+        </div>
+        </div>
+
+    </div>
+
+    {{ super() }}
+
+    {% block scripts %}
+
+        {{ super() }}
+
+        {% autoescape false %}
+        <script type="text/javascript">
+            var nodes = new vis.DataSet([
+                {% for node in nodes %}
+                    {id: {{ node["id"] }}, label: '{{ node["label"] }}',
+                    color: { background: '{{ node["color"]["background"] }}',
+                             border: '{{ node["color"]["border"] }}' } },
+                {% endfor %}
+            ]);
+            var edges = new vis.DataSet([
+                {% for edge in edges %}
+                    {from: {{ edge["from"] }}, to: {{ edge["to"] }} },
+                {% endfor %}
+            ]);
+
+            // create a network
+            var container = document.getElementById('networkview');
+
+            // provide the data in the vis format
+            var data = {
+                nodes: nodes,
+                edges: edges
+            };
+            var options = {height: '800px', nodes: {borderWidth: 2}};
+
+            // initialize your network!
+            var network = new vis.Network(container, data, options);
+        </script>
+        {% endautoescape %}
+
+    {% endblock %}
+
+{% endblock %}

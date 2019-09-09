@@ -74,6 +74,8 @@
                             <input type="text" class="form-control" name="variant_input" id="variant_input">
                         </div>
                     </div>
+                    <small>Select a chromosome and type a nucleotide position.
+                            <br> All variants for the given position are returned.</small>
                 </div>
                 <div class="panel-footer panel-warning">
                     <button type="submit" class="btn btn-warning btn-lg center-block" name="variant_submit" value="submit">Submit</button>
@@ -154,6 +156,8 @@
                         {# populated by Awesomplete #}
                     </div>
                     </div>
+                    <small>Start typing a gene name and select one of the suggestions provided.
+                            <br> Only <a href="https://www.broadinstitute.org/files/shared/metabolism/mitocarta/human.mitocarta2.0.html" title="MitoCarta" target="_blank">MitoCarta</a> genes are allowed.</small>
                 </div>
                 <div class="panel-footer panel-warning">
                     <button type="submit" class="btn btn-warning btn-lg center-block" name="gene_submit" value="submit">Submit</button>
@@ -183,6 +187,7 @@
                         <input type="text" name="disease_input" id="disease_input" placeholder="Disease" class="awesomplete form-control" data-multiple>
                         {# populated by Awesomplete #}
                     </div>
+                    <small>Start typing a disease name and select one of the suggestions provided.</small>
                 </div>
                 <div class="panel-footer panel-warning">
                     <button type="submit" class="btn btn-warning btn-lg center-block" name="disease_submit" value="submit">Submit</button>
@@ -206,6 +211,7 @@
                         <input type="text" name="pheno_input" id="pheno_input" placeholder="Phenotype" class="awesomplete form-control" data-multiple>
                         {# populated by Awesomplete #}
                     </div>
+                    <small>Start typing a phenotype name and select one of the suggestions provided.</small>
                 </div>
                 <div class="panel-footer panel-warning">
                     <button type="submit" class="btn btn-warning btn-lg center-block" name="pheno_submit" value="submit">Submit</button>
