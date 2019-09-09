@@ -61,7 +61,9 @@ async def test_get_vars_from_disease_id():
         "ensembl_gene_id": ["ENSG00000122691" for _ in range(3)],
         "gene_name": ["TWIST1" for _ in range(3)],
         "dbsnp_id": ["rs104894057", "rs104894059", "rs121909189"],
-        "variant": ["chr7:19116966T>G", "chr7:19116856T>C", "chr7:19116930A>G"],
+        # "variant": ["chr7:19116966T>G", "chr7:19116856T>C", "chr7:19116930A>G"],
+        "variant": ["NC_000007.14:g.19116966T>G", "NC_000007.14:g.19116856T>C",
+                    "NC_000007.14:g.19116930A>G"],
         "umls_disease_id": ["C1863371" for _ in range(3)],
         "disease_name": ["BLEPHAROPHIMOSIS, EPICANTHUS INVERSUS, AND PTOSIS 3, FORMERLY"
                          for _ in range(3)],

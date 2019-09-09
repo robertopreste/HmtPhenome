@@ -101,8 +101,8 @@
                                 <td>
                                     <a href="https://www.ncbi.nlm.nih.gov/snp/{{ el[1] }}" title="dbSNP" target="_blank">{{ el[0] }}</a>
                                     {% set v = parse_variant_string(el[0]) %}
-                                    {% if v[0] == "chrMT" or v[0] == "chrM" %}
-                                        &nbsp; (additional information on <a href="https://www.hmtvar.uniba.it/results?nt_position={{ v[1] }}" title="HmtVar" target="_blank">HmtVar</a>)
+                                    {% if v[0] == "NC_012920.1" %}
+                                        &nbsp; (additional information on <a href="https://www.hmtvar.uniba.it/results?nt_position={{ v[1].split("_")[0] }}" title="HmtVar" target="_blank">HmtVar</a>)
                                     {% endif %}
                                 </td>
                             </tr>

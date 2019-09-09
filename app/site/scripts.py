@@ -391,7 +391,7 @@ def create_variant_string(chrom: Union[int, str],
     return base_str.format(chrom, nt_start, change)
 
 
-def parse_variant_string(variant) -> set:
+def parse_variant_string(variant: str) -> set:
     """Parse the variant string created by create_variant_string().
     The input variant string should be in the format chr:posA>T.
 
@@ -401,6 +401,59 @@ def parse_variant_string(variant) -> set:
     """
     rgx = re.compile(r"(chr.+):(\d+)(\w+)")
     return rgx.findall(variant)[0]
+
+
+def parse_variant_HGVS(variant: str) -> set:
+    """Parse the variant string created by variant_to_HGVS().
+
+    :param variant: input variant string
+    :return: list(var_chr, var_pos, var_ref, var_alt)
+    """
+    rgx = re.compile(r"(NC_.+):[gm]\.(\d+_*\d*)([\w>]+)")
+    return rgx.findall(variant)[0]
+
+
+def create_variant_HGVS(chrom: Union[int, str],
+                        nt_start: Union[int, str],
+                        ref_all: str,
+                        alt_all: str) -> str:
+    """Convert the given variant string to HGVS format.
+
+    :param chrom: chromosome name (1:22, X, Y, M)
+    :param nt_start: start position of the variant
+    :param ref_all: reference allele
+    :param alt_all: alternate allele
+    :return: str variant in HGVS format
+    """
+    base_str = "{}:{}{}"
+
+    chroms = {"1": "NC_000001.11", "2": "NC_000002.12", "3": "NC_000003.12",
+              "4": "NC_000004.12", "5": "NC_000005.10", "6": "NC_000006.12",
+              "7": "NC_000007.14", "8": "NC_000008.11", "9": "NC_000009.12",
+              "10": "NC_000010.11", "11": "NC_000011.10", "12": "NC_000012.12",
+              "13": "NC_000013.11", "14": "NC_000014.9", "15": "NC_000015.10",
+              "16": "NC_000016.10", "17": "NC_000017.11", "18": "NC_000018.10",
+              "19": "NC_000019.10", "20": "NC_000020.11", "21": "NC_000021.9",
+              "22": "NC_000022.11", "X": "NC_000023.11", "Y": "NC_000024.10",
+              "M": "NC_012920.1", "MT": "NC_012920.1"}
+
+    ref = chroms[str(chrom)]
+    pos = "m.{}" if str(chrom) in ["M", "MT"] else "g.{}"
+    try:
+        if alt_all == "-":  # deletion
+            pos = pos.format("{}_{}".format(nt_start, int(nt_start) + len(ref_all)))
+            change = "del"
+        elif ref_all == "-":  # insertion
+            pos = pos.format("{}_{}".format(nt_start, int(nt_start) + 1))
+            change = "ins{}".format(alt_all.upper())
+        else:  # SNP
+            pos = pos.format(nt_start)
+            change = "{}>{}".format(ref_all.upper(), alt_all.upper())
+    except TypeError:
+        pos = change = "_"
+
+    return base_str.format(ref, pos, change)
+
 
 
 async def ensembl_gene_id_to_entrez(ens_gene_id: str) -> pd.DataFrame:
@@ -459,7 +512,7 @@ async def get_dbsnp_from_variant(chrom: Union[int, str],
         res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
         res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
         res = res[res["alt_allele"] != "HGMD_MUTATION"]
-        res["variant"] = [create_variant_string(el.chromosome, el.start_pos,
+        res["variant"] = [create_variant_HGVS(el.chromosome, el.start_pos,
                                                 el.ref_allele, el.alt_allele)
                           for el in res.itertuples()]
         res.drop_duplicates(subset="variant", inplace=True)
@@ -844,7 +897,7 @@ async def get_vars_from_gene(ens_gene_id: str) -> pd.DataFrame:
                      "chromosome": [el["seq_region_name"]],
                      "ref_allele": [ref_allele], "start_pos": [el["start"]],
                      "alt_allele": [allele],
-                     "variant": [create_variant_string(el["seq_region_name"],
+                     "variant": [create_variant_HGVS(el["seq_region_name"],
                                                        el["start"], ref_allele,
                                                        allele)],
                      "dbsnp_id": [el["id"]]})
@@ -855,7 +908,7 @@ async def get_vars_from_gene(ens_gene_id: str) -> pd.DataFrame:
                  "chromosome": [el["seq_region_name"]],
                  "ref_allele": [el["alleles"][0]], "start_pos": [el["start"]],
                  "alt_allele": [el["alleles"][1]],
-                 "variant": [create_variant_string(el["seq_region_name"],
+                 "variant": [create_variant_HGVS(el["seq_region_name"],
                                                    el["start"],
                                                    el["alleles"][0],
                                                    el["alleles"][1])],
@@ -1276,7 +1329,7 @@ async def get_vars_from_phenotype(phenotype: str) -> pd.DataFrame:
                                                   "17", "18", "19", "20", "21",
                                                   "22", "X", "Y", "M", "MT"])]
 
-    variants = [create_variant_string(el.chromosome, el.start_pos,
+    variants = [create_variant_HGVS(el.chromosome, el.start_pos,
                                       el.ref_allele, el.alt_allele)
                 for el in res.itertuples()]
     res["variant"] = variants
@@ -1657,7 +1710,7 @@ async def get_vars_from_disease_id(disease_id: str) -> pd.DataFrame:
     res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
     res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
     res = res[res["alt_allele"] != "HGMD_MUTATION"]
-    res["variant"] = [create_variant_string(el.chromosome, el.start_pos,
+    res["variant"] = [create_variant_HGVS(el.chromosome, el.start_pos,
                                             el.ref_allele, el.alt_allele)
                       for el in res.itertuples()]
     res["umls_disease_id"] = dis_umls

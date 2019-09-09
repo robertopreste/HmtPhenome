@@ -29,7 +29,8 @@ def test_get_gene_from_variant_empty():
 async def test_get_dbsnp_from_variant():
     expect = pd.DataFrame({
         "dbsnp_id": ["rs28358582", "rs28358582", "rs28358582"],
-        "variant": ["chrMT:3308T>A", "chrMT:3308T>C", "chrMT:3308T>G"]
+        # "variant": ["chrMT:3308T>A", "chrMT:3308T>C", "chrMT:3308T>G"]
+        "variant": ["NC_012920.1:m.3308T>A", "NC_012920.1:m.3308T>C", "NC_012920.1:m.3308T>G"]
     })
     result = await get_dbsnp_from_variant("M", 3308)
     assert_frame_equal(result.reset_index(drop=True),
@@ -111,7 +112,8 @@ async def test_json_from_variant():
                             'phenotype_id': '',
                             'phenotype_name': '',
                             'umls_disease_id': 'C0038644',
-                            'variant': 'chrMT:3308T>A'},
+                            # 'variant': 'chrMT:3308T>A'},
+                            'variant': 'NC_012920.1:m.3308T>A'},
                            {'dbsnp_id': 'rs28358582', 'disease_id': 'OMIM:272120',
                             'disease_name': 'Sudden infant death syndrome',
                             'ensembl_gene_id': 'ENSG00000198888',
@@ -119,7 +121,8 @@ async def test_json_from_variant():
                             'phenotype_id': '',
                             'phenotype_name': '',
                             'umls_disease_id': 'C0038644',
-                            'variant': 'chrMT:3308T>C'},
+                            # 'variant': 'chrMT:3308T>C'},
+                            'variant': 'NC_012920.1:m.3308T>C'},
                            {'dbsnp_id': 'rs28358582', 'disease_id': 'OMIM:272120',
                             'disease_name': 'Sudden infant death syndrome',
                             'ensembl_gene_id': 'ENSG00000198888',
@@ -127,6 +130,7 @@ async def test_json_from_variant():
                             'phenotype_id': '',
                             'phenotype_name': '',
                             'umls_disease_id': 'C0038644',
-                            'variant': 'chrMT:3308T>G'}]}
+                            # 'variant': 'chrMT:3308T>G'}]}
+                            'variant': 'NC_012920.1:m.3308T>G'}]}
     result = await json_from_variant("M", 3308)
     assert result == expect

@@ -10,7 +10,7 @@ from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, \
 from app.site.scripts import json_from_variant, network_from_variant_json, \
     json_from_gene, network_from_gene_json, json_from_phenotype, \
     network_from_phenotype_json, json_from_disease, network_from_disease_json, \
-    parse_variant_string, fallback_variant
+    parse_variant_string, parse_variant_HGVS, fallback_variant
 
 www = Blueprint("site", __name__)
 
@@ -158,7 +158,8 @@ async def results():
                                  genes=networks["genes"],
                                  diseases=networks["diseases"],
                                  phenotypes=networks["phenotypes"],
-                                 parse_variant_string=parse_variant_string)
+                                 # parse_variant_string=parse_variant_string)
+                                 parse_variant_string=parse_variant_HGVS)
 
 
 @www.errorhandler(404)

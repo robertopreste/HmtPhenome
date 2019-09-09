@@ -54,10 +54,14 @@ async def test_get_vars_from_phenotype():
         "phenotype_name": ["Intracranial Hemorrhages" for _ in range(7)],
         "ref_allele": ["G", "G", "A", "C", "C", "C", "C"],
         "alt_allele": ["A", "C", "G", "G", "T", "G", "T"],
-        "variant": ["chr19:8373832G>A", "chr19:8373832G>C",
-                    "chr19:8376973A>G", "chr7:100823256C>G",
-                    "chr7:100823256C>T", "chr12:6019472C>G",
-                    "chr12:6019472C>T"],
+        # "variant": ["chr19:8373832G>A", "chr19:8373832G>C",
+        #             "chr19:8376973A>G", "chr7:100823256C>G",
+        #             "chr7:100823256C>T", "chr12:6019472C>G",
+        #             "chr12:6019472C>T"],
+        "variant": ["NC_000019.10:g.8373832G>A", "NC_000019.10:g.8373832G>C",
+                    "NC_000019.10:g.8376973A>G", "NC_000007.14:g.100823256C>G",
+                    "NC_000007.14:g.100823256C>T", "NC_000012.12:g.6019472C>G",
+                    "NC_000012.12:g.6019472C>T"],
         "phenotype_id": ["HP:0002170" for _ in range(7)]
     })
     result = await get_vars_from_phenotype("HP:0002170")
