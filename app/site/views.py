@@ -5,7 +5,7 @@ import pprint
 import os
 import async_timeout
 import pandas as pd
-from quart import Blueprint, render_template, request, redirect, url_for, flash, session, after_this_request, send_file
+from quart import Blueprint, render_template, request, redirect, url_for, flash, session, after_this_request, send_file, send_from_directory
 from app.static import dbdata
 from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, \
     QueryDiseasesForm
@@ -15,6 +15,7 @@ from app.site.scripts import json_from_variant, network_from_variant_json, \
     parse_variant_string, parse_variant_HGVS, fallback_variant, create_dataframes
 
 www = Blueprint("site", __name__)
+dl_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "dls")
 
 
 # Home Page
@@ -200,9 +201,12 @@ async def download_data():
     #     os.remove("app/site/dls/hmtphenome_data.xlsx")
     #     return await response
 
-    return await send_file("app/site/dls/hmtphenome_data.xlsx", mimetype="text/plain",
-                           as_attachment=True,
-                           attachment_filename="hmtphenome_data.xlsx")
+    return await send_from_directory(dl_dir, file_name="hmtphenome_data.xlsx",
+                                     as_attachment=True)
+
+    # return await send_file("app/site/dls/hmtphenome_data.xlsx", mimetype="text/plain",
+    #                        as_attachment=True,
+    #                        attachment_filename="hmtphenome_data.xlsx")
 
 
 @www.route("/network", methods=["GET"])
