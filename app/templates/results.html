@@ -207,13 +207,21 @@
         <div class="container-fluid">
         <div class="row">
 
-            <div class="col-sm-4">&nbsp;</div>
+            <div class="col-sm-2">&nbsp;</div>
 
-            <div class="col-sm-4">
-            <p><a class="btn btn-warning btn-lg center-block" href="{{ url_for('site.network') }}" role="button" target="_blank">Show Network</a></p>
+            <div class="col-sm-3">
+                <p><a class="btn btn-warning btn-lg center-block" href="{{ url_for('site.network') }}" role="button" target="_blank">Show Network</a></p>
+                <p><small>Show resulting network representation in new window.</small></p>
             </div>
 
-            <div class="col-sm-4">&nbsp;</div>
+            <div class="col-sm-2">&nbsp;</div>
+
+            <div class="col-sm-3">
+                <p><a class="btn btn-warning btn-lg center-block" href="{{ url_for('site.download_data') }}" role="button">Download Data</a></p>
+                <p><small>Download data in tabular format.</small></p>
+            </div>
+
+            <div class="col-sm-2">&nbsp;</div>
 
         </div>
         </div>
@@ -226,7 +234,7 @@
             <h2>Data view</h2>
 
             <div class="col-sm-12">
-                <pre style="max-height: 300px;">{{ json_data }}</pre>
+                <pre style="max-height: 300px;">{{ json_pretty }}</pre>
             </div>
 
         </div>
@@ -244,35 +252,35 @@
 
         {{ super() }}
 
-        {% autoescape false %}
-        <script type="text/javascript">
-            var nodes = new vis.DataSet([
-                {% for node in nodes %}
-                    {id: {{ node["id"] }}, label: '{{ node["label"] }}',
-                    color: { background: '{{ node["color"]["background"] }}',
-                             border: '{{ node["color"]["border"] }}' } },
-                {% endfor %}
-            ]);
-            var edges = new vis.DataSet([
-                {% for edge in edges %}
-                    {from: {{ edge["from"] }}, to: {{ edge["to"] }} },
-                {% endfor %}
-            ]);
-
-            // create a network
-            var container = document.getElementById('networkview');
-
-            // provide the data in the vis format
-            var data = {
-                nodes: nodes,
-                edges: edges
-            };
-            var options = {height: '800px', nodes: {borderWidth: 2}};
-
-            // initialize your network!
-            var network = new vis.Network(container, data, options);
-        </script>
-        {% endautoescape %}
+{#        {% autoescape false %}#}
+{#        <script type="text/javascript">#}
+{#            var nodes = new vis.DataSet([#}
+{#                {% for node in nodes %}#}
+{#                    {id: {{ node["id"] }}, label: '{{ node["label"] }}',#}
+{#                    color: { background: '{{ node["color"]["background"] }}',#}
+{#                             border: '{{ node["color"]["border"] }}' } },#}
+{#                {% endfor %}#}
+{#            ]);#}
+{#            var edges = new vis.DataSet([#}
+{#                {% for edge in edges %}#}
+{#                    {from: {{ edge["from"] }}, to: {{ edge["to"] }} },#}
+{#                {% endfor %}#}
+{#            ]);#}
+{##}
+{#            // create a network#}
+{#            var container = document.getElementById('networkview');#}
+{##}
+{#            // provide the data in the vis format#}
+{#            var data = {#}
+{#                nodes: nodes,#}
+{#                edges: edges#}
+{#            };#}
+{#            var options = {height: '800px', nodes: {borderWidth: 2}};#}
+{##}
+{#            // initialize your network!#}
+{#            var network = new vis.Network(container, data, options);#}
+{#        </script>#}
+{#        {% endautoescape %}#}
 
         <script type="text/javascript">
             $(document).ready( function () {

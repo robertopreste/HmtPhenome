@@ -2,15 +2,17 @@
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
 import pprint
+import os
 import async_timeout
-from quart import Blueprint, render_template, request, redirect, url_for, flash, session
+import pandas as pd
+from quart import Blueprint, render_template, request, redirect, url_for, flash, session, after_this_request, send_file
 from app.static import dbdata
 from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, \
     QueryDiseasesForm
 from app.site.scripts import json_from_variant, network_from_variant_json, \
     json_from_gene, network_from_gene_json, json_from_phenotype, \
     network_from_phenotype_json, json_from_disease, network_from_disease_json, \
-    parse_variant_string, parse_variant_HGVS, fallback_variant
+    parse_variant_string, parse_variant_HGVS, fallback_variant, create_dataframes
 
 www = Blueprint("site", __name__)
 
@@ -120,13 +122,13 @@ async def results():
             async with async_timeout.timeout(60) as cm:
                 json_data = await json_from_phenotype(pheno_input)
                 # networks = network_from_phenotype_json(json_data)
-                if cm.expired or len(json_data["phenotype"]) == 0:
+                if cm.expired or len(json_data["phenotypes"]) == 0:
                     json_data = {"variants": [], "genes": [],
-                                 "diseases": [], "phenotype": []}
+                                 "diseases": [], "phenotypes": []}
                     await flash("No results found!")
         except:
             json_data = {"variants": [], "genes": [],
-                         "diseases": [], "phenotype": []}
+                         "diseases": [], "phenotypes": []}
             await flash("No results found!")
         networks = network_from_phenotype_json(json_data)
 
@@ -139,11 +141,11 @@ async def results():
                 # networks = network_from_disease_json(json_data)
                 if cm.expired or len(json_data["diseases"]) == 0:
                     json_data = {"variants": [], "genes": [],
-                                 "diseases": [], "phenotype": []}
+                                 "diseases": [], "phenotypes": []}
                     await flash("No results found!")
         except:
             json_data = {"variants": [], "genes": [],
-                         "diseases": [], "phenotype": []}
+                         "diseases": [], "phenotypes": []}
             await flash("No results found!")
         networks = network_from_disease_json(json_data)
 
@@ -152,11 +154,24 @@ async def results():
     session["nodes"] = networks["nodes"]
     session["edges"] = networks["edges"]
 
+    try:
+        os.remove("app/site/dls/hmtphenome_data.xlsx")
+    except:
+        pass
+
+    dfs = create_dataframes(json_data)
+    with pd.ExcelWriter("app/site/dls/hmtphenome_data.xlsx") as writer:
+        dfs["variants"].to_excel(writer, sheet_name="variants")
+        dfs["genes"].to_excel(writer, sheet_name="genes")
+        dfs["diseases"].to_excel(writer, sheet_name="diseases")
+        dfs["phenotypes"].to_excel(writer, sheet_name="phenotypes")
+
     return await render_template("results.html",
                                  title="Results",
                                  res_type=res_type,
                                  res_el=res_el,
-                                 json_data=pprint.pformat(json_data),
+                                 # json_data=json_data,
+                                 json_pretty=pprint.pformat(json_data),
                                  nodes=networks["nodes"],
                                  edges=networks["edges"],
                                  variants=networks["variants"],
@@ -168,6 +183,26 @@ async def results():
 
     # elif request.method == "POST":
     #     return redirect(url_for("site.network"))
+
+
+@www.route("/download_data", methods=["GET"])
+async def download_data():
+    # json_data = request.args.get("json_data", "")
+    # dfs = create_dataframes(json_data)
+    # with pd.ExcelWriter("app/site/dls/hmtphenome_data.xlsx") as writer:
+    #     dfs["variants"].to_csv(writer, sheet_name="variants")
+    #     dfs["genes"].to_csv(writer, sheet_name="genes")
+    #     dfs["diseases"].to_csv(writer, sheet_name="diseases")
+    #     dfs["phenotypes"].to_csv(writer, sheet_name="phenotypes")
+
+    # @after_this_request
+    # async def remove_file(response):
+    #     os.remove("app/site/dls/hmtphenome_data.xlsx")
+    #     return await response
+
+    return await send_file("app/site/dls/hmtphenome_data.xlsx", mimetype="text/plain",
+                           as_attachment=True,
+                           attachment_filename="hmtphenome_data.xlsx")
 
 
 @www.route("/network", methods=["GET"])

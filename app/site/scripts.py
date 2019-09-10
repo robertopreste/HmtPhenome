@@ -1432,7 +1432,7 @@ async def json_from_phenotype(pheno_input: str) -> dict:
     pheno_name = DiseaseMappings.query.filter(
         DiseaseMappings.disease_id == pheno_input
     ).first().disease_name
-    final_json["phenotype"] = pheno_name
+    final_json["phenotypes"] = [{"phenotype_name": pheno_name}]
     final_json["variants"] = vars_json
     final_json["genes"] = gene_json
     final_json["diseases"] = disease_json
@@ -1448,7 +1448,7 @@ def network_from_phenotype_json(final_json: dict) -> dict:
 
     :return: dict("nodes": [nodes list], "edges": [edges list])
     """
-    phenotype = final_json["phenotype"]
+    phenotype = final_json["phenotypes"]
     var_json = final_json["variants"]
     gen_json = final_json["genes"]
     dis_json = final_json["diseases"]
@@ -1480,9 +1480,9 @@ def network_from_phenotype_json(final_json: dict) -> dict:
 
     try:
         ids += 1
-        node = Node("p", ids, phenotype)
+        node = Node("p", ids, phenotype[0].get("phenotype_name"))
         id_dict[node.uid] = ids
-        nodes.append({"id": ids, "label": phenotype,
+        nodes.append({"id": ids, "label": phenotype[0].get("phenotype_name"),
                       "color": {"background": "#93B5C6", "border": "#7995A3"}})
     except:
         pass
@@ -1810,8 +1810,8 @@ async def json_from_disease(disease_input: str) -> dict:
     if dis_maps is not None:
         disease_name = dis_maps.disease_name
 
-    final_json["diseases"] = disease_name
-    final_json["phenotype"] = pheno_json
+    final_json["diseases"] = [{"disease_name": disease_name}]
+    final_json["phenotypes"] = pheno_json
     final_json["variants"] = vars_json
     final_json["genes"] = gene_json
 
@@ -1826,10 +1826,11 @@ def network_from_disease_json(final_json: dict) -> dict:
 
     :return: dict("nodes": [nodes list], "edges": [edges list])
     """
-    phen_json = final_json["phenotype"]
+    phen_json = final_json["phenotypes"]
     var_json = final_json["variants"]
     gen_json = final_json["genes"]
     disease = final_json["diseases"]
+    # dis_json = final_json["diseases"]
 
     variants = []
     variants.extend([el["variant"] for el in var_json])
@@ -1858,9 +1859,9 @@ def network_from_disease_json(final_json: dict) -> dict:
 
     try:
         ids += 1
-        node = Node("d", ids, disease)
+        node = Node("d", ids, disease[0].get("disease_name"))
         id_dict[node.uid] = ids
-        nodes.append({"id": ids, "label": disease,
+        nodes.append({"id": ids, "label": disease[0].get("disease_name"),
                       "color": {"background": "#D7816A", "border": "#B06A57"}})
     except:
         pass
@@ -1885,7 +1886,7 @@ def network_from_disease_json(final_json: dict) -> dict:
         nodes.append({"id": ids, "label": el,
                       "color": {"background": "#739E82", "border": "#5F826B"}})
     for el in phenos:
-        if el != disease:
+        if el != disease[0].get("disease_name"):
             ids += 1
             node = Node("p", ids, el)
             id_dict[node.uid] = ids
@@ -1960,3 +1961,18 @@ def network_from_disease_json(final_json: dict) -> dict:
     return {"nodes": true_nodes, "edges": edges, "variants": vars_set,
             "genes": gene_set, "diseases": dise_set, "phenotypes": phen_set}
 
+
+def create_dataframes(json_data: dict) -> dict:
+    """Create 4 different dataframes for variants, genes, diseases and
+    phenotypes from results of json_from_*() functions.
+
+    :param json_data: output of json_from_*() function
+    :return: dict of pd.DataFrames
+    """
+    variants = pd.DataFrame.from_records(json_data["variants"])
+    genes = pd.DataFrame.from_records(json_data["genes"])
+    diseases = pd.DataFrame.from_records(json_data["diseases"])
+    phenotypes = pd.DataFrame.from_records(json_data["phenotypes"])
+
+    return {"variants": variants, "genes": genes,
+            "diseases": diseases, "phenotypes": phenotypes}
