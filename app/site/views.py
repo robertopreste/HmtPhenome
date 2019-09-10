@@ -201,8 +201,7 @@ async def download_data():
     #     os.remove("app/site/dls/hmtphenome_data.xlsx")
     #     return await response
 
-    return await send_from_directory(dl_dir, file_name="hmtphenome_data.xlsx",
-                                     as_attachment=True)
+    return await send_from_directory(dl_dir, file_name="hmtphenome_data.xlsx")
 
     # return await send_file("app/site/dls/hmtphenome_data.xlsx", mimetype="text/plain",
     #                        as_attachment=True,
