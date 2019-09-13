@@ -162,3 +162,19 @@ class HpoPhenGene(db.Model):
         hpo_term_name: {self.hpo_term_name}, gene_id: {self.gene_id}, 
         gene_symbol: {self.gene_symbol})""".format(self=self)
 
+
+class Variants(db.Model):
+    __tablename__ = "Variants"
+
+    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
+    nt_start = db.Column(db.Integer, nullable=False)
+    ref_rCRS = db.Column(db.String, nullable=False)
+    alt = db.Column(db.String, nullable=False)
+    nt_end = db.Column(db.Integer, nullable=False)
+    locus = db.Column(db.String, nullable=False)
+    dbsnp_id = db.Column(db.String, nullable=True, default="NULL")
+
+    def __repr__(self):
+        return """Variants(id: {self.id}, nt_start: {self.nt_start}, 
+            ref_rCRS: {self.ref_rCRS}, alt: {self.alt}, nt_end: {self.nt_end}, 
+            locus: {self.locus}, dbsnp_id: {self.dbsnp_id})""".format(self=self)

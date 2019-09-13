@@ -210,7 +210,11 @@
             <div class="col-sm-2">&nbsp;</div>
 
             <div class="col-sm-3">
+                {% if variants|length == 0 and genes|length == 0 and diseases|length == 0 and phenotypes|length == 0 %}
+                <p><a class="btn btn-warning btn-lg center-block disabled" href="{{ url_for('site.network') }}" role="button" target="_blank">Show Network</a></p>
+                {% else %}
                 <p><a class="btn btn-warning btn-lg center-block" href="{{ url_for('site.network') }}" role="button" target="_blank">Show Network</a></p>
+                {% endif %}
                 <p><small>Show resulting network representation in new window.</small></p>
             </div>
 

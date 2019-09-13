@@ -12,6 +12,7 @@ from quart import Quart
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
 from flask_marshmallow import Marshmallow
+from flask_caching import Cache
 # from flask_cors import CORS
 # from flask_login import LoginManager
 # from flask_mail import Mail
@@ -27,6 +28,7 @@ app.config.from_object("config")
 Bootstrap(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+ca = Cache(app, config={"CACHE_TYPE": "simple"})
 # login = LoginManager(app)
 # login.login_view = "site.login"
 # mail = Mail(app)
@@ -84,7 +86,7 @@ def update_db():
     click.echo("Updating database tables...")
     sources = ("Mitocarta", "HpoDisGenePhen", "HpoGenePhen", "HpoPhenGene",
                "Omim", "Orphanet", "GeneDiseaseAss", "VarDiseaseAss",
-               "DiseaseMappings", "Phenotypes", "Diseases")
+               "DiseaseMappings", "Phenotypes", "Diseases", "Variants")
     for el in sources:
         click.echo("\tUpdating {} table... ".format(el), nl=False)
         df = pd.read_csv("app/update/data/tables/{}.csv".format(el))

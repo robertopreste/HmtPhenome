@@ -5,7 +5,7 @@ import pprint
 import os
 import async_timeout
 import pandas as pd
-from quart import Blueprint, render_template, request, redirect, url_for, flash, session, after_this_request, send_file, send_from_directory
+from quart import Blueprint, render_template, request, redirect, url_for, flash, session, send_from_directory
 from app.static import dbdata
 from app.site.forms import QueryVariantsForm, QueryGenesForm, QueryPhenosForm, \
     QueryDiseasesForm
@@ -64,7 +64,7 @@ async def query():
                                 disease_submit=form_dis.disease_submit.data))
 
 
-@www.route("/results", methods=["GET", "POST"])
+@www.route("/results", methods=["GET"])
 async def results():
 
     variant_chr = request.args.get("variant_chr", "", type=str)
@@ -103,7 +103,7 @@ async def results():
         res_type = "gene"
         res_el = gene_input
         try:
-            async with async_timeout.timeout(60) as cm:
+            async with async_timeout.timeout(120) as cm:
                 json_data = await json_from_gene(gene_input)
                 # networks = network_from_gene_json(json_data)
                 if cm.expired or len(json_data["genes"]) == 0:

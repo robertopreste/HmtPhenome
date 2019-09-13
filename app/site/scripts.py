@@ -2,7 +2,8 @@
 # -*- coding: UTF-8 -*-
 # Created by Roberto Preste
 from app.site.models import Mitocarta, Phenotypes, Diseases, Omim, Orphanet, \
-    GeneDiseaseAss, VarDiseaseAss, DiseaseMappings, HpoDisGenePhen
+    GeneDiseaseAss, VarDiseaseAss, DiseaseMappings, HpoDisGenePhen, Variants
+from app import ca
 import pandas as pd
 import numpy as np
 import requests
@@ -13,7 +14,6 @@ import json
 from typing import List, Union, Optional
 import asyncio
 import aiohttp
-import async_timeout
 from app.site.classes import Node
 
 
@@ -197,6 +197,7 @@ async def get_json_request(url, headers=None):
             return await res.json()
 
 
+@ca.memoize(420)
 def get_json_sync_request(url, headers=None):
     """Synchronous request to a generic url, returning a JSON dictionary.
 
@@ -253,9 +254,12 @@ async def pheno_id_to_term(pheno_id: str) -> str:
             return pheno_name
     elif pheno_id.startswith("Orphanet:"):
         orpha_id = pheno_id.strip("Orphanet:")
-        pheno_name = Orphanet.query.filter(
-            Orphanet.orpha_num == orpha_id
-        ).first().orpha_name
+        try:
+            pheno_name = Orphanet.query.filter(
+                Orphanet.orpha_num == orpha_id
+            ).first().orpha_name
+        except:
+            return pheno_name
     elif pheno_id.startswith("EFO:"):
         efo_id = pheno_id.strip("EFO:")
         base_url = "https://www.ebi.ac.uk/ols/api/ontologies/efo/terms?"
@@ -266,6 +270,7 @@ async def pheno_id_to_term(pheno_id: str) -> str:
     return pheno_name
 
 
+@ca.memoize(420)
 def disease_id_to_name(disease_id: str) -> str:
     """Convert a given disease ID into its common name.
 
@@ -292,6 +297,7 @@ def disease_id_to_name(disease_id: str) -> str:
             return ""
 
 
+@ca.memoize(420)
 def disease_name_to_id(disease_name: str) -> str:
     """Convert a given disease name into the related Omim or Orphanet ID.
 
@@ -317,6 +323,7 @@ def disease_name_to_id(disease_name: str) -> str:
                 return ""
 
 
+@ca.memoize(420)
 def umls_to_disease_id(umls_id: str) -> str:
     """Retrieve the disease ID associated to the given UMLS ID.
 
@@ -358,6 +365,7 @@ def umls_to_disease_id(umls_id: str) -> str:
         return ""
 
 
+@ca.memoize(420)
 def create_variant_string(chrom: Union[int, str],
                           nt_start: Union[int, str],
                           ref_all: str,
@@ -391,6 +399,7 @@ def create_variant_string(chrom: Union[int, str],
     return base_str.format(chrom, nt_start, change)
 
 
+@ca.memoize(420)
 def parse_variant_string(variant: str) -> set:
     """Parse the variant string created by create_variant_string().
     The input variant string should be in the format chr:posA>T.
@@ -403,6 +412,7 @@ def parse_variant_string(variant: str) -> set:
     return rgx.findall(variant)[0]
 
 
+@ca.memoize(420)
 def parse_variant_HGVS(variant: str) -> set:
     """Parse the variant string created by variant_to_HGVS().
 
@@ -413,6 +423,7 @@ def parse_variant_HGVS(variant: str) -> set:
     return rgx.findall(variant)[0]
 
 
+@ca.memoize(420)
 def create_variant_HGVS(chrom: Union[int, str],
                         nt_start: Union[int, str],
                         ref_all: str,
@@ -437,7 +448,7 @@ def create_variant_HGVS(chrom: Union[int, str],
               "22": "NC_000022.11", "X": "NC_000023.11", "Y": "NC_000024.10",
               "M": "NC_012920.1", "MT": "NC_012920.1"}
 
-    ref = chroms[str(chrom)]
+    ref = chroms[str(chrom).strip("chr")]
     pos = "m.{}" if str(chrom) in ["M", "MT"] else "g.{}"
     try:
         if alt_all == "-":  # deletion
@@ -453,7 +464,6 @@ def create_variant_HGVS(chrom: Union[int, str],
         pos = change = "_"
 
     return base_str.format(ref, pos, change)
-
 
 
 async def ensembl_gene_id_to_entrez(ens_gene_id: str) -> pd.DataFrame:
@@ -499,6 +509,16 @@ async def get_dbsnp_from_variant(chrom: Union[int, str],
     else:
         var_end = str(var_end)
 
+    if chrom == "MT":
+        var = Variants.query.filter(Variants.nt_start == int(var_start),
+                                    Variants.nt_end == int(var_end)).all()
+        res = pd.DataFrame({"dbsnp_id": el.dbsnp_id,
+                            "variant": create_variant_HGVS(chrom, el.nt_start,
+                                                           el.ref_rCRS, el.alt)}
+                           for el in var)
+        if res.shape[0] != 0:
+            return res
+
     res = await apy.aquery(attributes=["chr_name", "chrom_start",
                                        "consequence_allele_string", "refsnp_id"],
                            filters={"chr_name": chrom, "start": var_start,
@@ -524,6 +544,7 @@ async def get_dbsnp_from_variant(chrom: Union[int, str],
     return res
 
 
+@ca.memoize(420)
 def get_gene_from_variant(chrom: Union[int, str],
                           var_start: Union[int, str],
                           var_end: Optional[Union[int, str]] = None) \
@@ -557,6 +578,7 @@ def get_gene_from_variant(chrom: Union[int, str],
     return res
 
 
+@ca.memoize(420)
 def get_diseases_from_dbsnp(dbsnp_id: str) -> pd.DataFrame:
     """Retrieve diseases associated with the given dbSNP ID.
 
@@ -581,6 +603,7 @@ def get_diseases_from_dbsnp(dbsnp_id: str) -> pd.DataFrame:
     return df
 
 
+@ca.memoize(420)
 def get_phenos_from_umls(umls_id: str) -> pd.DataFrame:
     """Retrieve phenotypes associated with the given disease using its UMLS ID.
 
@@ -735,6 +758,7 @@ async def fallback_variant(variant_chr: Union[int, str],
     return final_json
 
 
+@ca.memoize(420)
 def network_from_variant_json(final_json: dict) -> dict:
     """Create the required nodes and edges dictionaries to build the network
     from variant data.
@@ -1093,6 +1117,7 @@ async def json_from_gene(gene_input: str) -> dict:
     return final_json
 
 
+@ca.memoize(420)
 def network_from_gene_json(final_json: dict) -> dict:
     """Create the required nodes and edges dictionaries to build the network
     from gene data.
@@ -1234,6 +1259,7 @@ def network_from_gene_json(final_json: dict) -> dict:
 # FROM PHENOTYPE #
 
 
+@ca.memoize(420)
 def get_genes_from_phenotype(phenotype: str) -> pd.DataFrame:
     """Retrieve genes related to a phenotype, using Ensembl.
 
@@ -1365,6 +1391,7 @@ async def get_vars_from_phenotype(phenotype: str) -> pd.DataFrame:
     return res
 
 
+@ca.memoize(420)
 def get_diseases_from_phenotype(phenotype: str) -> pd.DataFrame:
     """Retrieve diseases related to a phenotype, exploiting the
     get_genes_from_phenotype() and get_diseases_from_gene_name() functions.
@@ -1440,6 +1467,7 @@ async def json_from_phenotype(pheno_input: str) -> dict:
     return final_json
 
 
+@ca.memoize(420)
 def network_from_phenotype_json(final_json: dict) -> dict:
     """Create the required nodes and edges dictionaries to build the network
     from phenotype data.
@@ -1577,6 +1605,7 @@ def network_from_phenotype_json(final_json: dict) -> dict:
 # FROM DISEASE #
 
 
+@ca.memoize(420)
 def get_umls_from_disease_id(disease_id: str) -> str:
     """Convert the general disease ID to the standard UMLS ID.
 
@@ -1609,6 +1638,7 @@ def get_umls_from_disease_id(disease_id: str) -> str:
     return ""
 
 
+@ca.memoize(420)
 def get_genes_from_disease_id(disease_id: str) -> pd.DataFrame:
     """Retrieve genes involved in a specific disease, using the GeneDiseaseAss
     table from the db.
@@ -1737,6 +1767,7 @@ async def get_vars_from_disease_id(disease_id: str) -> pd.DataFrame:
     return res
 
 
+@ca.memoize(420)
 def get_phenos_from_disease_id(disease_id: str) -> pd.DataFrame:
     """Retrieve phenotypes associated to a specific disease, using the
     HpoDisGenePhen table from the db.
@@ -1818,6 +1849,7 @@ async def json_from_disease(disease_input: str) -> dict:
     return final_json
 
 
+@ca.memoize(420)
 def network_from_disease_json(final_json: dict) -> dict:
     """Create the required nodes and edges dictionaries to build the network
     from disease data.
@@ -1962,6 +1994,7 @@ def network_from_disease_json(final_json: dict) -> dict:
             "genes": gene_set, "diseases": dise_set, "phenotypes": phen_set}
 
 
+@ca.memoize(420)
 def create_dataframes(json_data: dict) -> dict:
     """Create 4 different dataframes for variants, genes, diseases and
     phenotypes from results of json_from_*() functions.
