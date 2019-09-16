@@ -54,7 +54,8 @@ async def query():
 
         return redirect(url_for("site.results",
                                 variant_chr=form_var.variant_chr.data,
-                                variant_input=form_var.variant_input.data,
+                                variant_pos=form_var.variant_pos.data,
+                                variant_alt=form_var.variant_alt.data,
                                 variant_submit=form_var.variant_submit.data,
                                 gene_input=form_gene.gene_input.data,
                                 gene_submit=form_gene.gene_submit.data,
@@ -68,7 +69,8 @@ async def query():
 async def results():
 
     variant_chr = request.args.get("variant_chr", "", type=str)
-    variant_input = request.args.get("variant_input", "", type=str)
+    variant_pos = request.args.get("variant_pos", "", type=str)
+    variant_alt = request.args.get("variant_alt", "", type=str)
     variant_submit = request.args.get("variant_submit")
     gene_input = request.args.get("gene_input", "", type=str)
     gene_submit = request.args.get("gene_submit")
@@ -78,16 +80,25 @@ async def results():
     disease_submit = request.args.get("disease_submit")
 
     if variant_submit == "True":
-        res_type = "position"
-        res_el = ":".join([variant_chr, variant_input])
-        if "-" in variant_input:
-            variant_start, variant_end = variant_input.split("-")
+        res_type = "variant"
+        # TODO: change this to the proper HGVS variant format
+
+        variant_start = int(variant_pos)
+        if variant_alt:
+            res_el = ":".join([variant_chr, variant_pos + ">" + variant_alt])
+            variant_end = int(variant_pos) + len(variant_alt) - 1
         else:
-            variant_end = variant_start = variant_input
+            res_el = ":".join([variant_chr, variant_pos])
+            variant_end = variant_start
+        # if "-" in variant_input:
+        #     variant_start, variant_end = variant_input.split("-")
+        # else:
+        #     variant_end = variant_start = variant_input
 
         try:
             async with async_timeout.timeout(60) as cm:
-                json_data = await json_from_variant(variant_chr, variant_start, variant_end)
+                json_data = await json_from_variant(variant_chr, variant_start,
+                                                    variant_alt, variant_end)
                 # networks = network_from_variant_json(json_data)
                 if cm.expired or len(json_data["variants"]) == 0:
                     json_data = {"variants": {}, "genes": {},

@@ -488,13 +488,16 @@ async def ensembl_gene_id_to_entrez(ens_gene_id: str) -> pd.DataFrame:
 
 
 async def get_dbsnp_from_variant(chrom: Union[int, str],
-                           var_start: Union[int, str],
-                           var_end: Optional[Union[int, str]] = None) -> pd.DataFrame:
+                                 var_start: Union[int, str],
+                                 var_alt: Optional[str] = None,
+                                 var_end: Optional[Union[int, str]] = None) -> pd.DataFrame:
     """Find the dbSNP ID related to a given variant.
 
     :param Union[int, str] chrom: chromosome name (1:22, X, Y, MT)
 
     :param Union[int, str] var_start: variant starting position
+
+    :param Optional[str] var_alt: variant alternate allele
 
     :param Optional[Union[int, str]] var_end: variant ending position
 
@@ -510,13 +513,19 @@ async def get_dbsnp_from_variant(chrom: Union[int, str],
         var_end = str(var_end)
 
     if chrom == "MT":
-        var = Variants.query.filter(Variants.nt_start == int(var_start),
-                                    Variants.nt_end == int(var_end)).all()
-        res = pd.DataFrame({"dbsnp_id": el.dbsnp_id,
-                            "variant": create_variant_HGVS(chrom, el.nt_start,
-                                                           el.ref_rCRS, el.alt)}
-                           for el in var)
-        if res.shape[0] != 0:
+        if var_alt:
+            var = Variants.query.filter(Variants.nt_start == int(var_start),
+                                        Variants.alt == var_alt,
+                                        Variants.nt_end == int(var_end)).all()
+        else:
+            var = Variants.query.filter(Variants.nt_start == int(var_start),
+                                        Variants.nt_end == int(var_end)).all()
+        if len(var) != 0:
+            res = pd.DataFrame({"dbsnp_id": el.dbsnp_id,
+                                "variant": create_variant_HGVS(chrom, el.nt_start,
+                                                               el.ref_rCRS, el.alt)}
+                               for el in var)
+        # if res.shape[0] != 0:
             return res
 
     res = await apy.aquery(attributes=["chr_name", "chrom_start",
@@ -531,9 +540,12 @@ async def get_dbsnp_from_variant(chrom: Union[int, str],
     if res.shape[0] != 0:
         res["ref_allele"] = res["ref/alt allele"].str.split("/", expand=True)[0]
         res["alt_allele"] = res["ref/alt allele"].str.split("/", expand=True)[1]
-        res = res[res["alt_allele"] != "HGMD_MUTATION"]
+        if var_alt:
+            res = res[(res["alt_allele"] != "HGMD_MUTATION") & (res["alt_allele"] == var_alt)]
+        else:
+            res = res[res["alt_allele"] != "HGMD_MUTATION"]
         res["variant"] = [create_variant_HGVS(el.chromosome, el.start_pos,
-                                                el.ref_allele, el.alt_allele)
+                                              el.ref_allele, el.alt_allele)
                           for el in res.itertuples()]
         res.drop_duplicates(subset="variant", inplace=True)
         res.drop(["chromosome", "start_pos", "ref_allele", "alt_allele",
@@ -642,6 +654,7 @@ def get_phenos_from_umls(umls_id: str) -> pd.DataFrame:
 
 async def json_from_variant(variant_chr: Union[int, str],
                             variant_start: Union[int, str],
+                            variant_alt: Optional[str] = None,
                             variant_end: Optional[Union[int, str]] = None) -> dict:
     """Create the final json structure from variant data.
 
@@ -649,12 +662,15 @@ async def json_from_variant(variant_chr: Union[int, str],
 
     :param Union[int, str] variant_start: variant starting position
 
+    :param Optional[str] variant_alt: variant alternate allele
+
     :param Optional[Union[int, str]] variant_end: variant ending position
 
     :return: dict json("variants": [variants list])
     """
     gene = get_gene_from_variant(variant_chr, variant_start, variant_end)
-    dbsnps = await get_dbsnp_from_variant(variant_chr, variant_start, variant_end)
+    dbsnps = await get_dbsnp_from_variant(variant_chr, variant_start,
+                                          variant_alt, variant_end)
     disease_df = pd.DataFrame(columns=["dbsnp_id", "umls_disease_id",
                                        "disease_id", "disease_name", "ass_score"])
     phenos_df = pd.DataFrame(columns=["umls_disease_id", "disease_name",

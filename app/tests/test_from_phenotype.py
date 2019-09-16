@@ -142,7 +142,7 @@ async def test_json_from_phenotype():
                             "phenotype_name": "Notched nasal tip",
                             "umls_disease_id": "C3150703"}],
               "genes": [],
-              "phenotypes": ["Notched nasal tip"],
+              "phenotypes": [{'phenotype_name': 'Notched nasal tip'}],
               "variants": []}
     result = await json_from_phenotype("HP:0000456")
     assert result == expect

@@ -7,7 +7,8 @@ from wtforms import StringField, SelectField, SubmitField
 
 class QueryVariantsForm(FlaskForm):
     variant_chr = SelectField("variant_chr", default=None)
-    variant_input = StringField("variant_input", default=None)
+    variant_pos = StringField("variant_pos", default=None)
+    variant_alt = StringField("variant_alt", default=None)
     variant_submit = SubmitField("variant_submit")
 
 

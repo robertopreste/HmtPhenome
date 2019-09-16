@@ -41,12 +41,12 @@
         <div class="row">
             <div class="panel panel-warning">
                 <div class="panel-heading">
-                    <h4>Position</h4>
+                    <h4>Variant</h4>
                 </div>
                 <div class="panel-body">
-                    <p>Insert a variant position: </p>
+                    <p>Insert a variant position and alternate allele: </p>
                     <div class="row">
-                        <div class="form-group col-sm-6">
+                        <div class="form-group col-sm-4">
                             <select class="form-control" name="variant_chr" id="variant_chr">
                                 <option value="chr1">chr1</option>
                                 <option value="chr2">chr2</option>
@@ -74,12 +74,15 @@
                                 <option value="chrM" selected>chrM</option>
                             </select>
                         </div>
-                        <div class="col-sm-6">
-                            <input type="text" class="form-control" name="variant_input" id="variant_input">
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" placeholder="Position" name="variant_pos" id="variant_pos">
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" placeholder="Allele (optional)" name="variant_alt" id="variant_alt">
                         </div>
                     </div>
-                    <small>Select a chromosome and type a nucleotide position.
-                            <br> All variants for the given position are returned.</small>
+                    <small>Select a chromosome and type a nucleotide position and (optionally) alternate allele.
+                            <br> Available data for the given variant are returned.</small>
                 </div>
                 <div class="panel-footer panel-warning">
                     <button type="submit" class="btn btn-warning btn-lg center-block" name="variant_submit" value="submit">Submit</button>
