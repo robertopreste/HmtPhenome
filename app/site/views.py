@@ -85,7 +85,7 @@ async def results():
 
         variant_start = int(variant_pos)
         if variant_alt:
-            res_el = ":".join([variant_chr, variant_pos + ">" + variant_alt])
+            res_el = ":".join([variant_chr, variant_pos + ">" + variant_alt.upper()])
             variant_end = int(variant_pos) + len(variant_alt) - 1
         else:
             res_el = ":".join([variant_chr, variant_pos])
@@ -96,6 +96,8 @@ async def results():
         #     variant_end = variant_start = variant_input
 
         try:
+            if variant_alt:
+                variant_alt = variant_alt.upper()
             async with async_timeout.timeout(60) as cm:
                 json_data = await json_from_variant(variant_chr, variant_start,
                                                     variant_alt, variant_end)
